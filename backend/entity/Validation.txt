@@ -1,0 +1,48 @@
+// package entity
+
+// import (
+// 	"fmt"
+// 	"testing"
+// 	"time"
+
+// 	"github.com/asaskevich/govalidator"
+// 	. "github.com/onsi/gomega"
+// )
+
+// func TestCreategroupcorrect(t *testing.T) {
+// 	g := NewGomegaWithT(t)
+
+// 	Group := Group{
+
+// 		NameGroup: "ABCEEE",
+// 	}
+
+// 	ok, err := govalidator.ValidateStruct(Group)
+
+// 	g.Expect(ok).To(BeTrue())
+
+// 	g.Expect(err).To(BeNil())
+
+// }
+
+// func TestCreategroupIncorrect(t *testing.T) {
+// 	g := NewGomegaWithT(t)
+
+// 	fixtures := []string{
+// 		" ",
+// 		"",
+// 	}
+
+// 	Group := Group{
+
+// 		NameGroup: "ABCEEE",
+// 	}
+
+// 	ok, err := govalidator.ValidateStruct(Group)
+
+// 	g.Expect(ok).To(BeTrue())
+
+// 	g.Expect(err).To(BeNil())
+
+// }
+

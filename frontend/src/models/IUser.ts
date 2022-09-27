@@ -1,0 +1,25 @@
+export interface UserRolesInterface {
+    ID: number;
+    RoleName: string;
+}
+
+export interface UserDetailsInterface {
+    ID: number;
+
+    Code: string;
+    FirstName: string;
+    LastName: string;
+    Nickname: string;
+    PhoneNumber: string;
+    PromtPay: string;
+    PriceShutt: number; 
+
+}
+
+
+export interface MembersInterface {
+    ID: number;
+    
+    UserDetailID: number;
+    UserDetail: UserDetailsInterface;
+}
