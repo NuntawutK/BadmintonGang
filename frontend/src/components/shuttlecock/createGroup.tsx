@@ -37,6 +37,7 @@ import moment from "moment";
 import { group } from "console";
 import { EventShuttInterface } from "../../models/IEvent";
 import userEvent from "@testing-library/user-event";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
@@ -78,6 +79,7 @@ export default function SelectGroup() {
   const [joinGroup, setjoinGroup] = React.useState<Partial<GroupMemberInterface>>({});
   const [ShowjoinGroup, setShowjoinGroup] = React.useState<GroupMemberInterface[]>([]);
 
+  const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
 
   const [user, setUser] = useState<UsersInterface>();
 
@@ -89,7 +91,7 @@ export default function SelectGroup() {
   const [trigger, setTrigger] = useState(0);
   const [triggerjoin, setTriggerjoin] = useState(0);
 
-  const [msg,setMsg] = useState<string>("");
+  const [msg, setMsg] = useState<string>("");
 
   const getUser = async () => {
     const getToken = localStorage.getItem("token");
@@ -97,6 +99,37 @@ export default function SelectGroup() {
       setUser(JSON.parse(localStorage.getItem("user") || ""));
     }
   }
+
+  
+  let { id } = useParams()
+
+  const getGroupMember = async () => {
+
+    const apiUrl = `http://localhost:8080/groupmember/${id}`;
+
+    const requestOptions = {
+      method: "GET",
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    //การกระทำ
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data) {
+          setGroupMember(res.data);
+        } else {
+          console.log("else");
+        }
+      });
+  };
+
 
 
 
@@ -252,11 +285,12 @@ export default function SelectGroup() {
 
   useEffect(() => {
     getUser();
+    getGroupMember();
   }, []);
-  
+
   useEffect(() => {
     getjoinGroup();
-  }, [trigger,triggerjoin]);
+  }, [trigger, triggerjoin]);
 
 
 
@@ -276,7 +310,7 @@ export default function SelectGroup() {
 
   return (
     <Container className={classes.container} maxWidth="md">
-       <Snackbar open={success} autoHideDuration={3000}onClose={handleClose} >
+      <Snackbar open={success} autoHideDuration={3000} onClose={handleClose} >
         <Alert onClose={handleClose} severity="success">
           {msg}
         </Alert>
@@ -294,7 +328,7 @@ export default function SelectGroup() {
             color="primary"
             gutterBottom
           >
-            Select Group
+            Create and Select Group
           </Typography>
         </Box>
       </Box>
@@ -391,32 +425,9 @@ export default function SelectGroup() {
                   </Typography>
 
                 </Grid>
-
-
-
-
-
-
-
-
-
               </Grid>
-
-              {/* <Typography variant="body2" color="inherit" noWrap>
-                {getRole()}
-                {premiumMembers.length !== 0 ? (
-                  <>
-                    <br/><br/>
-                    ID: {premiumMembers[premiumMembers.length - 1].PremiumMemberID}<br/>
-                    Class: {premiumMembers[premiumMembers.length - 1].MemberClass.Name}<br/>
-                    Point: {premiumMembers[premiumMembers.length - 1].Point}
-                  </>) : <></>}
-              </Typography> */}
             </Box>
           </Menu>
-
-
-
         </Box>
         <br />
         <br />
@@ -442,6 +453,9 @@ export default function SelectGroup() {
               <TableCell align="left" width="15%">
 
               </TableCell>
+              <TableCell align="left" width="15%">
+
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -456,15 +470,29 @@ export default function SelectGroup() {
                 <TableCell align="left">
                   <Button
                     component={RouterLink}
+                    // to={"/CreateEvent/" + group.Group.ID.toString()}
                     to={"/CreateEvent/" + group.Group.ID.toString()}
+
                     variant="contained"
                     color="primary"
                   >
-                    member
+                    Create Event
                   </Button>
 
                 </TableCell>
+                <TableCell align="left">
 
+                <Button
+                  component={RouterLink}
+                  to={"/manageEvent/" + group.Group.ID.toString()}
+                  variant="contained"
+                  color="primary"
+                  style={{ float: "right" }}
+                >
+                  manage event
+                </Button>
+
+             </TableCell> 
 
 
 

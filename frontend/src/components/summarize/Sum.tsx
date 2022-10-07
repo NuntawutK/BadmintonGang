@@ -279,22 +279,7 @@ export default function DataPlayer() {
               //className ={classes.fullbox}
             />
           </Grid>
-          <Grid item xs={5}>
-            <p>Menu</p>
-            
-            <TextField
-              fullWidth
-              id="MinPrice"
-              type="string"
-              inputProps={{ name: "MinPrice" }}
-              // value={Promotion.MinPrice}
-              // onChange={handleInputChange}
-              // label=""
-              // defaultValue={0}
-              variant="outlined"
-              //className ={classes.fullbox}
-            />
-          </Grid>
+          
       </Grid>
 
 
@@ -305,9 +290,7 @@ export default function DataPlayer() {
               <TableCell align="left" width="8%">
                 Status
               </TableCell>
-              <TableCell align="left" width="8%">
-                Menu
-              </TableCell>
+              
 
               <TableCell align="left" width="8%">
                 Order

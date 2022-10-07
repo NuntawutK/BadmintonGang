@@ -42,5 +42,6 @@ type Member struct {
 
 	// Groups []Group `gorm:"many2many:group_members"`
 	// JoinGroup []JoinGroup `gorm:"foreignKey:MemberID"`
+	ShuttleCock []ShuttleCock `gorm:"foreignKey:MemberID"`
 	GroupMember []GroupMember `gorm:"foreignKey:MemberID"`
 }

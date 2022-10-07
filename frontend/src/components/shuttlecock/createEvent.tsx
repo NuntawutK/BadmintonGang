@@ -100,6 +100,8 @@ export default function CreateEvent() {
 
   // const [ShowjoinGroup, setShowjoinGroup] = React.useState<JoinGroupInterface[]>([]);
 
+  const [user,setUser] = React.useState<UsersInterface>();
+  const [role, setRole] = useState("");
   const [selected, setSelected] = React.useState<number[]>([]);
 
   const [success, setSuccess] = React.useState(false);
@@ -240,7 +242,7 @@ export default function CreateEvent() {
     return result;
   }
 
-  // .{code: makeid(6)}
+  
   let payload: any[] = [];
   function submit() {
     selected.forEach((id: number) => {
@@ -254,15 +256,12 @@ export default function CreateEvent() {
       Place: sentEvent?.Place,
       TimeStart: selectedDateTimestart,
       TimeStop: selectedDateTimestop,
-      ShuttleCock: { Code: makeid(6) },
+      ShuttleCock: [{ 
+        Code: makeid(6),
+        MemberID: user?.ID,
+      }],
       EventGroupMember: payload,
-      // selected.map((item: number) => {
-      //   return {
-      //     ID: item
-      //   }
-      // })
-
-
+      GroupID: Number(id),
     };
     console.log(data);
 
@@ -285,6 +284,7 @@ export default function CreateEvent() {
           setMsg("Create Event success")
           setErrorMassage("")
         } else {
+          console.log(res.error)
           setError(true);
           setErrorMassage(res.error)
         }
@@ -297,6 +297,12 @@ export default function CreateEvent() {
 
 
   useEffect(() => {
+    const getToken = localStorage.getItem("token");
+    if (getToken) {
+      setUser(JSON.parse(localStorage.getItem("user") || ""));
+      setRole(localStorage.getItem("role") || "");
+    } 
+
     getGroupMember();
     getEventMember();
   }, [trigger]);
@@ -329,7 +335,7 @@ export default function CreateEvent() {
               gutterBottom
               align="center"
             >
-              Member in Group
+              CREATE EVENT
             </Typography>
             <br />
           </Box>
@@ -470,72 +476,7 @@ export default function CreateEvent() {
 
 
           </Grid>
-          <Grid item xs={7}>
-
-            {/* <TableContainer component={Paper} className={classes.tableSpace}>
-              <Table className={classes.table} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-
-
-                    <TableCell align="left" width="5%">
-                      Place
-                    </TableCell>
-
-                    <TableCell align="center" width="10%">
-                      TimeStart
-                    </TableCell>
-
-                    <TableCell align="center" width="10%">
-                      TimeStop
-                    </TableCell>
-
-                    <TableCell align="center" width="8%">
-                      Member
-                    </TableCell>
-
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {showEvent.map((item: EventShuttInterface) => (
-                    <TableRow key={item.ID}>
-                      <TableCell align="left">{item.Place}</TableCell>
-                      <TableCell align="left">{moment(item.TimeStart).format("DD/MM/YYYY hh:mm A")}</TableCell>
-                      <TableCell align="left">{moment(item.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
-                      <TableCell align="center">
-                        <Button
-                          component={RouterLink}
-                          to={"/memberinevent"}
-                          variant="contained"
-                          color="primary"
-                        >
-                          member
-                        </Button>
-
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          // component={RouterLink}
-                          // to={"/memberinevent"}
-                          variant="contained"
-                          color="primary"
-                        >
-                          Add
-                        </Button>
-
-                      </TableCell>
-
-
-                    </TableRow>
-                  )
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer> */}
-
-
-
-          </Grid>
+         
 
         </Grid>
       </Paper>
@@ -546,12 +487,12 @@ export default function CreateEvent() {
       <br />
       <Button
         component={RouterLink}
-        to={"/HistoryEvent/"+id}
+        to={"/manageEvent/"+id}
         variant="contained"
         color="primary"
         style={{ float: "right" }}
       >
-        history event
+        manage event
       </Button>
 
       <Button

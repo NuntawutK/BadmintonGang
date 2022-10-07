@@ -9,7 +9,7 @@ import OwnShuttlecock from './components/shuttlecock/OwnerShuttlecock';
 import DataPlayer from './components/player/DataPlayer';
 import Status from './components/status/Status';
 import Sum from './components/summarize/Sum';
-import SelectGroup from "./components/shuttlecock/selectGroup";
+import SelectGroup from "./components/shuttlecock/createGroup";
 import AccountInfomation from './components/Account';
 import Navbar from './components/Navbar';
 
@@ -17,9 +17,10 @@ import { UsersInterface } from './models/ISignIn';
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
 import { BrowserRouter } from 'react-router-dom';
-import HistoryEvent from "./components/shuttlecock/History";
 import CreateEvent from "./components/shuttlecock/createEvent";
 import MemberinEvent from "./components/shuttlecock/MemberEvent";
+import ManageEvent from "./components/shuttlecock/manageEvent";
+import Dashboard from "./components/shuttlecock/historyEvent";
 
 function App() {
   const [token, setToken] = useState<string>("");
@@ -64,12 +65,14 @@ function App() {
 
                   <Route path = "/SelectGroup" element={<SelectGroup />} />
                   <Route path = "/CreateEvent/:id" element={<CreateEvent />} />
-                  {/* <Route path = "/CreateEvent" element={<CreateEvent />} /> */}
 
                   
                   <Route path = "/memberinevent" element={<MemberinEvent />} />
                   <Route path = "/status" element={<Status />} />
-                  <Route path = "/HistoryEvent/:id" element={<HistoryEvent />} />
+                  <Route path = "/manageEvent/:id" element={<ManageEvent />} />
+                  <Route path = "/historyEvent/:id" element={<Dashboard />} />
+
+
 
                   <Route path = "/summarize" element={<Sum />} /> 
                   <Route path = "/player" element={<DataPlayer />} />

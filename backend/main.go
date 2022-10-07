@@ -48,6 +48,7 @@ func main() {
 			protected.POST("/joingroup", controller.JoinGroup)
 			protected.POST("/event", controller.CreateEventShuttleCock)
 			protected.POST("/creategroup", controller.CreateGroup)
+			protected.POST("/addshutt", controller.AddShuttleCock)
 			// protected.POST("/event",controller.CreateEventShuttleCock)
 		}
 	}

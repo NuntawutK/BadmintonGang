@@ -15,18 +15,11 @@ type Group struct {
 	NameGroup string
 	CodeGroup string `gorm:"uniqueIndex"`
 
+	EventShutt  []EventShutt  `gorm:"foreignKey:GroupID"`
 	GroupMember []GroupMember `gorm:"foreignKey:GroupID"`
 
 	// Members []Member `gorm:"many2many:group_members"`
 	// JoinGroup  []JoinGroup  `gorm:"foreignKey:GroupID"`
-}
-
-type ShuttleCock struct {
-	gorm.Model
-
-	Code string
-
-	EventShutt []EventShutt `gorm:"foreignKey:ShuttleCockID"`
 }
 
 type GroupMember struct {
@@ -45,24 +38,32 @@ type GroupMember struct {
 	// EventShutt []EventShutt `gorm:"foreignKey:JoinGroupID"`
 	// EventShutts []EventShutt `gorm:"many2many:join_event; references:ID"`
 }
+type ShuttleCock struct {
+	gorm.Model
+
+	Code string
+
+	EventShuttID *uint
+	EventShutt   EventShutt `gorm:"references:ID"`
+
+	MemberID *uint
+	Member   Member `gorm:"references:ID"`
+
+	// EventShutt []EventShutt `gorm:"foreignKey:ShuttleCockID"`
+}
 
 type EventShutt struct {
 	gorm.Model
 
-	// JoinGroupID *uint
-	// JoinGroup JoinGroup `gorm:"references:ID"`
-
-	ShuttleCockID *uint
-	ShuttleCock   ShuttleCock `gorm:"references:ID"`
+	GroupID *uint
+	Group   Group `gorm:"references:ID"`
 
 	Place     string
 	TimeStart time.Time
 	TimeStop  time.Time
 
 	EventGroupMember []EventGroupMember `gorm:"foreignKey:EventShuttID"`
-	// GroupMembers     []GroupMember      `gorm:"foreignKey:EventShuttID"`
-
-	// GroupMembers []GroupMember `gorm:"many2many:join_event; references:ID"`
+	ShuttleCock      []ShuttleCock      `gorm:"foreignKey:EventShuttID"`
 }
 
 type EventGroupMember struct {
