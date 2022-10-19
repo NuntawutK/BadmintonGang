@@ -1,6 +1,9 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"github.com/asaskevich/govalidator"
+	"gorm.io/gorm"
+)
 
 type UserRole struct {
 	gorm.Model
@@ -12,23 +15,24 @@ type UserRole struct {
 
 type UserLogin struct {
 	gorm.Model
-	Username string `gorm:"uniqueIndex"`
-	Password string
+	Username string `gorm:"uniqueIndex" valid:"required~please enter username,minstringlength(5)~Username must not be less than 5 characters"`
+	Password string `valid:"required~please enter password,minstringlength(8)~Password must not be less than 8 characters"`
 
 	UserRoleID *uint    `gorm:"NOT NULL"`
-	UserRole   UserRole `gorm:"references:ID; NOT NULL"`
+	UserRole   UserRole `gorm:"references:ID; NOT NULL" valid:"-"`
+
+	// Register []Register `gorm:"foreignKey:UserLoginID"`
 }
 
 type UserDetail struct {
 	gorm.Model
 
-	// Code 	string `gorm:"uniqueIndex"`
-	FirstName   string
-	LastName    string
-	Nickname    string
-	PhoneNumber string
-	PromtPay    string
-	PriceShutt  float64
+	FirstName   string  `valid:"required~please enter FirstName"`
+	LastName    string  `valid:"required~please enter LastName"`
+	Nickname    string  `valid:"required~please enter Nickname"`
+	PhoneNumber string  `valid:"required,matches(^[0]\\d{9}$)~PhoneNumber must be contain 10 numbers"`
+	PromtPay    string  `valid:"required,matches(^[0]\\d{9}$)~PromtPay must be contain 10 numbers"`
+	PriceShutt  float64 `valid:"required~PriceShutt must not be zero, PriceShutt~PriceShutt must not be negative"`
 }
 
 type Member struct {
@@ -40,8 +44,17 @@ type Member struct {
 	UserDetailID *uint
 	UserDetail   UserDetail `gorm:"references:ID"`
 
-	// Groups []Group `gorm:"many2many:group_members"`
-	// JoinGroup []JoinGroup `gorm:"foreignKey:MemberID"`
-	ShuttleCock []ShuttleCock `gorm:"foreignKey:MemberID"`
-	GroupMember []GroupMember `gorm:"foreignKey:MemberID"`
+	ShuttleCock                 []ShuttleCock                 `gorm:"foreignKey:MemberID"`
+	GroupMember                 []GroupMember                 `gorm:"foreignKey:MemberID"`
+	// EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:MemberID"`
+	// Register    []Register    `gorm:"foreignKey:MemberID"`
+}
+
+func init() {
+
+	govalidator.CustomTypeTagMap.Set("PriceShutt", func(i interface{}, o interface{}) bool {
+		a := i.(float64)
+		return a >= 1
+	})
+
 }

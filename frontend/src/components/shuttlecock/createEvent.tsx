@@ -45,14 +45,16 @@ import { useParams } from 'react-router-dom';
 import { EventShuttInterface } from "../../models/IEvent";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
 
-
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
 
   createStyles({
-    root: { flexGrow: 1 },
+    root: { flexGrow: 1,
+     },
 
-    container: { marginTop: theme.spacing(2) },
+    container: { marginTop: theme.spacing(1),
+     },
 
     paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
 
@@ -65,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
     tableHead: {
       "& .MuiTableCell-head": {
         color: "white",
-        backgroundColor: "navy",
+        backgroundColor: "#DC143C",
       },
     },
 
@@ -91,7 +93,10 @@ export default function CreateEvent() {
 
   // const [Detail, setDetail] = React.useState<Partial<UserDetailsInterface>>();
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
-  const [sentEvent, setSentEvent] = React.useState<Partial<EventShuttInterface>>({});
+  const [sentEvent, setSentEvent] = React.useState<Partial<EventShuttInterface>>({
+    Place: "",
+  
+  });
   // const [sentEvent,setsentEvent] = React.useState<Partial<JoinEventInterface>>({});
 
 
@@ -102,7 +107,9 @@ export default function CreateEvent() {
 
   const [user,setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
-  const [selected, setSelected] = React.useState<number[]>([]);
+  const [selected, setSelected] = React.useState<number[]>([
+
+  ]);
 
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
@@ -175,7 +182,7 @@ export default function CreateEvent() {
 
 
   let { id } = useParams()
-
+  
   const getGroupMember = async () => {
 
     const apiUrl = `http://localhost:8080/groupmember/${id}`;
@@ -197,11 +204,16 @@ export default function CreateEvent() {
 
         if (res.data) {
           setGroupMember(res.data);
+          const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
+          setSelected([res.data?.find((m:GroupMemberInterface) => m.Member.ID === user?.ID)?.ID])
+
         } else {
           console.log("else");
         }
       });
   };
+
+  
 
   const getEventMember = async () => {
     // const event: Ebe = JSON.parse(localStorage.getItem("user") || "");
@@ -256,10 +268,10 @@ export default function CreateEvent() {
       Place: sentEvent?.Place,
       TimeStart: selectedDateTimestart,
       TimeStop: selectedDateTimestop,
-      ShuttleCock: [{ 
-        Code: makeid(6),
-        MemberID: user?.ID,
-      }],
+      // ShuttleCock: [{ 
+      //   Code: makeid(6),
+      //   MemberID: user?.ID,
+      // }],
       EventGroupMember: payload,
       GroupID: Number(id),
     };
@@ -296,6 +308,7 @@ export default function CreateEvent() {
 
 
 
+
   useEffect(() => {
     const getToken = localStorage.getItem("token");
     if (getToken) {
@@ -318,9 +331,9 @@ export default function CreateEvent() {
           {msg}
         </Alert>
       </Snackbar>
-      <Snackbar autoHideDuration={3000} >
+      <Snackbar open={error} autoHideDuration={5000} onClose={handleClose} >
         <Alert onClose={handleClose} severity="error">
-          บันทึกข้อมูลไม่สำเร็จ
+        {errorMessage}
         </Alert>
       </Snackbar>
       <Paper className={classes.paper}>
@@ -346,9 +359,10 @@ export default function CreateEvent() {
               component={RouterLink}
               to="/SelectGroup"
               variant="contained"
-              color="primary"
+              color="secondary"
               style={{ float: "right" }}
             >
+              <ArrowBackIosIcon/>
               Back
             </Button>
           </Box>
@@ -372,13 +386,14 @@ export default function CreateEvent() {
 
             </Typography>
             <Grid container spacing={1} className={classes.root}>
-              <Grid item xs={4}>
+              <Grid item xs={5}>
                 <Typography >
                   <p>PLACE</p>
                   <TextField
                     id="Place"
                     type="string"
                     inputProps={{ name: "Place" }}
+                    size = "small"
                     value={sentEvent?.Place}
                     onChange={handleChange}
                     label=""
@@ -387,22 +402,17 @@ export default function CreateEvent() {
                     multiline
                     rows={1}
                   />
-                  <br />
-                  <br />
-                  <br />
-
-
-
                 </Typography>
 
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={7}>
                 <p>TIME START</p>
 
                 <form className={classes.container} noValidate>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDateTimePicker
                       name="WatchedTime"
+                      size = "small"
                       value={selectedDateTimestart}
                       onChange={handleDateChangeTimestart}
                       label=""
@@ -412,8 +422,9 @@ export default function CreateEvent() {
                   </MuiPickersUtilsProvider>
                 </form>
               </Grid>
-
-              <Grid item xs={4}>
+              <Grid item xs={5}>
+              </Grid>
+              <Grid item xs={7}>
 
                 <p>TIME END</p>
 
@@ -431,37 +442,35 @@ export default function CreateEvent() {
                 </form>
               </Grid>
             </Grid>
+            
+            
 
             <br />
             <TableContainer component={Paper} className={classes.tableContainer}>
               <Table stickyHeader>
                 <TableHead className={classes.tableHead}>
                   <TableRow>
-                    <TableCell width="5%" align="center">SELECT</TableCell>
-                    <TableCell width="5%" align="center">Firstname</TableCell>
-                    <TableCell width="5%" align="center">Lastname</TableCell>
-                    <TableCell width="5%" align="center">Nickname</TableCell>
-                    <TableCell width="10%" align="center">Tell</TableCell>
+                    <TableCell width="1%" align="center">SELECT</TableCell>
+                    <TableCell width="20%" align="center">Name</TableCell>
+                    <TableCell width="6%" align="center">Nickname</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
 
                   {groupMember?.map((item: GroupMemberInterface) => {
-                    const isItemSelected = isSelected(item.ID);
+                    let isItemSelected = isSelected(item.ID);
                     return (
                       <TableRow key={item.ID} >
-                        <TableCell padding="checkbox" align="center">
+                        <TableCell padding="checkbox" align="center" >
                           <Checkbox
                             checked={isItemSelected}
                             onClick={(event) => handleClick(event, item.ID)}
-                          // inputProps={{ 'aria-label': 'primary checkbox' }}
+                            disabled = {item.ID === groupMember.find((m:GroupMemberInterface) => m.Member.ID === user?.ID)?.ID }
                           />
 
                         </TableCell>
-                        <TableCell align="center">{item.Member.UserDetail.FirstName}</TableCell>
-                        <TableCell align="center">{item.Member.UserDetail.LastName}</TableCell>
+                        <TableCell align="center">{item.Member.UserDetail.FirstName}{"  "}{item.Member.UserDetail.LastName}</TableCell>
                         <TableCell align="center">{item.Member.UserDetail.Nickname}</TableCell>
-                        <TableCell align="center">{item.Member.UserDetail.PhoneNumber}</TableCell>
                       </TableRow>
                     )
                   })}
@@ -489,7 +498,7 @@ export default function CreateEvent() {
         component={RouterLink}
         to={"/manageEvent/"+id}
         variant="contained"
-        color="primary"
+        color="secondary"
         style={{ float: "right" }}
       >
         manage event
@@ -500,6 +509,7 @@ export default function CreateEvent() {
         onClick={submit}
         variant="contained"
         color="primary"
+        disabled = {(sentEvent.Place === "")}
       >
         Create EVENT
       </Button>

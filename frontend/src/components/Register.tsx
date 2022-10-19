@@ -29,12 +29,12 @@ import { Details } from "@material-ui/icons";
 
 import moment from "moment";
 
-import { MembersInterface,UserDetailsInterface,UserRolesInterface } from "../models/IUser";
-import { UsersInterface } from "../models/ISignIn";
+import { MembersInterface, UserDetailsInterface, UserRolesInterface } from "../models/IUser";
+import { UsersInterface, SigninInterface } from "../models/ISignIn";
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
-  
+
 
   createStyles({
     root: { flexGrow: 1 },
@@ -55,36 +55,28 @@ const Alert = (props: AlertProps) => {
 };
 
 export default function AccountInfomation() {
-   const classes = useStyles();
-
-  //  const [manageMember, setmanageMember] = React.useState<Partial<MembersInterface[]>>([]);
-
-   const [Detail, setDetail] = React.useState<Partial<UserDetailsInterface>>();
-
-
-
-//   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-//     new Date()
-//   );
-
-  
+  const classes = useStyles();
+  // const [Detail, setDetail] = React.useState<Partial<UserDetailsInterface>>();
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
-//   const [errorMessage, setErrorMassage] = useState(""); 
+
+  const [register, setregister] = React.useState<Partial<MembersInterface>>({});
+  const [registerlogin, setregisterlogin] = React.useState<Partial<SigninInterface>>({
+    Username: "",
+    Password: "",
+  });
+  const [registerdetail, setregisterdetail] = React.useState<Partial<UserDetailsInterface>>({
+    FirstName: "",
+    LastName: "",
+    Nickname: "",
+    PhoneNumber: "",
+    PromtPay: "",
+    PriceShutt: 0,
+  });
+  const [errorMessage, setErrorMassage] = useState("");
 
 
-
-//   const [Promotion, setPromotion] = React.useState<Partial<OwnerShuttlecock>>({
-//     NamePromotionID: 0,
-//     PromotionPeriodID: 0,
-//     PromotionTypeID: 0,
-//     MinPrice: 0,
-//     Discount: 0,
-//   });
-//   const [NamePromotion, setNamePromotion] = React.useState<NamePromotionsInterface[]>([]);
-//   const [PromotionPeriod, setPromotionPeriod] = React.useState<PromotionPeriodsInterface[]>([]);
-//   const [PromotionType, setPromotionType] = React.useState<PromotionTypesInterface[]>([]);
-//   const [detail,setdetail] = React.useState<NamePromotionsInterface>()
+  const [role, setrole] = React.useState<UserRolesInterface[]>([]);
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -93,288 +85,263 @@ export default function AccountInfomation() {
     setError(false);
   };
 
-//   const handleDateChange = (date: Date | null) => {
-//     setSelectedDate(date);
-//   };
-
-  const handleInputChange = (
-    event: React.ChangeEvent<{ id?: string; value: any }>
-  ) => {
-    const id = event.target.id as keyof typeof Detail;
+  const [btnDisabled, setBtnDisabled] = useState(true)
+  const handleInputChangelogin = (event: React.ChangeEvent<{ id?: string; value: any; name?: string }>) => {
+    const id = event.target.id as keyof typeof registerlogin;
     const { value } = event.target;
-    setDetail({ ...Detail, [id]: value === "" ? "" : Number(value) });
+    const { dis } = event.target.value;
+    setregisterlogin({ ...registerlogin, [id]: value });
+
+    // setBtnDisabled(!value)
+
   };
-  const handleChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const name = event.target.name as keyof typeof Detail;
-    setDetail({
-      ...Detail,
-      [name]: event.target.value,
-    });
-    // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target. === "NamePromotionID") {
-    //   setdetail(NamePromotion.find((r) => r.ID === event.target.value));
-    // }
+
+  const handleInputChangedetail = (event: React.ChangeEvent<{ id?: string; value: any }>) => {
+    const id = event.target.id as keyof typeof registerdetail;
+    const { value } = event.target;
+    const { dis } = event.target.value;
+    setregisterdetail({ ...registerdetail, [id]: value });
+    // setBtnDisabled(!value)
   };
- 
 
 
-//   function submit() {
-
-   
-
-
-//     let data = {
-//       PromotionPeriodID: Promotion?.PromotionPeriodID,
-//       NamePromotionID: Promotion?.NamePromotionID,
-//       PromotionTypeID: Promotion?.PromotionTypeID,
-//       MinPrice: typeof Promotion?.MinPrice === "string" ? (Promotion?.MinPrice === "" ? 0 : Promotion?.MinPrice) : Promotion?.MinPrice,
-//       Discount: typeof Promotion?.Discount === "string" ? (Promotion?.Discount === "" ? 0 : Promotion?.Discount) : Promotion?.Discount,
-//       PromotionCode: Promotion?.PromotionCode,
-//       Createdatetime: selectedDate,
-//     }; 
-//     console.log(data);
-//     const apiUrl = "http://localhost:8080/createpromotion";
-//     const requestOptions = {
-//       method: "POST",
-//       headers: { Authorization: `Bearer ${localStorage.getItem("token")}`,
-//         "Content-Type": "application/json" },
-//       body: JSON.stringify(data),
-//     };
-
-//     fetch(apiUrl, requestOptions)
-//       .then((response) => response.json())
-//       .then((res) => {
-//         if (res.data) {
-//           setSuccess(true);
-//           setErrorMassage("")
-//         } else {
-//           setError(true);
-//           setErrorMassage(res.error)
-//         }
-//       });
-   
-    
-//   }
-  const getMember = async () => {
-    const apiUrl = `http://localhost:8080/manageMember`;
-
-    const requestOptions = {
-      method: "GET",
-
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
+  function submitRegister() {
+    let data = {
+      UserLogin: {
+        Username: registerlogin.Username,
+        Password: registerlogin.Password,
       },
+      UserDetail: {
+        FirstName: registerdetail.FirstName,
+        LastName: registerdetail.LastName,
+        Nickname: registerdetail.Nickname,
+        PhoneNumber: registerdetail.PhoneNumber,
+        PromtPay: registerdetail.PromtPay,
+        PriceShutt: Number(registerdetail.PriceShutt),
+      },
+
+
+
     };
-    //การกระทำ
+    console.log(data);
+    const apiUrl = "http://localhost:8080/register";
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    };
+
     fetch(apiUrl, requestOptions)
       .then((response) => response.json())
-
       .then((res) => {
-        console.log(res.data);
-
         if (res.data) {
-          setDetail(res.data);
+          setSuccess(true);
+          setErrorMassage("")
+
         } else {
-          console.log("else");
+          setError(true);
+          setErrorMassage(res.error)
+          if (res.error == "UNIQUE constraint failed: members.user_login_id") {
+            setErrorMassage("user duplicate")
+          } else {
+            setErrorMassage(res.error)
+          }
+
         }
       });
-  };
-//   const getPromotionPeriod = async () => {
-//     const apiUrl = `http://localhost:8080/getpromotionperiod`;
 
-//     const requestOptions = {
-//       method: "GET",
 
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem("token")}`,
-//         "Content-Type": "application/json",
-//       },
-//     };
-//     //การกระทำ
-//     fetch(apiUrl, requestOptions)
-//       .then((response) => response.json())
-
-//       .then((res) => {
-//         console.log(res.data);
-
-//         if (res.data) {
-//           setPromotionPeriod(res.data);
-//         } else {
-//           console.log("else");
-//         }
-//       });
-//   };
-//   const getPromotionType = async () => {
-//     const apiUrl = `http://localhost:8080/getpromotiontype`;
-
-//     const requestOptions = {
-//       method: "GET",
-
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem("token")}`,
-//         "Content-Type": "application/json",
-//       },
-//     };
-//     //การกระทำ
-//     fetch(apiUrl, requestOptions)
-//       .then((response) => response.json())
-
-//       .then((res) => {
-//         console.log(res.data);
-
-//         if (res.data) {
-//           setPromotionType(res.data);
-//         } else {
-//           console.log("else");
-//         }
-//       });
-//   };
-
-//   console.log(Promotion);
-
+  }
   useEffect(() => {
-    getMember();
+
   }, []);
 
-  
-  
- 
+  console.log(registerdetail)
+  console.log(registerlogin)
+
+
+
   return (
     <Container className={classes.container} maxWidth="md">
-        <Box display="flex">
-          <Box flexGrow={1}>
-            <Typography
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-                <br />
-              Register
-            </Typography>
-          </Box>
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Register successfully
+        </Alert>
+      </Snackbar>
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
+      <Box display="flex">
+        <Box flexGrow={1}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color="primary"
+            gutterBottom
+          >
+            <br />
+            Register
+          </Typography>
         </Box>
-        
-        <br />
-        <br />
-        <Divider />
-        <br />
-        <Grid container spacing={1} className={classes.root}>
+      </Box>
+
+      <br />
+      <br />
+      <Divider />
+      <br />
+      <Grid container spacing={1} className={classes.root}>
         <Grid item xs={4}>
-        <p>UserID</p>
-        <TextField    
-                variant="outlined"
-                label="UserID"
-                value={Detail?.Code}
-                multiline rows={1}
-              />
+          <p>Username</p>
+          <TextField
+            variant="outlined"
+            // label="UserID"
+            value={registerlogin.Username}
+            onChange={handleInputChangelogin}
+            id="Username"
+            size = "small"
+          />
         </Grid>
         <Grid item xs={4}>
-        <p>Password</p>
-        <TextField
+          <p>Password</p>
+          <TextField
             variant="outlined"
             // margin="normal"
             // required
             name="Password"
-            label="Password"
+            // label="Password"
             type="password"
             id="Password"
             autoComplete="current-password"
-            
+            size = "small"
+            value={registerlogin.Password}
+            onChange={handleInputChangelogin}
+
+
           />
-         </Grid>
-         <Grid item xs={4}>       
-         </Grid>
+        </Grid>
         <Grid item xs={4}>
-        <p>Firstname</p>
-            <TextField 
+        </Grid>
+        <Grid item xs={4}>
+          <p>Firstname</p>
+          <TextField
+            size = "small"  
             variant="outlined"
-            value={Detail?.FirstName}
-            multiline rows={1}
-             />
+            value={registerdetail.FirstName}
+            onChange={handleInputChangedetail}
+            id="FirstName"
+
+          />
 
         </Grid>
         <Grid item xs={4}>
-        <p>Lastname</p>
-        <TextField 
-        variant="outlined"
-        value={Detail?.LastName}
-        multiline rows={1}
-         />
-
-        </Grid>
-        <Grid item xs={4}>
-        <p>Nickname</p>
-        <TextField 
+          <p>Lastname</p>
+          <TextField
+            size = "small"
             variant="outlined"
-            value={Detail?.Nickname}
-            multiline rows={1} />
-
-        </Grid>
-        </Grid>
-        <Grid container spacing={3} className={classes.root}>
-        <Grid item xs={4}>
-        <p>Tell</p>
-        <TextField 
-          variant="outlined"
-          value={Detail?.PhoneNumber}
-          multiline rows={1}
-        />
-
+            value={registerdetail.LastName}
+            onChange={handleInputChangedetail}
+            id="LastName"
+          />
 
         </Grid>
         <Grid item xs={4}>
-        <p>PromtPay</p>
-        <TextField 
-          variant="outlined"
-          value={Detail?.PromtPay}
-          multiline rows={1}
-        />
+          <p>Nickname</p>
+          <TextField
+            size = "small"
+            variant="outlined"
+            value={registerdetail.Nickname}
+            onChange={handleInputChangedetail}
+            id="Nickname"
+          />
+
+        </Grid>
+      </Grid>
+      <Grid container spacing={3} className={classes.root}>
+        <Grid item xs={4}>
+          <p>Tell</p>
+          <TextField
+            size = "small"
+            variant="outlined"
+            value={registerdetail.PhoneNumber}
+            onChange={handleInputChangedetail}
+            id="PhoneNumber"
+
+          />
+
 
         </Grid>
         <Grid item xs={4}>
-        <p>Price/Shuttlecock</p>
-        
-        <TextField 
-          variant="outlined"
-          value={Detail?.PriceShutt}
-          multiline rows={1}
-        />
+          <p>PromtPay</p>
+          <TextField
+            size = "small"
+            variant="outlined"
+            value={registerdetail.PromtPay}
+            onChange={handleInputChangedetail}
+            id="PromtPay"
+
+          />
 
         </Grid>
+        <Grid item xs={4}>
+          <p>Price/Shuttlecock</p>
+
+          <TextField
+            size = "small"
+            variant="outlined"
+            value={registerdetail.PriceShutt}
+            onChange={handleInputChangedetail}
+            id="PriceShutt"
+          />
+
         </Grid>
-        <br />
-        <br />
+      </Grid>
+      <br />
+      <br />
 
-        <Grid item xs={12}>
-            <Button
-              style={{ float: "right" }}
-              //onClick={submit}
-              variant="contained"
-              color="primary"
-            >
-              Register
-            </Button>
-            
-    
-            
-          </Grid>
-        
+      <Grid item xs={12}>
+        <Button
+          component={RouterLink}
+          to="../"
+          variant="contained"
+          color="secondary"
+        >
+          Back
+        </Button>
+        <Button
+          style={{ float: "right" }}
+          variant="contained"
+          color="primary"
+          disabled={registerlogin.Password === "" ||
+            registerlogin.Username === "" ||
+            registerdetail.FirstName === "" ||
+            registerdetail.LastName === "" ||
+            registerdetail.Nickname === "" ||
+            registerdetail.PhoneNumber === "" ||
+            registerdetail.PromtPay === "" ||
+            registerdetail.PriceShutt === 0}
+          onClick={submitRegister}
+        >
+          Register
+        </Button>
 
 
 
-        
-        
-        
+      </Grid>
 
-        
-         
+
+
+
+
+
+
+
+
+
     </Container>
-    
-    
+
+
   );
 }
 

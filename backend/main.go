@@ -42,17 +42,25 @@ func main() {
 			protected.GET("/group/player/:id", controller.GetGroupByPlayer)
 
 			protected.GET("/listevent/:group", controller.ListEventShuttleCock)
+			protected.GET("/listevent/membernotingroup/:event", controller.ListMemberNotInEventShuttleCock)
 			protected.GET("/eventmember/:eventid", controller.EventMember)
+			protected.GET("/summarizeevent/:eventid", controller.ListEventshuttbyid)
+			protected.GET("/summarizegroupmembershuttlecockevent/:eventid", controller.ListEventmembershuttgroupbyid)
+			protected.GET("/summarizegroupownershuttlecockevent/:eventid", controller.ListEventownershuttgroupbyid)
 
-			protected.PATCH("/updateaccount/:id", controller.UpdateAccount)
+			protected.PATCH("/updateaccount", controller.UpdateAccount)
+			protected.PATCH("/listevent/membernotingroup/:event", controller.UpdateMemberIntoEvent)
+
 			protected.POST("/joingroup", controller.JoinGroup)
 			protected.POST("/event", controller.CreateEventShuttleCock)
 			protected.POST("/creategroup", controller.CreateGroup)
 			protected.POST("/addshutt", controller.AddShuttleCock)
+			protected.POST("/summary", controller.Summary)
 			// protected.POST("/event",controller.CreateEventShuttleCock)
 		}
 	}
-
+	r.GET("/role", controller.GetRole)
+	r.POST("/register", controller.Register)
 	r.POST("/login", controller.Login)
 
 	// Run the server

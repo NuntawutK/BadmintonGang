@@ -22,19 +22,21 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
-
+import EditIcon from '@material-ui/icons/Edit';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SaveIcon from '@material-ui/icons/Save';
 import { Details } from "@material-ui/icons";
 //import { stringify } from "querystring";
 
 import moment from "moment";
 
-import { MembersInterface,UserDetailsInterface,UserRolesInterface } from "../models/IUser";
+import { MembersInterface, UserDetailsInterface, UserRolesInterface } from "../models/IUser";
 import { UsersInterface } from "../models/ISignIn";
+import { isDisabled } from "@testing-library/user-event/dist/utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
-  
+
 
   createStyles({
     root: { flexGrow: 1 },
@@ -48,6 +50,10 @@ const useStyles = makeStyles((theme: Theme) =>
     position: { marginleft: theme.spacing(5) },
 
     tableSpace: { marginTop: 20 },
+    colorbuttom:{
+      background: 'linear-gradient(45deg, #DC143C 30%, #DC143C 70%)',
+  
+    }
   })
 );
 const Alert = (props: AlertProps) => {
@@ -55,10 +61,13 @@ const Alert = (props: AlertProps) => {
 };
 
 export default function AccountInfomation() {
-   const classes = useStyles();
+  const classes = useStyles();
 
   const [Member, setMember] = React.useState<Partial<UsersInterface>>();
-  const [user,setUser] = React.useState<UsersInterface>()
+  const [user, setUser] = React.useState<Partial<UsersInterface>>({});
+  const [userdetail, setuserdetail] = React.useState<Partial<UserDetailsInterface>>({});
+
+  const [account, setaccount] = React.useState<Partial<UsersInterface>>({});
   const [role, setRole] = useState("");
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
@@ -70,8 +79,8 @@ export default function AccountInfomation() {
     localStorage.removeItem("update_msID");
     localStorage.removeItem("update_mwtID");
     localStorage.removeItem("check_mwtID");
-   }
-  
+  }
+
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
@@ -84,17 +93,23 @@ export default function AccountInfomation() {
   const handleInputChange = (
     event: React.ChangeEvent<{ id?: string; value: any }>
   ) => {
-    const id = event.target.id as keyof typeof Member;
+    const id = event.target.id as keyof typeof userdetail;
     const { value } = event.target;
-    setMember({ ...Member, [id]: value === "" ? "" : Number(value) });
+    if (id === "PriceShutt") {
+      setuserdetail({ ...userdetail, [id]: value === "" ? 0 : Number(value) });
+    }
+    else {
+      setuserdetail({ ...userdetail, [id]: value });
+    }
   };
+
 
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
-    const name = event.target.name as keyof typeof Member;
-    setMember({
-      ...Member,
+    const name = event.target.name as keyof typeof user;
+    setUser({
+      ...user,
       [name]: event.target.value,
     });
     // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
@@ -102,7 +117,14 @@ export default function AccountInfomation() {
     //   setdetail(NamePromotion.find((r) => r.ID === event.target.value));
     // }
   };
- 
+
+  const [btnDisabled, setBtnDisabled] = useState(true)
+  const handleClickedit = () =>{
+    setBtnDisabled(!btnDisabled)
+  }
+
+
+
   const getmember = async () => {
     const apiUrl = `http://localhost:8080/userdetail`;
 
@@ -130,187 +152,213 @@ export default function AccountInfomation() {
   };
 
 
-  function submit() {
-    let data = {
-      FirstName : Member?.UserDetail?.FirstName,
-      LastName: Member?.UserDetail?.LastName,
-      NickName: Member?.UserDetail?.Nickname,
-      PhoneNumber : Member?.UserDetail?.PhoneNumber,
-      PromtPay : Member?.UserDetail?.PromtPay,
-      PriceShutt : Member?.UserDetail?.PriceShutt, 
-    };
- 
-    console.log(data)
-    
-    let apiUrl: string
-    let requestOptions: object
-    if (localStorage.getItem("update_status") === "true") {
-      apiUrl = "http://localhost:8080/updateaccount/"+localStorage.getItem("update_msID");
-      requestOptions = {
-        method: "PATCH",
-        headers: { 
-         Authorization: `Bearer ${localStorage.getItem("token")}`, 
-         "Content-Type": "application/json", 
-        },
-        body: JSON.stringify(data),
-      };
-    } else {
-      apiUrl = "http://localhost:8080/managesalary";
-      requestOptions = {
-        method: "POST",
-        headers: { 
-         Authorization: `Bearer ${localStorage.getItem("token")}`, 
-         "Content-Type": "application/json", 
-        },
-        body: JSON.stringify(data),
-      };
+  function editAcount() {
+    let newAccount = {
+      ID: userdetail.ID,
+      PriceShutt: userdetail.PriceShutt,
+      PhoneNumber: userdetail.PhoneNumber,
+      PromtPay: userdetail.PromtPay,
     }
-  
-    fetch(apiUrl, requestOptions)
+
+    console.log(newAccount)
+    const apiUrlUpdate = "http://localhost:8080/updateaccount";
+    const requestUpdateOptions = {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newAccount),
+    }
+
+    fetch(apiUrlUpdate, requestUpdateOptions)
       .then((response) => response.json())
       .then((res) => {
         if (res.data) {
           setSuccess(true);
-          cancelUpdateMS();
+          const member: MembersInterface = JSON.parse(localStorage.getItem("user") || "")
+          member.UserDetail = res.data as UserDetailsInterface
+          localStorage.setItem("user", JSON.stringify(member))
+          setBtnDisabled(!btnDisabled)
         } else {
+          console.log(res.error);
           setError(true);
-          setErrorMessage(res.error);
-          cancelUpdateMS();
-         
+          // setErrorMsg(res.error);
         }
       });
   }
- 
+
   useEffect(() => {
     // getmember();
-    const getToken = localStorage.getItem("token");
-    if (getToken) {
-      setUser(JSON.parse(localStorage.getItem("user") || ""));
-      setRole(localStorage.getItem("role") || "");
-    } 
+    setuserdetail(JSON.parse(localStorage.getItem("user") || "")?.UserDetail)
+    // setUser(JSON.parse(localStorage.getItem("user") || ""));
+    // const getToken = localStorage.getItem("token");
+    // if (getToken) {
+    //   setUser(JSON.parse(localStorage.getItem("user") || ""));
+    //   setRole(localStorage.getItem("role") || "");
+    // } 
   }, []);
 
-  console.log(user)
-  
- 
+  console.log(userdetail)
+
+
   return (
-    <Container className={classes.container} maxWidth="md">
-        <Box display="flex">
-          <Box flexGrow={1}>
-            <Typography
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-                <br />
-              Account Infomation
-            </Typography>
-          </Box>
+    <Container className={classes.container} maxWidth="sm">
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+        Edit success
+        </Alert>
+      </Snackbar>
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+        Edit Unsuccess
+        </Alert>
+      </Snackbar>
+      <Box display="flex">
+        <Box flexGrow={1}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color="primary"
+            gutterBottom
+          >
+            <br />
+            Account Infomation
+          </Typography>
         </Box>
-        
-        <br />
-        <br />
-        <Divider />
-        <br />
-        <Grid container spacing={1} className={classes.root}>
-        
-          
+      </Box>
+
+      <br />
+      <br />
+      <Divider />
+      <br />
+      <Grid container spacing={1} className={classes.root}>
+
+
         <Grid item xs={4}>
           <p>Firstname</p>
-          <TextField 
-          variant="outlined"
-          value={user?.UserDetail.FirstName}
-          multiline rows={1}
-        />
-      
-         </Grid>
-        
-        <Grid item xs={4}>
-        <p>Lastname</p>
-        <TextField 
-        variant="outlined"
-        value={user?.UserDetail.LastName}
-        multiline rows={1}
-         />
-
-        </Grid>
-        <Grid item xs={4}>
-        <p>Nickname</p>
-        <TextField 
+          <TextField
+            size = "small"
             variant="outlined"
-            value={user?.UserDetail.Nickname}
-            multiline rows={1} />
+            value={userdetail.FirstName}
+            disabled
+          />
 
         </Grid>
-        </Grid>
-        <Grid container spacing={3} className={classes.root}>
+
         <Grid item xs={4}>
-        <p>Tell</p>
-        <TextField 
-          variant="outlined"
-          value={user?.UserDetail.PhoneNumber}
-          multiline rows={1}
-        />
-
-
-        </Grid>
-        <Grid item xs={4}>
-        <p>PromtPay</p>
-        <TextField 
-          variant="outlined"
-          value={user?.UserDetail.PromtPay}
-          multiline rows={1}
-        />
+          <p>Lastname</p>
+          <TextField
+            size = "small"
+            variant="outlined"
+            value={userdetail.LastName}
+            multiline rows={1}
+            disabled
+          />
 
         </Grid>
         <Grid item xs={4}>
-        <p>Price/Shuttlecock</p>
-        
-        <TextField 
-          variant="outlined"
-          value={user?.UserDetail.PriceShutt}
-          multiline rows={1}
-        />
+          <p>Nickname</p>
+          <TextField
+          size = "small"
+            variant="outlined"
+            value={userdetail.Nickname}
+            multiline rows={1}
+            disabled
+          />
 
         </Grid>
+      </Grid>
+      <Grid container spacing={3} className={classes.root}>
+        <Grid item xs={4}>
+          <p>PhoneNumber</p>
+          <TextField
+            size = "small"
+            id="PhoneNumber"
+            variant="outlined"
+            value={userdetail.PhoneNumber}
+            disabled={btnDisabled}
+            onChange={handleInputChange}
+
+
+          />
+
+
         </Grid>
-        <br />
-        <br />
+        <Grid item xs={4}>
+          <p>PromtPay</p>
+          <TextField
+            size = "small"
+            id="PromtPay"
+            variant="outlined"
+            value={userdetail.PromtPay}
+            disabled={btnDisabled}
+            onChange={handleInputChange}
 
-        <Grid item xs={12}>
-            <Button
-              style={{ float: "right" }}
-              //onClick={submit}
-              variant="contained"
-              color="primary"
-            >
-              save
-            </Button>
-            
-            <Button
-              style={{ float: "right", marginRight: "15px"}}
-              //onClick={submit}
-              variant="contained"
-              color="primary"
-            >
-              edit
-            </Button>
-            
-          </Grid>
-        
+          />
+
+        </Grid>
+        <Grid item xs={4}>
+          <p>Price/Shuttlecock</p>
+
+          <TextField
+            id="PriceShutt"
+            variant="outlined"
+            value={userdetail.PriceShutt}
+            // inputProps={{ name: "PriceShutt" }}
+            size = "small"
+            onChange={handleInputChange}
+            disabled={btnDisabled}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">฿</InputAdornment>,
+            }}
+
+
+          />
+
+        </Grid>
+      </Grid>
+      <br />
+      <br />
+
+      <Grid item xs={12}>
+        <Button
+          style={{ float: "right" }}
+          variant="contained"
+          color="primary"
+          className={classes.colorbuttom}
+          onClick={editAcount}
+          disabled = {btnDisabled}
+        >
+          <SaveIcon/>&nbsp;
+          save
+        </Button>
+
+        <Button
+          style={{ float: "right", marginRight: "15px" }}        
+          variant="contained"
+          color="primary"
+          className={classes.colorbuttom}
+          onClick={handleClickedit}
+        >
+          <EditIcon/>&nbsp;
+          edit
+        </Button>
+
+      </Grid>
 
 
 
-        
-        
-        
 
-        
-         
+
+
+
+
+
+
     </Container>
-    
-    
+
+
   );
 }
 

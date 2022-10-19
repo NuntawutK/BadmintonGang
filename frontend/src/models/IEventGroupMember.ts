@@ -1,5 +1,6 @@
 import { GroupMemberInterface } from "./IGroupMember";
 import { EventShuttInterface } from "./IEvent";
+import { EventGroupmemberShuttlecockInterface } from "./IEventGroupMemberShuttlecock";
 
 export interface EventGroupMemberInterface {
     
@@ -10,4 +11,6 @@ export interface EventGroupMemberInterface {
 
     EventShuttID:number;
     EventShutt: EventShuttInterface;
+
+    EventGroupMemberShuttlecock: EventGroupmemberShuttlecockInterface[];
 }

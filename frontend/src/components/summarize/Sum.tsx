@@ -35,6 +35,7 @@ import moment from "moment";
 import { GroupMemberInterface } from "../../models/IGroupMember";
 import { MembersInterface } from "../../models/IUser";
 import { group } from "console";
+import { EventShuttInterface } from "../../models/IEvent";
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
@@ -60,7 +61,6 @@ const Alert = (props: AlertProps) => {
 
 export default function DataPlayer() {
   const classes = useStyles();
-  // const [managepromotion, setmanagepromotion] = React.useState();
 
   // List group by member id
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
@@ -72,7 +72,34 @@ export default function DataPlayer() {
 
   // Use GroupID to find member
   const [memberGroup, setMemberGroup] = React.useState<GroupMemberInterface[]>([]);
+  
+  const [showEvent, setShowEvent] = React.useState<EventShuttInterface>();
+  let { id } = useParams();
+  const getEventMember = async () => {
+      const apiUrl = `http://localhost:8080/summarizeevent/${id}`;
 
+      const requestOptions = {
+          method: "GET",
+
+          headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+          },
+      };
+      //การกระทำ
+      fetch(apiUrl, requestOptions)
+          .then((response) => response.json())
+
+          .then((res) => {
+              console.log(res.data);
+
+              if (res.data) {
+                  setShowEvent(res.data);
+              } else {
+                  console.log("else");
+              }
+          });
+  };
 
   const getGroupMember = async () => {
     const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
@@ -128,42 +155,11 @@ export default function DataPlayer() {
       });
   };
 
-  //  const getGroup = async () => {
-  //   const apiUrl = `http://localhost:8080/manageGroup`;
-
-  //   const requestOptions = {
-  //     method: "GET",
-
-  //     headers: {
-  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   };
-  //   //การกระทำ
-  //   fetch(apiUrl, requestOptions)
-  //     .then((response) => response.json())
-
-  //     .then((res) => {
-  //       console.log(res.data);
-
-  //       if (res.data) {
-  //         setGroup(res.data);
-  //       } else {
-  //         console.log("else");
-  //       }
-  //     });
-  // };
-
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     const name = event.target.name as keyof typeof group;
     setSelectedGroup(groupMember.find(g => g.ID === event.target.value as number)?.Group);
-
-    // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target.name === "GroupID") {
-    //   setmember(Group?.find((g) => g.ID === event.target.value as number)?.Group?.JoinGroup as JoinGroupInterface[]);
-    // }
   };
   
   const handleChangeMember = (
@@ -171,11 +167,6 @@ export default function DataPlayer() {
   ) => {
     const name = event.target.name as keyof typeof group;
     setSelectedMember(groupMember.find(g => g.ID === event.target.value as number)?.Member);
-
-    // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target.name === "GroupID") {
-    //   setmember(Group?.find((g) => g.ID === event.target.value as number)?.Group?.JoinGroup as JoinGroupInterface[]);
-    // }
   };
 
 
@@ -189,12 +180,6 @@ export default function DataPlayer() {
     getMemberList();
   }, [selectedGroup?.ID]);
 
-  // function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-  //   return { name, calories, fat, carbs, protein };
-  // }
-
-  console.log(selectedGroup);
-  // console.log(sentGroup.CodeGroup)
 
   return (
     <Container className={classes.container} maxWidth="md">
@@ -206,13 +191,13 @@ export default function DataPlayer() {
             color="primary"
             gutterBottom
           >
-            Summary
+            Select host
           </Typography>
         </Box>
       </Box>
       <Grid container spacing={3} className={classes.root}>
-
-        <Grid item xs={4}>
+        
+        <Grid item xs={3}>
           <p>Select Group</p>
           <FormControl fullWidth variant="outlined">
             <Select
@@ -237,8 +222,36 @@ export default function DataPlayer() {
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={4}>
-          <p>Select Member</p>
+          <p>Select Event</p>
+          <FormControl fullWidth variant="outlined">
+            <Select
+              // value={selectedGroup?.ID || 0}
+              //เปลี่ยนค่าที่รับเข้ามาจาก Value
+              onChange={handleChangeMember}
+              //กำหนดให้ value
+              inputProps={{
+                name: "ID",
+              }}
+              defaultValue={0}
+            >
+              <MenuItem value={0} key={0}>
+                Select Event
+              </MenuItem>
+              {memberGroup.map((item: GroupMemberInterface) => (
+                <MenuItem value={item.ID} key={item.ID}>
+                  {}
+
+                </MenuItem>)
+              )}
+
+            </Select>
+          </FormControl>
+          
+        </Grid>
+        <Grid item xs={5}>
+        <p>Select Member</p>
           <FormControl fullWidth variant="outlined">
             <Select
               // value={selectedGroup?.ID || 0}
@@ -262,8 +275,8 @@ export default function DataPlayer() {
 
             </Select>
           </FormControl>
-        </Grid>
-        <Grid item xs={5}>
+          </Grid>
+        {/* <Grid item xs={5}>
             <p>Status</p>
             
             <TextField
@@ -278,9 +291,10 @@ export default function DataPlayer() {
               variant="outlined"
               //className ={classes.fullbox}
             />
-          </Grid>
+          </Grid> */}
           
       </Grid>
+      
 
 
       <TableContainer component={Paper} className={classes.tableSpace}>

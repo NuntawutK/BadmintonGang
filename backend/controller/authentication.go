@@ -75,7 +75,6 @@ func Login(c *gin.Context) {
 		tokenResponse := MemberResponse{
 			Member:     member,
 			RoleName:   memberRole.RoleName,
-			RoleNameTH: memberRole.RoleNameTH,
 			Token:      signedToken,
 		}
 

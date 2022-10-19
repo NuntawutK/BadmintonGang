@@ -28,15 +28,18 @@ import { useParams } from "react-router-dom";
 import { GroupInterface } from "../../models/IGroup";
 // import { EmployeesInterface } from "../../models/IUser";
 import { GroupMemberInterface } from "../../models/IGroupMember";
-
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { Details } from "@material-ui/icons";
 //import { stringify } from "querystring";
 import { ShuttleCockInterface } from "../../models/IShuttleCock";
-
+import GroupAddOutlinedIcon from '@material-ui/icons/GroupAddOutlined';
 import moment from "moment";
 import id from "date-fns/locale/id";
 import Menu from "@material-ui/core/Menu";
 import Checkbox from '@material-ui/core/Checkbox';
+import AddIcon from '@material-ui/icons/Add';
+import HistoryIcon from '@material-ui/icons/History';
+import SportsTennisIcon from '@material-ui/icons/SportsTennis';
 import { UsersInterface } from "../../models/ISignIn";
 
 
@@ -62,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
     tableHead: {
       "& .MuiTableCell-head": {
         color: "white",
-        backgroundColor: "navy",
+        backgroundColor: "#DC143C",
       },
     },
 
@@ -82,26 +85,27 @@ const Alert = (props: AlertProps) => {
 export default function ManageEvent() {
   const classes = useStyles();
 
-  //  const [showEvent,setShowEvent] = React.useState<EventGroupMemberInterface[]>([]);
-  // const [event, setevent] = React.useState<EventGroupMemberInterface>();
-
-  const [showEvent, setShowEvent] = React.useState<EventShuttInterface[]>([]);
-
+  // Get User and Role from localStorage
   const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
+  
+  // Show group name
+  const [group, setGroup] = React.useState<GroupInterface>();
+  
+  // Show event on table
+  const [showEvent, setShowEvent] = React.useState<EventShuttInterface[]>([]);
 
   const [showCodeShuttlecockInEvent, setshowCodeShuttlecockInEvent] = React.useState<EventShuttInterface[]>([]);
 
+  // Get member not in event by GroupMemberID
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
 
+  // Control member menu and shuttle cock menu
   const [anchorEl, setAnchorEl] = useState<(null | HTMLElement)[]>([]);
   const [anchorEl2, setAnchorEl2] = useState<(null | HTMLElement)[]>([]);
 
 
   const [sentcodeshuttlecock, setsentcodeshuttlecock] = React.useState<Partial<GroupInterface>>({});
-
-  // const openMenuMember = Boolean(anchorEl);
-  // const openMenuCodeShuttlecock = Boolean(anchorEl2);
 
   const openMenuMember = (index: number) => {
     return Boolean(anchorEl[index]);
@@ -116,11 +120,23 @@ export default function ManageEvent() {
   const [errorMessage, setErrorMassage] = useState("");
 
   const [selected, setSelected] = React.useState<number[]>([]);
+  const [selectedOwnershutt, setSelectedOwnershutt] = React.useState<number[]>([]);
+  const [selectedmembershutt, setSelectedmembershutt] = React.useState<number[]>([]);
+
+
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
+  const isSelectedOwner = (id: number) => selectedOwnershutt.indexOf(id) !== -1;
+  const isSelectedmembershutt = (id: number) => selectedmembershutt.indexOf(id) !== -1;
+
+  const [selectDisabled, setSelectDisabled] = useState(false)
+  const handleClickedit = () =>{
+    setSelectDisabled(selectDisabled)
+  }
 
 
-
-
+  
+  
+  
   const handleClick = (event: React.MouseEvent<unknown>, item: number) => {
     const selectedIndex = selected.indexOf(item);
     let newSelected: number[] = [];
@@ -142,6 +158,49 @@ export default function ManageEvent() {
   };
 
 
+  const handleClickOwner = (event: React.MouseEvent<unknown>, item: number) => {
+    const selectedIndex = selectedOwnershutt.indexOf(item);
+    let newSelected: number[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedOwnershutt, item);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedOwnershutt.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selectedOwnershutt.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedOwnershutt.slice(0, selectedIndex),
+        selectedOwnershutt.slice(selectedIndex + 1),
+      );
+    }
+ 
+
+    setSelectedOwnershutt(newSelected);
+  };
+
+  const handleClickMemberShutt = (event: React.MouseEvent<unknown>, item: number) => {
+    const selectedIndex = selectedmembershutt.indexOf(item);
+    let newSelected: number[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedmembershutt, item);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedmembershutt.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selectedmembershutt.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedmembershutt.slice(0, selectedIndex),
+        selectedmembershutt.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelectedmembershutt(newSelected);
+  };
+
+
+
 
   const handleChangeCode = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
@@ -159,10 +218,13 @@ export default function ManageEvent() {
     // }
   };
 
-  const handleMenuMember = (event: MouseEvent<HTMLElement>, index: number) => {
+  const handleMenuMember = (event: MouseEvent<HTMLElement>, index: number, eventId: number) => {
     let newAnchorEl = [...anchorEl];
     newAnchorEl[index] = event.currentTarget;
     setAnchorEl(newAnchorEl);
+
+    // When click open Member menu, then get Member not in event by eventId
+    getMemberNotInEventMember(eventId);
   }
 
   const handleMenuCodeShuttlecock = (event: MouseEvent<HTMLElement>, index: number) => {
@@ -175,15 +237,19 @@ export default function ManageEvent() {
     let newAnchorEl = [...anchorEl];
     newAnchorEl[index] = null;
     setAnchorEl(newAnchorEl);
+
+    // Clear member after close Member menu
+    setGroupMember([]);
+    setSelected([]);
+    setSelectedOwnershutt([]);
+    
   }
+
   const handleClosecodeShuttlecock = (index: number) => {
     let newAnchorEl2 = [...anchorEl2];
     newAnchorEl2[index] = null;
     setAnchorEl2(newAnchorEl2);
   }
-
-
-
 
   const { id } = useParams()
 
@@ -215,10 +281,34 @@ export default function ManageEvent() {
       });
   };
 
+  const getMemberNotInEventMember = (eventId: number) => {
+    const apiUrl = `http://localhost:8080/listevent/membernotingroup/${eventId}`;
 
-  const getGroupMember = async () => {
+    const requestOptions = {
+      method: "GET",
 
-    const apiUrl = `http://localhost:8080/groupmember/${id}`;
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    //การกระทำ
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+
+      .then((res) => {
+        console.log(res.data);
+        if (res.data) {
+          setGroupMember(res.data);
+        } else {
+          console.log("else");
+        }
+      });
+  }
+
+  const getGroup = async () => {
+
+    const apiUrl = `http://localhost:8080/group/${id}`;
 
     const requestOptions = {
       method: "GET",
@@ -236,13 +326,13 @@ export default function ManageEvent() {
         console.log(res.data);
 
         if (res.data) {
-          setGroupMember(res.data);
+          setGroup(res.data);
         } else {
           console.log("else");
         }
       });
   };
-
+ 
   let length: number
 
   function makeid(length: any) {
@@ -257,11 +347,19 @@ export default function ManageEvent() {
   }
 
   function submitAddshuttlecock(Event: number) {
+    let payload: any[] = [];
+  
+    selectedmembershutt.forEach((item: number) => {
+      payload.push({
+        EventGroupMemberID: item
+      });
+    });
+
     let data = {
       Code: makeid(6),
       EventShuttID: Event,
-      MemberID: user?.ID,
-
+      MemberID: selectedOwnershutt[0],
+      EventGroupMemberShuttlecock: payload,
     };
     console.log(data);
 
@@ -293,8 +391,42 @@ export default function ManageEvent() {
 
   }
 
+  const submitMemberNotInEvent = (eventId: number) => {
+    let payload: any[] = [];
+    selected.forEach((item: number) => {
+      payload.push({
+        GroupMemberID: item
+      });
+    });
+    console.log(payload);
+    const apiUrl = `http://localhost:8080/listevent/membernotingroup/${eventId}`;
 
+    const requestOptions = {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
 
+    //การกระทำ
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+      .then((res) => {
+        console.log(res);
+        if (res.data) {
+          setSuccess(true);
+          setTrigger(trigger+1);
+          setSelected([]);
+          getMemberNotInEventMember(eventId);
+          console.log(res.data);
+        } else {
+          setError(true);
+          console.log(res.error);
+        }
+      });
+  }
 
 
 
@@ -305,27 +437,20 @@ export default function ManageEvent() {
       setRole(localStorage.getItem("role") || "");
     }
     getEventMember();
-    getGroupMember();
+    getGroup();
   }, [trigger]);
 
-  console.log(anchorEl);
+  // console.log(anchorEl);
 
 
   return (
     <Container className={classes.container} maxWidth="md">
       <Box display="flex">
         <Box flexGrow={1}>
-          <Typography
-            component="h2"
-            variant="h6"
-            color="primary"
-            gutterBottom
-          >
-            Player
-          </Typography>
-          <Typography variant="h4">
+          
+          <Typography variant="h5">
 
-            <h3>GroupName : {groupMember[0]?.Group?.NameGroup}</h3>
+            <h3>GroupName : {group?.NameGroup}</h3>
 
 
           </Typography>
@@ -338,9 +463,10 @@ export default function ManageEvent() {
             component={RouterLink}
             to="/SelectGroup"
             variant="contained"
-            color="primary"
+            color="secondary"
             style={{ float: "right" }}
           >
+            <ArrowBackIosIcon/>
             Back
           </Button>
 
@@ -390,15 +516,15 @@ export default function ManageEvent() {
                       <Button
                         // component={RouterLink}
                         // to={"/memberinevent"}
-                        variant="contained"
+                        // variant="contained"
                         color="primary"
 
-                        onClick={(e) => handleMenuMember(e, index)}
+                        onClick={(e) => handleMenuMember(e, index, item.ID)}
                         // aria-controls={openMenuMember ? 'basic-menu' : undefined}
                         aria-haspopup="true"
                       // aria-expanded={openMenuMember ? 'true' : undefined}
                       >
-                        see
+                        <GroupAddOutlinedIcon/>
                       </Button>
 
                       <Menu
@@ -431,17 +557,12 @@ export default function ManageEvent() {
                                         No.
                                       </TableCell>
                                       <TableCell align="left" width="8%">
-                                        Firstname
-                                      </TableCell>
-                                      <TableCell align="left" width="5%">
-                                        Lastname
+                                        Name
                                       </TableCell>
                                       <TableCell align="left" width="5%">
                                         Nickname
                                       </TableCell>
-                                      <TableCell align="left" width="5%">
-                                        Phone Number
-                                      </TableCell>
+                                      
 
                                     </TableRow>
                                   </TableHead>
@@ -450,11 +571,9 @@ export default function ManageEvent() {
                                     {item?.EventGroupMember.map((item2: EventGroupMemberInterface, index) => {
                                       return (
                                         <TableRow key={item2.ID} >
-                                          <TableCell align="center">{index + 1}</TableCell>
-                                          <TableCell align="center">{item2.GroupMember.Member.UserDetail.FirstName}</TableCell>
-                                          <TableCell align="center">{item2.GroupMember.Member.UserDetail.LastName}</TableCell>
-                                          <TableCell align="center">{item2.GroupMember.Member.UserDetail.Nickname}</TableCell>
-                                          <TableCell align="center">{item2.GroupMember.Member.UserDetail.PhoneNumber}</TableCell>
+                                          <TableCell align="left">{index + 1}</TableCell>
+                                          <TableCell align="left">{item2.GroupMember.Member.UserDetail.FirstName}{" "}{item2.GroupMember.Member.UserDetail.LastName}</TableCell>
+                                          <TableCell align="left">{item2.GroupMember.Member.UserDetail.Nickname}</TableCell>
                                         </TableRow>
                                       )
                                     })}
@@ -476,15 +595,12 @@ export default function ManageEvent() {
                                   <TableHead className={classes.tableHead}>
                                     <TableRow>
                                       <TableCell width="5%" align="center">SELECT</TableCell>
-                                      <TableCell width="5%" align="center">Firstname</TableCell>
-                                      <TableCell width="5%" align="center">Lastname</TableCell>
+                                      <TableCell width="5%" align="center">Name</TableCell>
                                       <TableCell width="5%" align="center">Nickname</TableCell>
-                                      <TableCell width="10%" align="center">Tell</TableCell>
                                     </TableRow>
                                   </TableHead>
                                   <TableBody>
-
-                                    {/* {groupMember?.map((item: GroupMemberInterface) => {
+                                    {groupMember?.map((item: GroupMemberInterface) => {
                                       const isItemSelected = isSelected(item.ID);
                                       return (
                                         <TableRow key={item.ID} >
@@ -496,19 +612,12 @@ export default function ManageEvent() {
                                             />
 
                                           </TableCell>
-                                          <TableCell align="center">{item.Member.UserDetail.FirstName}</TableCell>
-                                          <TableCell align="center">{item.Member.UserDetail.LastName}</TableCell>
-                                          <TableCell align="center">{item.Member.UserDetail.Nickname}</TableCell>
-                                          <TableCell align="center">{item.Member.UserDetail.PhoneNumber}</TableCell>
+                                          <TableCell align="left">{item.Member.UserDetail.FirstName}{" "}{item.Member.UserDetail.LastName}</TableCell>
+                                          <TableCell align="left">{item.Member.UserDetail.Nickname}</TableCell>
                                         </TableRow>
                                       )
-                                    })} */}
-
-
-
-
+                                    })}
                                   </TableBody>
-
                                 </Table>
                               </TableContainer>
 
@@ -517,11 +626,11 @@ export default function ManageEvent() {
                               <br />
                               <Button
                                 style={{ float: "right" }}
-                                // onClick={submit}
+                                onClick={() => submitMemberNotInEvent(item.ID)}
                                 variant="contained"
-                                color="primary"
+                                color="secondary"
                               >
-                                Add Member
+                                <GroupAddOutlinedIcon/>&nbsp;Add Member
                               </Button>
 
 
@@ -539,13 +648,14 @@ export default function ManageEvent() {
                       <Button
                         // component={RouterLink}
                         // to={"/memberinevent"}
-                        variant="contained"
+                        // variant="contained"
 
                         onClick={(e) => handleMenuCodeShuttlecock(e, index)}
                         aria-haspopup="true"
                         color="secondary"
                       >
-                        SEE
+                        <SportsTennisIcon/>
+                        <AddIcon fontSize="small"/>
                       </Button>
                       <Menu
                         anchorEl={anchorEl2[index]}
@@ -566,43 +676,48 @@ export default function ManageEvent() {
                           <Grid container spacing={1} className={classes.root}>
                             <Grid item xs={12}>
                               <Typography variant="subtitle1" noWrap>
-                                <p>Code ShuttleCock</p>
+                                <p>Add ShuttleCock</p>
+                                <TableContainer component={Paper} className={classes.tableContainer}>
+                                <Table stickyHeader>
+                                  <TableHead className={classes.tableHead}>
+                                    <TableRow>
+                                      <TableCell width="5%" align="center">OwnerShutt</TableCell>
+                                      <TableCell width="5%" align="center">Member</TableCell>
+                                      <TableCell width="5%" align="center">Name</TableCell>
+                                      <TableCell width="5%" align="center">Nickname</TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    {item.EventGroupMember.map((item3: EventGroupMemberInterface) => {
+                                      const isItemSelectedOwner = isSelectedOwner(item3.GroupMember.MemberID);
+                                      const isItemSelectedmembershutt = isSelectedmembershutt(item3.ID);
+                                      return (
+                                        <TableRow key={item3.ID} >
+                                          <TableCell padding="checkbox" align="center">
+                                            <Checkbox
+                                              name="myCheckbox"
+                                              disabled = {!isItemSelectedOwner && selectedOwnershutt.length > 0}
+                                              checked={isItemSelectedOwner}
+                                              onClick={(event) => handleClickOwner(event, item3.GroupMember.MemberID)}
+                                            />
 
-                                <TableContainer component={Paper} className={classes.tableSpaceshutt}>
-                                  <Table className={classes.tableshutt} aria-label="simple table">
-                                    <TableHead>
-                                      <TableRow>
-                                        <TableCell align="left" width="5%">
-                                          No.
-                                        </TableCell>
-                                        <TableCell align="left" width="8%">
-                                          Name
-                                        </TableCell>
+                                          </TableCell>
+                                          
+                                          <TableCell padding="checkbox" align="center">
+                                            <Checkbox
+                                              checked={isItemSelectedmembershutt}
+                                              onClick={(event) => handleClickMemberShutt(event, item3.ID)}
+                                            />
 
-                                        <TableCell align="left" width="5%">
-                                          Price
-                                        </TableCell>
-
-                                      </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-
-                                      {item?.ShuttleCock.map((item3: ShuttleCockInterface, index) => (
-                                        <TableRow key={item.ID}>
-                                          <TableCell align="left" >{index + 1}</TableCell>
-
-                                          <TableCell align="left">{item3.Member?.UserDetail?.FirstName}{" "}{item3.Member?.UserDetail?.LastName}</TableCell>
-                                          <TableCell align="left">{item3.Member?.UserDetail?.PriceShutt}</TableCell>
-
+                                          </TableCell>
+                                          <TableCell align="left">{item3.GroupMember.Member.UserDetail.FirstName}{" "}{item3.GroupMember.Member.UserDetail.LastName}</TableCell>
+                                          <TableCell align="left">{item3.GroupMember.Member.UserDetail.Nickname}</TableCell>
                                         </TableRow>
-
-                                      ))}
-                                    </TableBody>
-
-
-                                  </Table>
-                                </TableContainer>
-
+                                      )
+                                    })}
+                                  </TableBody>
+                                </Table>
+                              </TableContainer>
 
                                 <br />
                                 <br />
@@ -611,9 +726,9 @@ export default function ManageEvent() {
                                   style={{ float: "right" }}
                                   onClick={() => submitAddshuttlecock(item.ID)}
                                   variant="contained"
-                                  color="primary"
+                                  color="secondary"
                                 >
-                                  Add ShuttleCock
+                                  <SportsTennisIcon/><AddIcon fontSize="small"/>&nbsp;&nbsp;Add Shuttle Cock
                                 </Button>
 
 
@@ -632,10 +747,10 @@ export default function ManageEvent() {
                       style={{ float: "left" }}
                       component={RouterLink}
                       to={"/historyEvent/"+ item.ID.toString()}
-                      variant="contained"
+                      // variant="contained"
                       color="primary"
                     >
-                      see
+                      <HistoryIcon/>
                     </Button>
                   </TableCell>
 

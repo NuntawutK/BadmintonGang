@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 
 import MenuIcon from "@material-ui/icons/Menu";
-
+import GroupIcon from '@material-ui/icons/Group';
 import { Link } from "react-router-dom";
 
 import { Link as RouterLink } from "react-router-dom";
@@ -29,7 +29,10 @@ import Box from "@material-ui/core/Box";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-
+import SportsTennisIcon from '@material-ui/icons/SportsTennis';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import StorageIcon from '@material-ui/icons/Storage';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { UsersInterface } from "../models/ISignIn";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { WatchDirectoryFlags } from "typescript";
@@ -59,10 +62,10 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     drawer : { width: 250 },
     colorbar:{
-      background: 'linear-gradient(45deg, #8458B3 30%, #8458B3 70%, #d0bdf4 100%)',
+      background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
     },
     colorbuttom:{
-      background: 'linear-gradient(45deg, #8458B3 30%, #8458B3 70%, #d0bdf4 100%)',
+      background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
 
     }
   }),
@@ -91,11 +94,11 @@ const handleClose = () => {
   }
   
  const menu = [
-    {name: "AccountInfomation", icon: <PersonPinIcon  />, path: "/AccountInfomation"},
-    {name: "Player", icon: <PersonPinIcon  />, path: "/player"},
-    {name: "shuttlecock", icon: <PersonPinIcon  />, path: "/SelectGroup"},
-    {name: "Summarize", icon: <PersonPinIcon  />, path: "/summarize"},
-    {name: "status", icon: <PersonPinIcon  />, path: "/status"},
+    {name: "AccountInfomation", icon: <AccountCircleIcon  />, path: "/AccountInfomation"},
+    {name: "Player", icon: <GroupIcon  />, path: "/player"},
+    {name: "shuttlecock", icon: <SportsTennisIcon  />, path: "/SelectGroup"},
+    {name: "Summarize", icon: <AttachMoneyIcon  />, path: "/summarize"},
+    {name: "status", icon: <StorageIcon  />, path: "/status"},
  ]
  const SignOut = () => {
   localStorage.clear();
@@ -105,7 +108,7 @@ const handleClose = () => {
 
     <div className={classes.root} >
       <AppBar position="static" className={classes.colorbar} >
-        <Toolbar>
+        <Toolbar  >
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
          
             onClick={toggleDrawer(true)} 
@@ -114,7 +117,7 @@ const handleClose = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
+          <Drawer open={openDrawer} onClose={toggleDrawer(false)} >
             <List 
               className={classes.drawer} 
               onClick={toggleDrawer(false)} 

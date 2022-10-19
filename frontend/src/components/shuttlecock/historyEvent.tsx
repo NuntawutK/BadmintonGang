@@ -24,7 +24,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
 import TableContainer from '@material-ui/core/TableContainer';
 
 import Button from "@material-ui/core/Button";
@@ -33,6 +33,12 @@ import { EventShuttInterface } from '../../models/IEvent';
 import { GroupMemberInterface } from '../../models/IGroupMember';
 import { UsersInterface } from '../../models/ISignIn';
 import { EventGroupMemberInterface } from '../../models/IEventGroupMember';
+import moment from 'moment';
+import { Title } from '@material-ui/icons';
+import { ShuttleCockInterface } from '../../models/IShuttleCock';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import { EventGroupmemberShuttlecockInterface } from '../../models/IEventGroupMemberShuttlecock';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const drawerWidth = 240;
 
@@ -117,6 +123,14 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(3),
     },
     table: { minWidth: 650 },
+    tableSpace: { marginTop: 20 },
+    tableHead: {
+        "& .MuiTableCell-head": {
+            color: "white",
+            backgroundColor: "#DC143C",
+        },
+    },
+
 
 }));
 
@@ -124,15 +138,17 @@ export default function Dashboard() {
     const classes = useStyles();
 
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-    const [showEvent, setShowEvent] = React.useState<EventShuttInterface[]>([]);
+    const [showEvent, setShowEvent] = React.useState<EventShuttInterface>();
+    const [showEventownershutt, setshowEventownershutt] = React.useState<EventShuttInterface>();
+    const [showEventshuttmembergroup, setshowEventshuttmembergroup] = React.useState<EventShuttInterface>();
+
     const [user, setUser] = React.useState<UsersInterface>();
     const [role, setRole] = useState("");
 
+    let { id } = useParams();
 
-
-    let { id } = useParams()
-    const getEventMember = async () => {
-        const apiUrl = `http://localhost:8080/listevent/${id}`;
+    const getEventDetail = async () => {
+        const apiUrl = `http://localhost:8080/summarizeevent/${id}`;
 
         const requestOptions = {
             method: "GET",
@@ -158,121 +174,320 @@ export default function Dashboard() {
     };
 
 
+
+    const getEventDetailshuttlecock = async () => {
+        const apiUrl = `http://localhost:8080/summarizegroupmembershuttlecockevent/${id}`;
+
+        const requestOptions = {
+            method: "GET",
+
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json",
+            },
+        };
+        //การกระทำ
+        fetch(apiUrl, requestOptions)
+            .then((response) => response.json())
+
+            .then((res) => {
+                console.log(res.data);
+
+                if (res.data) {
+                    setshowEventshuttmembergroup(res.data);
+                } else {
+                    console.log("else");
+                }
+            });
+    };
+
+
+
+    const getEventOwnerDetailshuttlecock = async () => {
+        const apiUrl = `http://localhost:8080/summarizegroupownershuttlecockevent/${id}`;
+
+        const requestOptions = {
+            method: "GET",
+
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json",
+            },
+        };
+        //การกระทำ
+        fetch(apiUrl, requestOptions)
+            .then((response) => response.json())
+
+            .then((res) => {
+                console.log(res.data);
+
+                if (res.data) {
+                    setshowEventownershutt(res.data);
+                } else {
+                    console.log("else");
+                }
+            });
+    };
+
+    const [selectedshutt, setselectedshutt] = React.useState<Partial<ShuttleCockInterface>>({
+        EventGroupMemberShuttlecock: [],
+    });
+    const ShowmemberofShutt = (index: number) => {
+        setselectedshutt(showEventshuttmembergroup?.ShuttleCock[index] as Partial<ShuttleCockInterface>)
+    }
+
+
+    const navigate = useNavigate();
+
+    // function TotalPriceShutt(OwnerShutt: EventShuttInterface | undefined, memberinshutt: ShuttleCockInterface[] | undefined) {
+    //     if (typeof OwnerShutt === 'undefined' || typeof memberinshutt === 'undefined') 
+    //         return;
+
+    //     let totalmember = 0;
+    //     memberinshutt.forEach((shutt: ShuttleCockInterface) => {
+    //         totalmember += shutt.Member.UserDetail.FirstName.length
+    //     })
+
+    //     let totalprice = 0
+    //     totalprice =     (OwnerShutt.ShuttleCock.)
+    //     return totalprice;
+    // }
+
+
+    // function TotalPriceShutt(member: ShuttleCockInterface[] | undefined) {
+    //     if (typeof member === 'undefined')
+    //         return;
+
+    //     let totalmember = 0;
+    //     member.forEach((member: ShuttleCockInterface) => {
+    //         totalmember += (member.EventGroupMemberShuttlecock.length)
+    //     })
+    //     let totalprice = 0;
+
+
+    //     return totalprice;
+    // }
+
     useEffect(() => {
         const getToken = localStorage.getItem("token");
         if (getToken) {
             setUser(JSON.parse(localStorage.getItem("user") || ""));
             setRole(localStorage.getItem("role") || "");
         }
-        getEventMember();
+        getEventDetail();
+        getEventDetailshuttlecock();
+        getEventOwnerDetailshuttlecock();
     }, []);
 
 
     return (
         <div className={classes.root}>
-            <CssBaseline />
 
 
-            <main className={classes.content}>
-                <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
+            <Container maxWidth="lg" className={classes.container}>
 
 
-                    {/* <Button
-                        component={RouterLink}
-                        to={"/manageEvent/"+id}
-                        variant="contained"
-                        color="primary"
-                        style={{ float: "right" }}
-                    >
-                        Back
-                    </Button> */}
+                <Button
+                    // component={RouterLink}
+                    // to={"/manageEvent/"+id}
+                    variant="contained"
+                    color="secondary"
+                    style={{ float: "right" }}
+                    onClick={() => navigate(-1)}
+                >
+                    <ArrowBackIosIcon />
+                    Back
+                </Button>
 
 
-                    <Grid container spacing={3}>
+                <Grid container spacing={3}>
 
 
-                        <Grid item xs={12}>
+                    <Grid item xs={12}>
+
+                        <Typography variant="h5">
+                            Group: {showEvent?.Group.NameGroup}
+                            <br />
+                            Place: {showEvent?.Place}
+                            <br />
+                            Time: {moment(showEvent?.TimeStart).format("DD/MM/YYYY hh:mm A")}  to {moment(showEvent?.TimeStop).format("DD/MM/YYYY hh:mm A")}
+                        </Typography>
+
+                    </Grid>
+                    {/* Calculate */}
+                    <Grid item xs={12} md={7} >
+                        <Typography variant="h5">
+                            Member in Team
+                        </Typography>
+                        <Paper className={fixedHeightPaper}>
+
+                            <Table size="small">
+                                <TableHead className={classes.tableHead}>
+                                    <TableRow>
+                                        <TableCell align="center">No.</TableCell>
+                                        <TableCell align="left">Name</TableCell>
+                                        <TableCell align="left">Nickname</TableCell>
+                                        <TableCell align="left">Phonenumber</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {showEventshuttmembergroup?.EventGroupMember.map((item1: EventGroupMemberInterface, index: number) => {
+
+                                        return (
+                                            <TableRow key={item1.ID} >
+                                                <TableCell align="left">{index + 1}</TableCell>
+                                                <TableCell align="left">{item1.GroupMember.Member.UserDetail.FirstName}{" "}{item1.GroupMember.Member.UserDetail.LastName}</TableCell>
+                                                <TableCell align="left">{item1.GroupMember.Member.UserDetail.Nickname}</TableCell>
+                                                <TableCell align="left">{item1.GroupMember.Member.UserDetail.PhoneNumber}</TableCell>
+
+                                            </TableRow>
 
 
-                        </Grid>
+                                        )
 
-                        <Grid item xs={12} md={8}>
-                            <Typography variant="h5">
-                                member
-                            </Typography>
 
-                            <Paper className={fixedHeightPaper}>
 
-                                {/* <Title>Recent Orders</Title> */}
+                                    })
+                                    }
+
+
+                                </TableBody>
+                            </Table>
+
+                        </Paper>
+                    </Grid>
+
+                    <Grid item xs={12} md={5}>
+                        <Typography variant="h5">
+                            Shuttlecock
+                        </Typography>
+                        <Paper className={fixedHeightPaper}>
+
+
+                            <React.Fragment>
+                                <Typography variant="h5">
+
+                                    Total Shutt : {showEventownershutt?.ShuttleCock?.length}
+
+                                </Typography>
+                                <br />
+
+
                                 <Table size="small">
-                                    <TableHead>
+                                    <TableHead className={classes.tableHead}>
                                         <TableRow>
-                                            <TableCell align="center">No.</TableCell>
-                                            <TableCell align="left">Name</TableCell>
-                                            <TableCell align="left">Nickname</TableCell>
+                                            <TableCell>No.</TableCell>
+                                            <TableCell>Nickname</TableCell>
+                                            <TableCell>Price/shutt</TableCell>
+                                            <TableCell>Member</TableCell>
+
+
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {showEvent.map((item: EventShuttInterface) => {
-                                           
+                                        {showEventownershutt?.ShuttleCock.map((item1: ShuttleCockInterface, index: number) => {
 
-                                                {item?.EventGroupMember.map((item2: EventGroupMemberInterface,index) => {
-                                                    return (
-                                                        <TableRow key={item2.ID} >
-                                                            <TableCell align="center">{index + 1}</TableCell>
-                                                            <TableCell align="left">{item2.GroupMember?.Member?.UserDetail?.FirstName}{" "}{item2.GroupMember?.Member?.UserDetail?.LastName}</TableCell>
+                                            {
+                                                return (
+                                                    <TableRow key={item1.ID} >
+                                                        <TableCell align="left">{index + 1}</TableCell>
+                                                        <TableCell align="left">{item1.Member?.UserDetail?.Nickname}</TableCell>
+                                                        <TableCell align="left">{item1.Member?.UserDetail?.PriceShutt}</TableCell>
+                                                        <TableCell>
+                                                            <Button
+                                                                // component={RouterLink}
+                                                                // to={"/memberinevent"}
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                onClick={() => ShowmemberofShutt(index)}
+                                                                // aria-controls={openMenuMember ? 'basic-menu' : undefined}
+                                                                aria-haspopup="true"
+                                                            // aria-expanded={openMenuMember ? 'true' : undefined}
+                                                            >
+                                                                <VisibilityIcon />
+                                                            </Button>
 
-                                                            <TableCell align="left">{item2.GroupMember?.Member?.UserDetail?.Nickname}</TableCell>
-                                                        </TableRow>
-                                                    )
-                                                })}
-                                        
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+
+
+                                            }
                                         })}
 
+
+
+
+
+
+
                                     </TableBody>
+
                                 </Table>
+                                <br />
+                                <br />
+                                {/* <Typography variant="h5">
 
+                                    Total Price : {TotalPriceShutt(showEvent?.ShuttleCock)} 
 
-                            </Paper>
-                        </Grid>
+                                </Typography> */}
 
+                            </React.Fragment>
 
-                        {/* Calculate */}
-                        <Grid item xs={12} md={4} >
+                        </Paper>
+                        <Typography variant="h5">
+                            Member
+                        </Typography>
+                        <Paper className={fixedHeightPaper}>
+
+                            <Table size="small">
+                                <TableHead className={classes.tableHead}>
+                                    <TableRow>
+                                        <TableCell align="center">No.</TableCell>
+                                        <TableCell align="left">Name</TableCell>
+                                        <TableCell align="left">Nickname</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+
+                                    {
+                                        selectedshutt?.EventGroupMemberShuttlecock?.map((t2: EventGroupmemberShuttlecockInterface, index: number) => {
+                                            return (
+                                                <TableRow key={t2.ID} >
+                                                    <TableCell align="center">{index + 1}</TableCell>
+                                                    <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.FirstName}{" "}{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.LastName}</TableCell>
+                                                    <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.Nickname}</TableCell>
+                                                </TableRow>
+                                            )
+                                        })
+                                    }                                                      
+
+                                </TableBody>
+                            </Table>
+                            <br />
+                            <br />
+                            <br />
                             <Typography variant="h5">
-                                Shuttlecock
+
+                                {/* Total Price : {TotalPriceShutt(showEventshuttmembergroup?.ShuttleCock)} */}
+
                             </Typography>
-                            <Paper className={fixedHeightPaper}>
-                                <React.Fragment>
-                                    {/* <Title>Recent Orders</Title> */}
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>No.</TableCell>
-                                                <TableCell>Nickname</TableCell>
-                                                <TableCell>Price</TableCell>
 
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-
-                                        </TableBody>
-                                    </Table>
-
-                                </React.Fragment>
-
-                            </Paper>
-                        </Grid>
-
+                        </Paper>
 
 
                     </Grid>
-                    <Box pt={4}>
 
-                    </Box>
-                </Container>
-            </main>
+
+
+
+
+
+                </Grid>
+                <Box pt={4}>
+
+                </Box>
+            </Container>
         </div>
     );
 }

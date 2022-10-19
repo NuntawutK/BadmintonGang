@@ -1,4 +1,5 @@
 import { EventShuttInterface } from "./IEvent";
+import { EventGroupmemberShuttlecockInterface } from "./IEventGroupMemberShuttlecock";
 import { MembersInterface } from "./IUser";
 
 export interface ShuttleCockInterface {
@@ -11,5 +12,8 @@ export interface ShuttleCockInterface {
 
     MemberID: number;
     Member: MembersInterface;
+
+    EventGroupMemberShuttlecock: EventGroupmemberShuttlecockInterface[];
+
 
 }

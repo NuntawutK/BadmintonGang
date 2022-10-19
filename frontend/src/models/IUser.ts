@@ -1,3 +1,5 @@
+import { SigninInterface } from "./ISignIn";
+
 export interface UserRolesInterface {
     ID: number;
     RoleName: string;
@@ -22,4 +24,7 @@ export interface MembersInterface {
     
     UserDetailID: number;
     UserDetail: UserDetailsInterface;
+
+    UserLoginID: number;
+    UserLogin: SigninInterface;
 }

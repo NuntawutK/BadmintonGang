@@ -5,13 +5,14 @@ import (
 
 	// "github.com/asaskevich/govalidator"
 	"github.com/Sakeezt/Badminton/backend/entity"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
 //Get Group
 func GetGroup(c *gin.Context) {
 	id := c.Param("id")
-	var group []entity.Group
+	var group entity.Group
 	if err := entity.DB().Raw("SELECT * FROM groups WHERE id = ?", id).Find(&group).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -81,6 +82,11 @@ func CreateGroup(c *gin.Context) {
 
 	if tx := entity.DB().Where("id = ?", group.CreatedMemberID).First(&createdMember); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Member not found"})
+		return
+	}
+
+	if _, err := govalidator.ValidateStruct(group); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

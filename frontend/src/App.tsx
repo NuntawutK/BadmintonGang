@@ -23,9 +23,9 @@ import ManageEvent from "./components/shuttlecock/manageEvent";
 import Dashboard from "./components/shuttlecock/historyEvent";
 
 function App() {
-  const [token, setToken] = useState<string>("");
+  const [token, setToken] = useState<string | null>();
   const [user, setUser] = useState<UsersInterface>();
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<string | null>();
 
   
   useEffect(() => {
@@ -33,31 +33,34 @@ function App() {
     if (getToken) {
       setUser(JSON.parse(localStorage.getItem("user") || ""));
       setToken(getToken);
-      setRole(localStorage.getItem("role") || "");
+      setRole(localStorage.getItem("role"));
     } 
   }, []);
 
   if (!token) {
-    return <SignIn />
+    return /* <SignIn /> */ (
+        <Router>
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/Register" element={<Register />} />
+          </Routes>
+        </Router>
+      );
+   
   }
   
-    // <Route path = "/Register" element={<Register />} />
-  
+  // <Route path = "/Register" element={<Register />} />
 
   return (
     
     <Router>
-      
       {
-        
-        
         token &&(
           <Fragment>
-
             <Navbar />
             <Routes>
               {
-                role === "Member" &&(
+                role === "Member" && (
                   <>
                   <Route path = "/" element={<AccountInfomation />} />
                   <Route path = "/AccountInfomation" element={<AccountInfomation />} />
@@ -82,7 +85,6 @@ function App() {
               }
             </Routes>
           </Fragment>
-
         )
       }
     </Router>

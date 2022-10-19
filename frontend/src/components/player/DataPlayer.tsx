@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
     paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
 
-    table: { minWidth: 650 },
+    table: { minWidth: 100 },
 
     position: { marginleft: theme.spacing(5) },
 
@@ -230,22 +230,22 @@ export default function DataPlayer() {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="left" width="8%">
+              <TableCell align="left" width="2%">
                 No.
               </TableCell>
-              <TableCell align="left" width="8%">
+              <TableCell align="left" width="5%">
                 Firstname
               </TableCell>
 
-              <TableCell align="left" width="8%">
+              <TableCell align="left" width="5%">
                 Lastname
               </TableCell>
 
-              <TableCell align="center" width="12%">
+              <TableCell align="center" width="5%">
                 Nickname
               </TableCell>
 
-              <TableCell align="center" width="12%">
+              <TableCell align="center" width="5%">
                 PromptPay
               </TableCell>
 

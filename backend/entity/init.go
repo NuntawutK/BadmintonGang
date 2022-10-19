@@ -1,8 +1,6 @@
 package entity
 
 import (
-	
-
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -18,8 +16,7 @@ func SetupIntoDatabase(db *gorm.DB) {
 	// +------------------------------+
 	// UserRole
 	memberRole := UserRole{
-		RoleName:   "Member",
-		RoleNameTH: "สมาชิก",
+		RoleName: "Member",
 	}
 	db.Model(&UserRole{}).Create(&memberRole)
 
@@ -47,88 +44,55 @@ func SetupIntoDatabase(db *gorm.DB) {
 
 	//userDetail
 	userDetail1 := UserDetail{
-		
-		FirstName:  "สหรัฐ",
-		LastName:	"จันทรินทร์",
-		Nickname:   "ซากีส",
-		PhoneNumber:"098xxxxxxx",
-		PromtPay: "098xxxxxxx",
-		PriceShutt: 20,
 
+		FirstName:   "นาย A",
+		LastName:    "A",
+		Nickname:    "Ant",
+		PhoneNumber: "0981234558",
+		PromtPay:    "0981234558",
+		PriceShutt:  20,
 	}
 	db.Model(&UserDetail{}).Create(&userDetail1)
 
 	userDetail2 := UserDetail{
-		
-		FirstName:  "Saharat",
-		LastName:	"Juntarin",
-		Nickname:   "sakeezt",
-		PhoneNumber:"098xxxxxxx",
-		PromtPay: "098xxxxxxx",
-		PriceShutt: 25,
 
+		FirstName:   "นาย B",
+		LastName:    "B",
+		Nickname:    "Bird",
+		PhoneNumber: "0955555558",
+		PromtPay:    "0955555558",
+		PriceShutt:  25,
 	}
 	db.Model(&UserDetail{}).Create(&userDetail2)
 
 	userDetail3 := UserDetail{
-		
-		FirstName:  "Test",
-		LastName:	"Testex",
-		Nickname:   "sakeeztt",
-		PhoneNumber:"068xxxxxxx",
-		PromtPay: "067xxxxxxx",
-		PriceShutt: 30,
 
+		FirstName:   "นาย C",
+		LastName:    "C",
+		Nickname:    "Cat",
+		PhoneNumber: "0948484848",
+		PromtPay:    "0948484848",
+		PriceShutt:  30,
 	}
 	db.Model(&UserDetail{}).Create(&userDetail3)
 
-
-
 	// Member
-	membersakeezt1:= Member{
+	membersakeezt1 := Member{
 		UserLogin:  login1,
 		UserDetail: userDetail1,
 	}
 	db.Model(&Member{}).Create(&membersakeezt1)
 
-
-	membersakeezt2:= Member{
+	membersakeezt2 := Member{
 		UserLogin:  login2,
 		UserDetail: userDetail2,
 	}
 	db.Model(&Member{}).Create(&membersakeezt2)
 
-
-	membersakeezt3:= Member{
+	membersakeezt3 := Member{
 		UserLogin:  login3,
 		UserDetail: userDetail3,
 	}
 	db.Model(&Member{}).Create(&membersakeezt3)
-
-
-
-	// //Group
-	// group1 := Group{
-	// 	Member: membersakeezt1,
-	// 	CodeGroup: "ABCD52",
-	// 	NameGroup: "Example1",
-	// }
-	// db.Model(&Group{}).Create(&group1)
-
-	// //Join Group
-	// joingroup1 := JoinGroup{
-	// 	Member: membersakeezt2,
-	// 	Group : group1,
-	// }
-	// db.Model(&JoinGroup{}).Create(&joingroup1)
-
-	// //Join Group
-	// joingroup2 := JoinGroup{
-	// 	Member: membersakeezt3,
-	// 	Group : group1,
-	// }
-	// db.Model(&JoinGroup{}).Create(&joingroup1)
-
-
 
 }

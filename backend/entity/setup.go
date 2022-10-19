@@ -39,6 +39,9 @@ func SetupDatabase() {
 		&ShuttleCock{},
 		&GroupMember{},
 		&EventGroupMember{},
+		&Summary{},
+		&EventGroupMemberShuttlecock{},
+		// &Register{},
 	)
 
 	db = database

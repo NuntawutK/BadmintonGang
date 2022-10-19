@@ -15,7 +15,7 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
-
+import GroupIcon from '@material-ui/icons/Group';
 //Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -38,7 +38,9 @@ import { group } from "console";
 import { EventShuttInterface } from "../../models/IEvent";
 import userEvent from "@testing-library/user-event";
 import { useParams } from "react-router-dom";
-
+import GroupAddIcon from '@material-ui/icons/GroupAdd';
+import EventAvailableIcon from '@material-ui/icons/EventAvailable';
+import AddIcon from '@material-ui/icons/Add';
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
 
@@ -50,16 +52,27 @@ const useStyles = makeStyles((theme: Theme) =>
 
     paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
 
-    table: { minWidth: 650 },
+    table: { minWidth: 10 },
 
     position: { marginleft: theme.spacing(5) },
 
-    tableSpace: { marginTop: 20 },
+    tableSpace: { marginTop: 20, },
 
     menuBox: {
       padding: theme.spacing(3),
       marginLeft: theme.spacing(3),
       marginRight: theme.spacing(3),
+    },
+    colorbuttom:{
+      background: 'linear-gradient(45deg, #DC143C 30%, #DC143C 70%)',
+  
+    },
+    tableHead: {
+      "& .MuiTableCell-head": {
+        color: "white",
+        backgroundColor: "#DC143C",
+      },
+      
     },
   })
 );
@@ -303,6 +316,13 @@ export default function SelectGroup() {
     setAnchorEl(null);
   }
   console.log(ShowGroup);
+  const handleCloseregister = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSuccess(false);
+    setError(false);
+  };
 
 
   console.log(sentGroup.NameGroup)
@@ -310,14 +330,14 @@ export default function SelectGroup() {
 
   return (
     <Container className={classes.container} maxWidth="md">
-      <Snackbar open={success} autoHideDuration={3000} onClose={handleClose} >
-        <Alert onClose={handleClose} severity="success">
+      <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseregister} >
+        <Alert onClose={handleCloseregister} severity="success">
           {msg}
         </Alert>
       </Snackbar>
-      <Snackbar autoHideDuration={3000} >
-        <Alert onClose={handleClose} severity="error">
-          บันทึกข้อมูลไม่สำเร็จ
+      <Snackbar open={error} autoHideDuration={5000} onClose={handleCloseregister} >
+        <Alert onClose={handleCloseregister} severity="error">
+        {errorMessage}
         </Alert>
       </Snackbar>
       <Box display="flex">
@@ -335,36 +355,9 @@ export default function SelectGroup() {
       <br />
       <br />
       <br />
-      <Grid container spacing={3} className={classes.root}>
-        <Grid item xs={6}>
-          Join Group :
-          <TextField
-            id="CodeGroup"
-            type="string"
-            inputProps={{ name: "CodeGroup" }}
-            value={sentGroup.CodeGroup}
-            onChange={handleChangeCreateGroup}
-            label=""
-            // variant="outlined"
-            //className ={classes.fullbox}
-            multiline
-          // rows={}
-          />
-
-          <Button
-            style={{ float: "right" }}
-            onClick={submitjoingroup}
-            variant="contained"
-            color="primary"
-          >
-            Join Group
-          </Button>
-        </Grid>
-
-
-        <Box flexGrow={1}>
-
-          <Button
+      <Grid container spacing={1} className={classes.root}>
+      <Grid item xs={12}>
+        <Button
             // component={RouterLink}
             // to="/CreateGroup"
             variant="contained"
@@ -373,9 +366,11 @@ export default function SelectGroup() {
             onClick={handleMenu}
             aria-haspopup="true"
             color="secondary"
+            className={classes.colorbuttom}
+
 
           >
-            CreateGroup
+            <GroupIcon/>&nbsp;CreateGroup
           </Button>
           <Menu
             anchorEl={anchorEl}
@@ -417,6 +412,7 @@ export default function SelectGroup() {
                       onClick={submit}
                       variant="contained"
                       color="primary"
+                      className={classes.colorbuttom}
                     >
                       Create Group
                     </Button>
@@ -428,7 +424,43 @@ export default function SelectGroup() {
               </Grid>
             </Box>
           </Menu>
-        </Box>
+
+        </Grid>
+        <br/>
+        <br/>
+        <br/>
+        <Grid item xs={6}>
+          Join Group 
+          <br/>
+          <TextField
+            id="CodeGroup"
+            type="string"
+            inputProps={{ name: "CodeGroup" }}
+            value={sentGroup.CodeGroup}
+            onChange={handleChangeCreateGroup}
+            label=""
+            // variant="outlined"
+            //className ={classes.fullbox}
+            multiline
+          // rows={}
+          />
+
+        </Grid>
+        
+        <Grid item xs={12}>
+        <Button
+            style={{ float: "left" }}
+            size = "small"
+            onClick={submitjoingroup}
+            variant="contained"
+            color="primary"
+            className={classes.colorbuttom}
+          >
+            <GroupAddIcon/>&nbsp; Join Group
+           
+          </Button>
+        </Grid>
+
         <br />
         <br />
         <Divider />
@@ -437,24 +469,27 @@ export default function SelectGroup() {
 
 
       <TableContainer component={Paper} className={classes.tableSpace}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
+        <Table className={classes.table} aria-label="simple table" size="medium">
+          <TableHead className = {classes.tableHead}>
             <TableRow>
-              <TableCell align="left" width="15%">
+              <TableCell align="left" width="1%">
                 No.
               </TableCell>
-              <TableCell align="left" width="15%">
+              <TableCell align="left" width="3%">
                 Code
               </TableCell>
 
-              <TableCell align="left" width="15%">
-                NamesGroup
+              <TableCell align="left" width="4%">
+                Name
               </TableCell>
-              <TableCell align="left" width="15%">
 
+              <TableCell align="center" width="4%">
+                Create
+                Event
               </TableCell>
-              <TableCell align="left" width="15%">
-
+              <TableCell align="center" width="4%">
+                Manage
+                Event
               </TableCell>
             </TableRow>
           </TableHead>
@@ -473,10 +508,12 @@ export default function SelectGroup() {
                     // to={"/CreateEvent/" + group.Group.ID.toString()}
                     to={"/CreateEvent/" + group.Group.ID.toString()}
 
-                    variant="contained"
-                    color="primary"
-                  >
-                    Create Event
+                    // variant="contained"
+                    color="secondary"
+                  > 
+                   
+                    <EventAvailableIcon />
+                    <AddIcon fontSize="small"/>
                   </Button>
 
                 </TableCell>
@@ -485,11 +522,11 @@ export default function SelectGroup() {
                 <Button
                   component={RouterLink}
                   to={"/manageEvent/" + group.Group.ID.toString()}
-                  variant="contained"
-                  color="primary"
-                  style={{ float: "right" }}
+                  // variant="contained"
+                  color="secondary"
+                  style={{ float: "left" }}
                 >
-                  manage event
+                  <EventAvailableIcon />
                 </Button>
 
              </TableCell> 

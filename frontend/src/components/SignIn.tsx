@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
-    background: 'linear-gradient(45deg, #8458B3 30%, #8458B3 70%)',
+    background: 'linear-gradient(45deg, #EE6262 30%, #EE6262 70%)',
   },
   form: {
     width: "100%",
@@ -58,11 +58,11 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    background: 'linear-gradient(45deg, #8458B3 30%, #8458B3 70%)',
+    background: 'linear-gradient(45deg, #EE6262 30%, #EE6262 70%)',
   },
   root: { flexGrow: 1 },
   colorbuttom:{
-    background: 'linear-gradient(45deg, #8458B3 30%, #8458B3 70%, #d0bdf4 100%)',
+    background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
 
   }
   
@@ -140,11 +140,12 @@ function SignIn() {
         </Alert>
       </Snackbar>
       <CssBaseline />
+
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <SportsTennisIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" align="center">
           Sign in
         </Typography>
 
@@ -196,8 +197,8 @@ function SignIn() {
         <Grid container spacing={1} className={classes.root}>
         <Grid item xs={12}>
         <Button
-            // component={RouterLink}
-            // to="/Register"
+            component={RouterLink}
+            to="/Register"
             variant="contained"
             color="secondary"
             style={{ float: "right" }}

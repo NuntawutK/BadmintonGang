@@ -1,0 +1,14 @@
+// import { EventShuttInterface } from "./IEvent";
+
+// export interface SummaryInterface {
+    
+//     ID: number;
+
+
+//     EventShuttID: number;
+//     EventShutt: EventShuttInterface
+
+//     TotalPrice : number;
+    
+
+// }
