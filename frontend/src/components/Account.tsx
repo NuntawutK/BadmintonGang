@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
     position: { marginleft: theme.spacing(5) },
 
     tableSpace: { marginTop: 20 },
-    colorbuttom:{
+    colorbuttom: {
       background: 'linear-gradient(45deg, #DC143C 30%, #DC143C 70%)',
-  
+
     }
   })
 );
@@ -119,7 +119,7 @@ export default function AccountInfomation() {
   };
 
   const [btnDisabled, setBtnDisabled] = useState(true)
-  const handleClickedit = () =>{
+  const handleClickedit = () => {
     setBtnDisabled(!btnDisabled)
   }
 
@@ -188,6 +188,28 @@ export default function AccountInfomation() {
       });
   }
 
+  const [image, setImage] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const uploadImage = async (e: any) => {
+    const files = e.target.files
+    const data = new FormData()
+    data.append('file', files[0])
+    data.append('upload_preset', 'darwin')
+    setLoading(true)
+    const res = await fetch(
+      '	https://api.cloudinary.com/v1_1/dihifeicm/image/upload',
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+    const file = await res.json()
+
+    setImage(file.secure_url)
+    setLoading(false)
+  }
+
   useEffect(() => {
     // getmember();
     setuserdetail(JSON.parse(localStorage.getItem("user") || "")?.UserDetail)
@@ -206,12 +228,12 @@ export default function AccountInfomation() {
     <Container className={classes.container} maxWidth="sm">
       <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
-        Edit success
+          Edit success
         </Alert>
       </Snackbar>
       <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error">
-        Edit Unsuccess
+          Edit Unsuccess
         </Alert>
       </Snackbar>
       <Box display="flex">
@@ -238,7 +260,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Firstname</p>
           <TextField
-            size = "small"
+            size="small"
             variant="outlined"
             value={userdetail.FirstName}
             disabled
@@ -249,7 +271,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Lastname</p>
           <TextField
-            size = "small"
+            size="small"
             variant="outlined"
             value={userdetail.LastName}
             multiline rows={1}
@@ -260,7 +282,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Nickname</p>
           <TextField
-          size = "small"
+            size="small"
             variant="outlined"
             value={userdetail.Nickname}
             multiline rows={1}
@@ -273,7 +295,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>PhoneNumber</p>
           <TextField
-            size = "small"
+            size="small"
             id="PhoneNumber"
             variant="outlined"
             value={userdetail.PhoneNumber}
@@ -288,7 +310,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>PromtPay</p>
           <TextField
-            size = "small"
+            size="small"
             id="PromtPay"
             variant="outlined"
             value={userdetail.PromtPay}
@@ -306,7 +328,7 @@ export default function AccountInfomation() {
             variant="outlined"
             value={userdetail.PriceShutt}
             // inputProps={{ name: "PriceShutt" }}
-            size = "small"
+            size="small"
             onChange={handleInputChange}
             disabled={btnDisabled}
             InputProps={{
@@ -316,6 +338,20 @@ export default function AccountInfomation() {
 
           />
 
+        </Grid>
+        <Grid item xs={12}>
+        <input
+          type="file"
+          name="file"
+          placeholder="Upload an image"
+          onChange={uploadImage}
+          style={{ float: "right" }}
+        />
+        {loading ? (
+          <h3>Loading...</h3>
+        ) : (
+          <img src={image} style={{ width: '300px' }} />
+        )}
         </Grid>
       </Grid>
       <br />
@@ -328,20 +364,20 @@ export default function AccountInfomation() {
           color="primary"
           className={classes.colorbuttom}
           onClick={editAcount}
-          disabled = {btnDisabled}
+          disabled={btnDisabled}
         >
-          <SaveIcon/>&nbsp;
+          <SaveIcon />&nbsp;
           save
         </Button>
 
         <Button
-          style={{ float: "right", marginRight: "15px" }}        
+          style={{ float: "right", marginRight: "15px" }}
           variant="contained"
           color="primary"
           className={classes.colorbuttom}
           onClick={handleClickedit}
         >
-          <EditIcon/>&nbsp;
+          <EditIcon />&nbsp;
           edit
         </Button>
 

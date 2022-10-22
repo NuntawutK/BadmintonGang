@@ -95,8 +95,8 @@ const handleClose = () => {
   
  const menu = [
     {name: "AccountInfomation", icon: <AccountCircleIcon  />, path: "/AccountInfomation"},
+    {name: "ManageGroup", icon: <SportsTennisIcon  />, path: "/SelectGroup"},
     {name: "Player", icon: <GroupIcon  />, path: "/player"},
-    {name: "shuttlecock", icon: <SportsTennisIcon  />, path: "/SelectGroup"},
     {name: "Summarize", icon: <AttachMoneyIcon  />, path: "/summarize"},
     {name: "status", icon: <StorageIcon  />, path: "/status"},
  ]

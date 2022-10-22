@@ -60,8 +60,6 @@ const Alert = (props: AlertProps) => {
 
 export default function DataPlayer() {
   const classes = useStyles();
-  // const [managepromotion, setmanagepromotion] = React.useState();
-
   // List group by member id
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
   

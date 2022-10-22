@@ -25,7 +25,11 @@ func GetjoinGroup(c *gin.Context) {
 	id := c.Param("id")
 	var joingroup []entity.GroupMember
 
-	if err := entity.DB().Preload("Group").Preload("Member").Preload("Member.UserDetail").Raw("SELECT * FROM group_members WHERE member_id = ?", id).Find(&joingroup).Error; err != nil {
+	if err := entity.DB().
+		Preload("Group").
+		Preload("Member").
+		Preload("Member.UserDetail").
+		Raw("SELECT * FROM group_members WHERE member_id = ?", id).Find(&joingroup).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

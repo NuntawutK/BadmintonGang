@@ -146,7 +146,7 @@ export default function Dashboard() {
     const [role, setRole] = useState("");
 
     let { id } = useParams();
-
+    
     const getEventDetail = async () => {
         const apiUrl = `http://localhost:8080/summarizeevent/${id}`;
 
@@ -239,34 +239,20 @@ export default function Dashboard() {
 
     const navigate = useNavigate();
 
-    // function TotalPriceShutt(OwnerShutt: EventShuttInterface | undefined, memberinshutt: ShuttleCockInterface[] | undefined) {
-    //     if (typeof OwnerShutt === 'undefined' || typeof memberinshutt === 'undefined') 
-    //         return;
+    function TotalPriceShutt() {
 
-    //     let totalmember = 0;
-    //     memberinshutt.forEach((shutt: ShuttleCockInterface) => {
-    //         totalmember += shutt.Member.UserDetail.FirstName.length
-    //     })
-
-    //     let totalprice = 0
-    //     totalprice =     (OwnerShutt.ShuttleCock.)
-    //     return totalprice;
-    // }
+        let totalprice = 0;
+        if (typeof selectedshutt?.Member?.UserDetail === 'undefined' || selectedshutt.EventGroupMemberShuttlecock?.length === 0)
+            return totalprice;
+        if (typeof selectedshutt?.EventGroupMemberShuttlecock === 'undefined')
+            return totalprice;
 
 
-    // function TotalPriceShutt(member: ShuttleCockInterface[] | undefined) {
-    //     if (typeof member === 'undefined')
-    //         return;
-
-    //     let totalmember = 0;
-    //     member.forEach((member: ShuttleCockInterface) => {
-    //         totalmember += (member.EventGroupMemberShuttlecock.length)
-    //     })
-    //     let totalprice = 0;
+        totalprice = Number(selectedshutt?.Member?.UserDetail?.PriceShutt / selectedshutt?.EventGroupMemberShuttlecock?.length)
 
 
-    //     return totalprice;
-    // }
+        return totalprice;
+    }
 
     useEffect(() => {
         const getToken = localStorage.getItem("token");
@@ -439,6 +425,7 @@ export default function Dashboard() {
                             Member
                         </Typography>
                         <Paper className={fixedHeightPaper}>
+                           
 
                             <Table size="small">
                                 <TableHead className={classes.tableHead}>
@@ -446,32 +433,39 @@ export default function Dashboard() {
                                         <TableCell align="center">No.</TableCell>
                                         <TableCell align="left">Name</TableCell>
                                         <TableCell align="left">Nickname</TableCell>
+                                        <TableCell align="left">price/person</TableCell>
+
                                     </TableRow>
                                 </TableHead>
-                                <TableBody>
 
-                                    {
-                                        selectedshutt?.EventGroupMemberShuttlecock?.map((t2: EventGroupmemberShuttlecockInterface, index: number) => {
-                                            return (
+
+                                {
+                                    selectedshutt?.EventGroupMemberShuttlecock?.map((t2: EventGroupmemberShuttlecockInterface, index: number) => {
+                                        return (
+                                            <TableBody>
                                                 <TableRow key={t2.ID} >
                                                     <TableCell align="center">{index + 1}</TableCell>
                                                     <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.FirstName}{" "}{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.LastName}</TableCell>
                                                     <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.Nickname}</TableCell>
+                                                    <TableCell align="left">{TotalPriceShutt()}{" ฿"}</TableCell>
+
                                                 </TableRow>
-                                            )
-                                        })
-                                    }                                                      
+                                            </TableBody>
 
-                                </TableBody>
+                                        )
+
+
+
+
+                                    })
+                                }
                             </Table>
-                            <br />
-                            <br />
-                            <br />
-                            <Typography variant="h5">
 
-                                {/* Total Price : {TotalPriceShutt(showEventshuttmembergroup?.ShuttleCock)} */}
 
-                            </Typography>
+
+                            <br />
+                            <br />
+                            <br />
 
                         </Paper>
 

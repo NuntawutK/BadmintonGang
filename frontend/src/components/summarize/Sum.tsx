@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme, createStyles, withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Box, Paper, Select } from "@material-ui/core";
@@ -14,6 +14,8 @@ import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
+import PropTypes from 'prop-types';
+
 
 //Table
 import Table from '@material-ui/core/Table';
@@ -36,70 +38,148 @@ import { GroupMemberInterface } from "../../models/IGroupMember";
 import { MembersInterface } from "../../models/IUser";
 import { group } from "console";
 import { EventShuttInterface } from "../../models/IEvent";
+import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
+import { ShuttleCockInterface } from "../../models/IShuttleCock";
+import { EventGroupmemberShuttlecockInterface } from "../../models/IEventGroupMemberShuttlecock";
+import IconButton from '@material-ui/core/IconButton';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import Collapse from '@material-ui/core/Collapse';
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
 
 
   createStyles({
-    root: { flexGrow: 1 },
+    root: { flexGrow: 1, display: 'flex' },
 
     container: { marginTop: theme.spacing(2) },
 
     paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
 
-    table: { minWidth: 650 },
+    table: { minWidth: 400 },
 
     position: { marginleft: theme.spacing(5) },
 
     tableSpace: { marginTop: 20 },
   })
 );
+
+
+const StyledTableHead = withStyles((theme) => ({
+  head: {
+    backgroundColor: '#334756',
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+
 const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
+function Row(props: any) {
+  const { event } = props;
+  const [openRow, setOpenRow] = React.useState(false);
+
+  const [shutt, setshutt] = React.useState<ShuttleCockInterface[]>([]);
+  function getDetailEvent() {
+    const apiUrl = "http://localhost:8080/sum/eventshutt/"+ event.EventShuttID;
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+      .then((res) => {
+        if (res.data) {
+          console.log(res.data)
+          setshutt(res.data)
+        }
+      });
+  }
+
+  React.useEffect(() => {
+    getDetailEvent()
+  }, [])
+
+  return (
+    <React.Fragment>
+      <TableRow key={event.EventShutt?.ID}>
+        <TableCell>
+          <IconButton aria-label="expand row" size="medium" onClick={() => setOpenRow(!openRow)}>
+            {openRow ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell align="center">{event.EventShutt?.ID}</TableCell>
+        <TableCell align="center">{event.EventShutt?.Place}</TableCell>
+        <TableCell align="center">{moment(event.EventShutt?.TimeStart).format("DD/MM/YYYY hh:mm A")}{" TO "}{moment(event.EventShutt?.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
+        </TableRow>
+        <TableRow>
+
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+            <Collapse in={openRow} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <Typography variant="h6" gutterBottom component="div">
+                รายละเอียด
+              </Typography>
+              <Table size="small" aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center" >No.</TableCell>
+                    <TableCell align="center" >Owner shut</TableCell>
+                    <TableCell align="center" >quantity</TableCell>
+                    {/* <TableCell align="center" > Total price</TableCell> */}
+                    <TableCell align="center"> PromtPay</TableCell>
+                    {/* <TableCell align="center">slip</TableCell> */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {shutt.map((shutt: ShuttleCockInterface,index:number) => (
+                    <TableRow key={shutt.ID} hover >
+                      <TableCell component="th" scope="row" align="center">{index+1}</TableCell>
+                      <TableCell align="center">{shutt.Member.UserDetail.Nickname}</TableCell>
+                      <TableCell align="center">{shutt.Member.UserDetail.Nickname.length}</TableCell>
+                      <TableCell align="center">{shutt.Member.UserDetail.PhoneNumber}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+   
+    </React.Fragment>
+  )
+}
+
+Row.propTypes = {
+  event: PropTypes.object
+}
+
+
 export default function DataPlayer() {
   const classes = useStyles();
 
+
   // List group by member id
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
+  // select group for getGroupmemberID
+  const [selectgroupMember, setselectGroupMember] = React.useState<GroupMemberInterface>();
+  // use eventID find event
+  const [eventgroupMember, seteventGroupMember] = React.useState<EventGroupMemberInterface[]>([]);
+
+
+
   
-  // Selected group for get GroupID
-  const [selectedGroup, setSelectedGroup] = React.useState<GroupInterface>();
-  const [selectedMember, setSelectedMember] = React.useState<MembersInterface>();
-
-
-  // Use GroupID to find member
-  const [memberGroup, setMemberGroup] = React.useState<GroupMemberInterface[]>([]);
-  
-  const [showEvent, setShowEvent] = React.useState<EventShuttInterface>();
-  let { id } = useParams();
-  const getEventMember = async () => {
-      const apiUrl = `http://localhost:8080/summarizeevent/${id}`;
-
-      const requestOptions = {
-          method: "GET",
-
-          headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "application/json",
-          },
-      };
-      //การกระทำ
-      fetch(apiUrl, requestOptions)
-          .then((response) => response.json())
-
-          .then((res) => {
-              console.log(res.data);
-
-              if (res.data) {
-                  setShowEvent(res.data);
-              } else {
-                  console.log("else");
-              }
-          });
-  };
 
   const getGroupMember = async () => {
     const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
@@ -128,9 +208,8 @@ export default function DataPlayer() {
       });
   };
 
-  const getMemberList = async () => {
-    const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
-    const apiUrl = `http://localhost:8080/groupmember/${selectedGroup?.ID}`;
+  const geteventGroupMemberlist = async () => {
+    const apiUrl = `http://localhost:8080/sum/groupmember/${selectgroupMember?.ID}`;
 
     const requestOptions = {
       method: "GET",
@@ -148,197 +227,111 @@ export default function DataPlayer() {
         console.log(res.data);
 
         if (res.data) {
-          setMemberGroup(res.data);
+          seteventGroupMember(res.data);
         } else {
           console.log("else");
         }
       });
   };
 
+
+
   const handleChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
+    event: React.ChangeEvent<{ value: unknown }>
   ) => {
-    const name = event.target.name as keyof typeof group;
-    setSelectedGroup(groupMember.find(g => g.ID === event.target.value as number)?.Group);
+    setselectGroupMember(groupMember.find(g => g.ID === event.target.value as number))
   };
-  
-  const handleChangeMember = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const name = event.target.name as keyof typeof group;
-    setSelectedMember(groupMember.find(g => g.ID === event.target.value as number)?.Member);
-  };
+
 
 
 
   useEffect(() => {
     // getGroup();
     getGroupMember();
+
   }, []);
 
   useEffect(() => {
-    getMemberList();
-  }, [selectedGroup?.ID]);
+    geteventGroupMemberlist();
+  }, [selectgroupMember?.ID]);
 
 
   return (
     <Container className={classes.container} maxWidth="md">
-      <Box display="flex">
-        <Box flexGrow={1}>
-          <Typography
-            component="h2"
-            variant="h6"
-            color="primary"
-            gutterBottom
-          >
-            Select host
-          </Typography>
+      <Paper className={classes.paper}>
+
+        <Box display="flex">
+          <Box flexGrow={1}>
+            <Typography
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Summary
+            </Typography>
+          </Box>
         </Box>
-      </Box>
-      <Grid container spacing={3} className={classes.root}>
-        
-        <Grid item xs={3}>
-          <p>Select Group</p>
-          <FormControl fullWidth variant="outlined">
-            <Select
-              // value={selectedGroup?.ID || 0}
-              //เปลี่ยนค่าที่รับเข้ามาจาก Value
-              onChange={handleChange}
-              //กำหนดให้ value
-              inputProps={{
-                name: "ID",
-              }}
-              defaultValue={0}
-            >
-              <MenuItem value={0} key={0}>
-                Select Group
-              </MenuItem>
-              {groupMember.map((item: GroupMemberInterface) => (
-                <MenuItem value={item.ID} key={item.ID}>
-                  {item.Group.NameGroup}
-                </MenuItem>)
-              )}
 
-            </Select>
-          </FormControl>
-        </Grid>
+        <Grid container spacing={3} className={classes.root}>
+          <Grid item xs={3}>
+            <p>Select Group</p>
+            <FormControl fullWidth variant="outlined">
+              <Select
+                // value={selectedGroup?.ID || 0}
+                //เปลี่ยนค่าที่รับเข้ามาจาก Value
+                onChange={handleChange}
+                //กำหนดให้ value
+                inputProps={{
+                  name: "ID",
+                }}
+                defaultValue={0}
+              >
+                <MenuItem value={0} key={0}>
+                  Select Group
+                </MenuItem>
+                {groupMember.map((item: GroupMemberInterface) => (
+                  <MenuItem value={item.ID} key={item.ID}>
+                    {item.Group.NameGroup}
+                  </MenuItem>)
+                )}
 
-        <Grid item xs={4}>
-          <p>Select Event</p>
-          <FormControl fullWidth variant="outlined">
-            <Select
-              // value={selectedGroup?.ID || 0}
-              //เปลี่ยนค่าที่รับเข้ามาจาก Value
-              onChange={handleChangeMember}
-              //กำหนดให้ value
-              inputProps={{
-                name: "ID",
-              }}
-              defaultValue={0}
-            >
-              <MenuItem value={0} key={0}>
-                Select Event
-              </MenuItem>
-              {memberGroup.map((item: GroupMemberInterface) => (
-                <MenuItem value={item.ID} key={item.ID}>
-                  {}
-
-                </MenuItem>)
-              )}
-
-            </Select>
-          </FormControl>
-          
-        </Grid>
-        <Grid item xs={5}>
-        <p>Select Member</p>
-          <FormControl fullWidth variant="outlined">
-            <Select
-              // value={selectedGroup?.ID || 0}
-              //เปลี่ยนค่าที่รับเข้ามาจาก Value
-              onChange={handleChangeMember}
-              //กำหนดให้ value
-              inputProps={{
-                name: "ID",
-              }}
-              defaultValue={0}
-            >
-              <MenuItem value={0} key={0}>
-                Select Group
-              </MenuItem>
-              {memberGroup.map((item: GroupMemberInterface) => (
-                <MenuItem value={item.ID} key={item.ID}>
-                  {item.Member.UserDetail.FirstName}{item.Member.UserDetail.LastName}
-
-                </MenuItem>)
-              )}
-
-            </Select>
-          </FormControl>
+              </Select>
+            </FormControl>
           </Grid>
-        {/* <Grid item xs={5}>
-            <p>Status</p>
-            
-            <TextField
-              fullWidth
-              id="MinPrice"
-              type="string"
-              inputProps={{ name: "MinPrice" }}
-              // value={Promotion.MinPrice}
-              // onChange={handleInputChange}
-              // label=""
-              // defaultValue={0}
-              variant="outlined"
-              //className ={classes.fullbox}
-            />
-          </Grid> */}
-          
-      </Grid>
-      
+        </Grid>
 
+        <Grid container className={classes.root}>
+          <Grid container item xs={12} spacing={3} className={classes.root} style={{ marginTop: 5 }} >
 
-      <TableContainer component={Paper} className={classes.tableSpace}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left" width="8%">
-                Status
-              </TableCell>
-              
+            <TableContainer component={Paper} className={classes.tableSpace} style={{ marginLeft: '1.1rem' }}>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableHead width="1%" />
+                    <StyledTableHead align="center" width="20%">
+                      No.
+                    </StyledTableHead>
+                    <StyledTableHead align="center" width="20%">
+                      place
+                    </StyledTableHead>
+                    <StyledTableHead align="center" width="20%">
+                      Time
+                    </StyledTableHead>
 
-              <TableCell align="left" width="8%">
-                Order
-              </TableCell>
+                  </TableRow>
+                </TableHead>
 
-              <TableCell align="center" width="12%">
-                PromtPay
-              </TableCell>
-
-              <TableCell align="center" width="12%">
-                QR Code
-              </TableCell>
-
-              
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {memberGroup?.map((item: GroupMemberInterface, index: number) => (
-              <TableRow key={item.ID}>
-                {/* <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.FirstName}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.LastName}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.Nickname}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.PromtPay}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.PriceShutt}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.PhoneNumber}</TableCell> */}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-
+                <TableBody>
+                  {eventgroupMember.map((event: EventGroupMemberInterface) => (
+                    <Row event={event} />
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
+      </Paper>
     </Container>
 
 

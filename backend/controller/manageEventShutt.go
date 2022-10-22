@@ -20,24 +20,6 @@ func CreateEventShuttleCock(c *gin.Context) {
 		return
 	}
 
-	// var createShutts []entity.ShuttleCock
-	// for _, shutt := range eventshuttlecock.ShuttleCock {
-	// 	var member entity.Member
-	// 	if tx := entity.DB().Model(&entity.Member{}).Where("id = ?", shutt.MemberID).First(&member); tx.RowsAffected == 0 {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "member not found"})
-	// 		return
-	// 	}
-	// 	createshutt := entity.ShuttleCock{
-	// 		Code:   shutt.Code,
-	// 		Member: member,
-	// 	}
-	// 	if _, err := govalidator.ValidateStruct(createshutt); err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	createShutts = append(createShutts, createshutt)
-	// }
-
 	var newgroupmember []entity.EventGroupMember
 	for _, item := range eventshuttlecock.EventGroupMember {
 		var groupmember entity.GroupMember
@@ -145,49 +127,6 @@ func ListMemberNotInEventShuttleCock(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": groupMember})
 }
 
-// func ListEventbyid(c *gin.Context) {
-
-// 	idevent := c.Param("eventid")
-
-// 	var eventshutt entity.EventShutt
-// 	if err := entity.DB().Model(&entity.EventShutt{}).
-// 		Preload("ShuttleCock").
-// 		Preload("ShuttleCock.Member").
-// 		Preload("ShuttleCock.Member.UserDetail").
-// 		Preload("EventGroupMember.GroupMember").
-// 		Preload("EventGroupMember.GroupMember.Member").
-// 		Preload("EventGroupMember.GroupMember.Member.UserDetail").
-// 		Preload("EventGroupMember.EventShutt").
-// 		Preload("Group").
-// 		Find(&eventshutt, entity.DB().Where("id = ?", idevent)).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
-// }
-
-// func ListEventshuttbyid(c *gin.Context) {
-
-// 	idevent := c.Param("eventid")
-
-// 	var eventshutt entity.EventShutt
-// 	if err := entity.DB().Model(&entity.EventShutt{}).
-// 		Preload("EventGroupMember.EventGroupMemberShuttlecock.ShuttleCock").
-// 		Preload("EventGroupMember.EventGroupMemberShuttlecock.ShuttleCock.Member").
-// 		Preload("EventGroupMember.EventGroupMemberShuttlecock.ShuttleCock.Member.UserDetail").
-// 		Preload("EventGroupMember.EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member").
-// 		Preload("EventGroupMember.EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member.UserDetail").
-// 		Preload("EventGroupMember.EventShutt").
-// 		Preload("Group").
-// 		Find(&eventshutt, entity.DB().Where("id = ?", idevent)).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
-// }
-
 func ListEventshuttbyid(c *gin.Context) {
 
 	idevent := c.Param("eventid")
@@ -213,6 +152,8 @@ func ListEventmembershuttgroupbyid(c *gin.Context) {
 		Preload("EventGroupMember.GroupMember.Member").
 		Preload("EventGroupMember.GroupMember.Member.UserDetail").
 		Preload("ShuttleCock").
+		Preload("ShuttleCock.Member").
+		Preload("ShuttleCock.Member.UserDetail").
 		Preload("ShuttleCock.EventGroupMemberShuttlecock").
 		Preload("ShuttleCock.EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member").
 		Preload("ShuttleCock.EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member.UserDetail").
