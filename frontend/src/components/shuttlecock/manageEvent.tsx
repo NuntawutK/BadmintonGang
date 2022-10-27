@@ -16,6 +16,7 @@ import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 //Table
 import Popover from '@material-ui/core/Popover';
@@ -49,6 +50,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { EventGroupmemberShuttlecockInterface } from "../../models/IEventGroupMemberShuttlecock";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -75,6 +77,12 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: "#DC143C",
       },
     },
+    tableHead2: {
+      "& .MuiTableCell-head": {
+        color: "white",
+        backgroundColor: "#F25D5D",
+      },
+    },
 
 
     menuBox: {
@@ -95,14 +103,12 @@ export default function ManageEvent() {
   // Get User and Role from localStorage
   const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
-  
+
   // Show group name
   const [group, setGroup] = React.useState<GroupInterface>();
-  
+
   // Show event on table
   const [showEvent, setShowEvent] = React.useState<EventShuttInterface[]>([]);
-
-  const [showCodeShuttlecockInEvent, setshowCodeShuttlecockInEvent] = React.useState<EventShuttInterface[]>([]);
 
   // Get member not in event by GroupMemberID
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
@@ -114,13 +120,9 @@ export default function ManageEvent() {
 
   const [sentcodeshuttlecock, setsentcodeshuttlecock] = React.useState<Partial<GroupInterface>>({});
 
-  const openMenuMember = (index: number) => {
-    return Boolean(anchorEl[index]);
-  }
-  const openMenuCodeShuttlecock = (index: number) => {
-    return Boolean(anchorEl2[index]);
-  }
 
+
+  const [msg, setMsg] = useState<string>("");
   const [trigger, setTrigger] = useState(0);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
@@ -129,21 +131,28 @@ export default function ManageEvent() {
   const [selected, setSelected] = React.useState<number[]>([]);
   const [selectedOwnershutt, setSelectedOwnershutt] = React.useState<number[]>([]);
   const [selectedmembershutt, setSelectedmembershutt] = React.useState<number[]>([]);
+  const [isItemEmpty, setIsItemEmpty] = useState<boolean>(false);
 
-
+  const [showEventownershutt, setshowEventownershutt] = React.useState<EventShuttInterface>();
+  const [showEventshuttmembergroup, setshowEventshuttmembergroup] = React.useState<EventShuttInterface>();
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
   const isSelectedOwner = (id: number) => selectedOwnershutt.indexOf(id) !== -1;
   const isSelectedmembershutt = (id: number) => selectedmembershutt.indexOf(id) !== -1;
 
   const [selectDisabled, setSelectDisabled] = useState(false)
-  const handleClickedit = () =>{
+  const handleClickedit = () => {
     setSelectDisabled(selectDisabled)
   }
 
 
-  
-  
-  
+  const openMenuMember = (index: number) => {
+    return Boolean(anchorEl[index]);
+  }
+  const openMenuCodeShuttlecock = (index: number) => {
+    return Boolean(anchorEl2[index]);
+  }
+
+
   const handleClick = (event: React.MouseEvent<unknown>, item: number) => {
     const selectedIndex = selected.indexOf(item);
     let newSelected: number[] = [];
@@ -163,6 +172,15 @@ export default function ManageEvent() {
 
     setSelected(newSelected);
   };
+  const handlecloseAdd = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSuccess(false);
+    setError(false);
+    setIsItemEmpty(false);
+  };
+
 
 
   const handleClickOwner = (event: React.MouseEvent<unknown>, item: number) => {
@@ -181,7 +199,7 @@ export default function ManageEvent() {
         selectedOwnershutt.slice(selectedIndex + 1),
       );
     }
- 
+
 
     setSelectedOwnershutt(newSelected);
   };
@@ -249,7 +267,7 @@ export default function ManageEvent() {
     setGroupMember([]);
     setSelected([]);
     setSelectedOwnershutt([]);
-    
+
   }
 
   const handleClosecodeShuttlecock = (index: number) => {
@@ -257,7 +275,6 @@ export default function ManageEvent() {
     newAnchorEl2[index] = null;
     setAnchorEl2(newAnchorEl2);
   }
-
   const { id } = useParams()
 
   const getEventMember = async () => {
@@ -287,27 +304,126 @@ export default function ManageEvent() {
         }
       });
   };
+  const [selectedshutt, setselectedshutt] = React.useState<Partial<ShuttleCockInterface>>({
+    EventGroupMemberShuttlecock: [],
+  });
+  const ShowmemberofShutt = (index: number) => {
+    setselectedshutt(showEventshuttmembergroup?.ShuttleCock[index] as Partial<ShuttleCockInterface>)
+  }
+  const getEventOwnerDetailshuttlecock = async () => {
+    const apiUrl = `http://localhost:8080/summarizegroupownershuttlecockevent/${id}`;
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [cancelMS, setCancelMS] = useState<string>('')
-  const handleClickOpenDialog = (id: string) => {
-    setOpenDialog(true);
-    setCancelMS(id)
+    const requestOptions = {
+      method: "GET",
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    //การกระทำ
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data) {
+          setshowEventownershutt(res.data);
+        } else {
+          console.log("else");
+        }
+      });
   };
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+
+
+  const getEventDetailshuttlecock = async () => {
+    const apiUrl = `http://localhost:8080/summarizegroupmembershuttlecockevent/${id}`;
+
+    const requestOptions = {
+      method: "GET",
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    //การกระทำ
+    fetch(apiUrl, requestOptions)
+      .then((response) => response.json())
+
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data) {
+          setshowEventshuttmembergroup(res.data);
+        } else {
+          console.log("else");
+        }
+      });
   };
+
+  const [openDialogEvent, setOpenDialogEvent] = React.useState(false);
+  const [cancelEvent, setcancelEvent] = useState<string>('')
+
+  const [openDialogShuttlecock, setOpenDialogShuttlecock] = React.useState(false);
+  const [cancelShuttlecock, setcancelShuttlecock] = useState<string>('')
+
+
+  const handleClickOpenDialogEvent = (id: string) => {
+    setOpenDialogEvent(true);
+    setcancelEvent(id)
+  };
+
+  const handleClickOpenDialogShuttlecock = (id: string) => {
+    setOpenDialogShuttlecock(true);
+    setcancelShuttlecock(id)
+  };
+
+
+  const handleCloseDialogEvent = () => {
+    setOpenDialogEvent(false);
+  };
+
+
+  const handleCloseDialogShutt = () => {
+    setOpenDialogShuttlecock(false);
+  };
+
 
   const sleep = (milliseconds: number) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
 
-  const deleteEvent = async () => {
-    setOpenDialog(false);
-    const apiUrl = "http://localhost:8080/deleteevent/"+cancelMS;
+
+  const deleteAddshuttlecock = async () => {
+    setOpenDialogShuttlecock(false);
+    const apiUrl = "http://localhost:8080/deleteaddshutttlecock/" + cancelShuttlecock;
     const requestOptions = {
       method: "DELETE",
-      headers: { 
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    const reponse = await fetch(apiUrl, requestOptions);
+
+    const res = await reponse.json()
+    if (res.data) {
+      console.log(res.data)
+      await sleep(1000)
+      window.location.reload()
+    } else {
+      console.log(res.data)
+    }
+  }
+
+  const deleteEvent = async () => {
+    setOpenDialogEvent(false);
+    const apiUrl = "http://localhost:8080/deleteevent/" + cancelEvent;
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
         "Content-Type": "application/json",
       },
@@ -375,7 +491,7 @@ export default function ManageEvent() {
         }
       });
   };
- 
+
   let length: number
 
   function makeid(length: any) {
@@ -398,6 +514,12 @@ export default function ManageEvent() {
       });
     });
     console.log(payload)
+    if (payload.length === 0) {
+      setIsItemEmpty(true);
+      setErrorMassage("Select Member please")
+      return
+    }
+
     let data = {
       Code: makeid(6),
       EventShuttID: Event,
@@ -405,6 +527,8 @@ export default function ManageEvent() {
       EventGroupMemberShuttlecock: payload,
     };
     console.log(data);
+
+
 
     const apiUrl = "http://localhost:8080/addshutt";
     const requestOptions = {
@@ -423,11 +547,16 @@ export default function ManageEvent() {
         console.log(res);
         if (res.data) {
           setSuccess(true);
-          // setMsg("Create group success")
+          setMsg("Add shuttlecock success")
           setErrorMassage("");
         } else {
           setError(true);
           setErrorMassage(res.error)
+          if (res.error == "member not found") {
+            setErrorMassage("Select Member please")
+          } else {
+            setErrorMassage(res.error)
+          }
         }
       });
 
@@ -460,7 +589,7 @@ export default function ManageEvent() {
         console.log(res);
         if (res.data) {
           setSuccess(true);
-          setTrigger(trigger+1);
+          setTrigger(trigger + 1);
           setSelected([]);
           getMemberNotInEventMember(eventId);
           console.log(res.data);
@@ -481,6 +610,8 @@ export default function ManageEvent() {
     }
     getEventMember();
     getGroup();
+    getEventOwnerDetailshuttlecock();
+    getEventDetailshuttlecock();
   }, [trigger]);
 
   // console.log(anchorEl);
@@ -488,9 +619,24 @@ export default function ManageEvent() {
 
   return (
     <Container className={classes.container} maxWidth="md">
+      <Snackbar open={success} autoHideDuration={3000} onClose={handlecloseAdd} >
+        <Alert onClose={handlecloseAdd} severity="success">
+          {msg}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={error} autoHideDuration={5000} onClose={handlecloseAdd} >
+        <Alert onClose={handlecloseAdd} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={isItemEmpty} autoHideDuration={3000} onClose={handlecloseAdd}>
+        <Alert onClose={handlecloseAdd} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
       <Box display="flex">
         <Box flexGrow={1}>
-          
+
           <Typography variant="h6">
 
             <h3>GroupName : {group?.NameGroup}</h3>
@@ -509,7 +655,7 @@ export default function ManageEvent() {
             color="secondary"
             style={{ float: "right" }}
           >
-            <ArrowBackIosIcon/>
+            <ArrowBackIosIcon />
             Back
           </Button>
 
@@ -519,7 +665,7 @@ export default function ManageEvent() {
 
       <TableContainer component={Paper} className={classes.tableSpace}>
         <Table className={classes.table} aria-label="simple table">
-          <TableHead  className={classes.tableHead}>
+          <TableHead className={classes.tableHead}>
             <TableRow>
               <TableCell align="left" width="5%">
                 Place
@@ -569,7 +715,7 @@ export default function ManageEvent() {
                         aria-haspopup="true"
                       // aria-expanded={openMenuMember ? 'true' : undefined}
                       >
-                        <GroupAddOutlinedIcon/>
+                        <GroupAddOutlinedIcon />
                       </Button>
 
                       <Menu
@@ -607,7 +753,7 @@ export default function ManageEvent() {
                                       <TableCell align="left" width="5%">
                                         Nickname
                                       </TableCell>
-                                      
+
 
                                     </TableRow>
                                   </TableHead>
@@ -675,7 +821,7 @@ export default function ManageEvent() {
                                 variant="contained"
                                 color="secondary"
                               >
-                                <GroupAddOutlinedIcon/>&nbsp;Add Member
+                                <GroupAddOutlinedIcon />&nbsp;Add Member
                               </Button>
 
 
@@ -699,8 +845,8 @@ export default function ManageEvent() {
                         aria-haspopup="true"
                         color="secondary"
                       >
-                        <SportsTennisIcon/>
-                        <AddIcon fontSize="small"/>
+                        <SportsTennisIcon />
+                        <AddIcon fontSize="small" />
                       </Button>
                       <Menu
                         anchorEl={anchorEl2[index]}
@@ -723,58 +869,169 @@ export default function ManageEvent() {
                               <Typography variant="subtitle1" noWrap>
                                 <p>Add ShuttleCock</p>
                                 <TableContainer component={Paper} className={classes.tableContainer}>
-                                <Table stickyHeader>
-                                  <TableHead className={classes.tableHead}>
-                                    <TableRow>
-                                      <TableCell width="5%" align="center">OwnerShutt</TableCell>
-                                      <TableCell width="5%" align="center">Member</TableCell>
-                                      <TableCell width="5%" align="center">Name</TableCell>
-                                      <TableCell width="5%" align="center">Nickname</TableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                    {item.EventGroupMember.map((item3: EventGroupMemberInterface) => {
-                                      const isItemSelectedOwner = isSelectedOwner(item3.GroupMember.MemberID);
-                                      const isItemSelectedmembershutt = isSelectedmembershutt(item3.ID);
-                                      return (
-                                        <TableRow key={item3.ID} >
-                                          <TableCell padding="checkbox" align="center">
-                                            <Checkbox
-                                              name="myCheckbox"
-                                              disabled = {!isItemSelectedOwner && selectedOwnershutt.length > 0}
-                                              checked={isItemSelectedOwner}
-                                              onClick={(event) => handleClickOwner(event, item3.GroupMember.MemberID)}
-                                            />
+                                  <Table stickyHeader>
+                                    <TableHead className={classes.tableHead}>
+                                      <TableRow>
+                                        <TableCell width="5%" align="center">OwnerShutt</TableCell>
+                                        <TableCell width="5%" align="center">Member</TableCell>
+                                        <TableCell width="5%" align="center">Name</TableCell>
+                                        <TableCell width="5%" align="center">Nickname</TableCell>
+                                      </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                      {item.EventGroupMember.map((item3: EventGroupMemberInterface) => {
+                                        const isItemSelectedOwner = isSelectedOwner(item3.GroupMember.MemberID);
+                                        const isItemSelectedmembershutt = isSelectedmembershutt(item3.ID);
+                                        return (
+                                          <TableRow key={item3.ID} >
+                                            <TableCell padding="checkbox" align="center">
+                                              <Checkbox
+                                                name="myCheckbox"
+                                                disabled={!isItemSelectedOwner && selectedOwnershutt.length > 0}
+                                                checked={isItemSelectedOwner}
+                                                onClick={(event) => handleClickOwner(event, item3.GroupMember.MemberID)}
+                                              />
 
-                                          </TableCell>
-                                          
-                                          <TableCell padding="checkbox" align="center">
-                                            <Checkbox
-                                              checked={isItemSelectedmembershutt}
-                                              onClick={(event) => handleClickMemberShutt(event, item3.ID)}
-                                            />
+                                            </TableCell>
 
-                                          </TableCell>
-                                          <TableCell align="left">{item3.GroupMember.Member.UserDetail.FirstName}{" "}{item3.GroupMember.Member.UserDetail.LastName}</TableCell>
-                                          <TableCell align="left">{item3.GroupMember.Member.UserDetail.Nickname}</TableCell>
-                                        </TableRow>
-                                      )
-                                    })}
-                                  </TableBody>
-                                </Table>
-                              </TableContainer>
+                                            <TableCell padding="checkbox" align="center">
+                                              <Checkbox
+                                                checked={isItemSelectedmembershutt}
+                                                onClick={(event) => handleClickMemberShutt(event, item3.ID)}
+                                              />
 
+                                            </TableCell>
+                                            <TableCell align="left">{item3.GroupMember.Member.UserDetail.FirstName}{" "}{item3.GroupMember.Member.UserDetail.LastName}</TableCell>
+                                            <TableCell align="left">{item3.GroupMember.Member.UserDetail.Nickname}</TableCell>
+                                            
+                                          </TableRow>
+                                        )
+                                      })}
+                                    </TableBody>
+
+                                  </Table>
+
+                                </TableContainer>
                                 <br />
-                                <br />
-                                <br />
+
                                 <Button
                                   style={{ float: "right" }}
                                   onClick={() => submitAddshuttlecock(item.ID)}
                                   variant="contained"
                                   color="secondary"
                                 >
-                                  <SportsTennisIcon/><AddIcon fontSize="small"/>&nbsp;&nbsp;Add Shuttle Cock
+                                  <SportsTennisIcon /><AddIcon fontSize="small" />&nbsp;&nbsp;Add Shuttle Cock
                                 </Button>
+                                <br />
+                                <br />
+                                <br />
+                                <Typography variant="subtitle2" noWrap>
+                                  Owner Shuttlecock
+                                </Typography>
+                                <br />
+                                <TableContainer component={Paper} className={classes.tableContainer}>
+                                  <Table stickyHeader size="small">
+                                    <TableHead className={classes.tableHead2}>
+                                      <TableRow>
+                                        <TableCell width="5%" align="left">Name</TableCell>
+                                        <TableCell width="5%" align="left">Member</TableCell>
+                                        <TableCell width="5%" align="left"></TableCell>
+                                      </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                      {showEventownershutt?.ShuttleCock.map((item1: ShuttleCockInterface, index: number) => {
+                                        return (
+                                          <TableRow key={item1.ID} >
+                                            <TableCell align="left">{item1.Member?.UserDetail?.FirstName}{" "}{item1.Member?.UserDetail?.LastName}</TableCell>                                           
+                                           <TableCell>
+                                              <Button
+                                                // component={RouterLink}
+                                                // to={"/memberinevent"}
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={() => ShowmemberofShutt(index)}
+                                                // aria-controls={openMenuMember ? 'basic-menu' : undefined}
+                                                aria-haspopup="true"
+                                              // aria-expanded={openMenuMember ? 'true' : undefined}
+                                              >
+                                                <VisibilityIcon fontSize="small" />
+                                              </Button>
+
+                                            </TableCell>
+                                            <TableCell>
+                                              <Button
+                                                size="small"
+                                                color="secondary"
+                                                onClick={() => handleClickOpenDialogShuttlecock(item1.ID.toString())}
+                                              >
+                                                <DeleteForeverIcon fontSize="small" />
+                                              </Button>
+                                              <Dialog
+                                                open={openDialogShuttlecock}
+                                                onClose={handleCloseDialogShutt}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                              >
+                                                <DialogTitle id="alert-dialog-title">{"Want to delete activity data?"}</DialogTitle>
+                                                <DialogContent>
+                                                  <DialogContentText id="alert-dialog-description">
+                                                    ⚠️ If the data has been deleted <b>Will not be able to recover data</b>
+                                                  </DialogContentText>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                  <Button onClick={handleCloseDialogShutt} color="primary">
+                                                    cancel
+                                                  </Button>
+                                                  <Button onClick={deleteAddshuttlecock} color="primary" autoFocus>
+                                                    accept
+                                                  </Button>
+                                                </DialogActions>
+                                              </Dialog>
+
+                                            </TableCell>
+                                          </TableRow>
+                                        )
+                                      })}
+                                    </TableBody>
+                                  </Table>
+                                </TableContainer>
+                                <br />
+                                <br />
+                                <Typography variant="subtitle2" noWrap>
+                                Members play shuttlecock
+
+                                </Typography>
+                                <Table size="small">
+                                  <TableHead className={classes.tableHead2}>
+                                    <TableRow>
+                                      <TableCell align="left">Name</TableCell>
+                                      <TableCell align="left">Nickname</TableCell>
+                                      <TableCell align="left"></TableCell>
+                                    </TableRow>
+                                  </TableHead>
+
+
+                                  {
+                                    selectedshutt?.EventGroupMemberShuttlecock?.map((t2: EventGroupmemberShuttlecockInterface, index: number) => {
+                                      return (
+                                        <TableBody>
+                                          <TableRow key={t2.ID} >
+                                            <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.FirstName}{" "}{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.LastName}</TableCell>
+                                            <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.Nickname}</TableCell>
+                                            
+                                          </TableRow>
+                                        </TableBody>
+
+                                      )
+
+
+
+
+                                    })
+                                  }
+                                </Table>
+
+
 
 
                               </Typography>
@@ -786,49 +1043,49 @@ export default function ManageEvent() {
                     </Box>
 
                   </TableCell>
-                  
+
                   <TableCell align="center">
                     <Button
                       style={{ float: "left" }}
                       component={RouterLink}
-                      to={"/historyEvent/"+ item.ID.toString()}
+                      to={"/historyEvent/" + item.ID.toString()}
                       // variant="contained"
                       color="primary"
                     >
-                      <HistoryIcon/>
+                      <HistoryIcon />
                     </Button>
                   </TableCell>
                   <TableCell>
-                         <Button 
-                            size="small"
-                            color="secondary"
-                            onClick={() => handleClickOpenDialog(item.ID.toString())}
-                         >
-                           <DeleteForeverIcon fontSize="small"/>
-                         </Button>
-                         <Dialog
-                           open={openDialog}
-                           onClose={handleCloseDialog}
-                           aria-labelledby="alert-dialog-title"
-                           aria-describedby="alert-dialog-description"
-                         >
-                           <DialogTitle id="alert-dialog-title">{"Want to delete activity data?"}</DialogTitle>
-                           <DialogContent>
-                             <DialogContentText id="alert-dialog-description">
-                               ⚠️ If the data has been deleted <b>Will not be able to recover data</b>
-                             </DialogContentText>
-                           </DialogContent>
-                           <DialogActions>
-                             <Button onClick={handleCloseDialog} color="primary">
-                               cancel
-                             </Button>
-                             <Button onClick={deleteEvent} color="primary" autoFocus>
-                              accept
-                             </Button>
-                           </DialogActions>
-                         </Dialog>
-                     
-                     </TableCell>
+                    <Button
+                      size="small"
+                      color="secondary"
+                      onClick={() => handleClickOpenDialogEvent(item.ID.toString())}
+                    >
+                      <DeleteForeverIcon fontSize="small" />
+                    </Button>
+                    <Dialog
+                      open={openDialogEvent}
+                      onClose={handleCloseDialogEvent}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">{"Want to delete activity data?"}</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          ⚠️ If the data has been deleted <b>Will not be able to recover data</b>
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleCloseDialogEvent} color="primary">
+                          cancel
+                        </Button>
+                        <Button onClick={deleteEvent} color="primary" autoFocus>
+                          accept
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+
+                  </TableCell>
 
 
                 </TableRow>

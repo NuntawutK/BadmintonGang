@@ -61,6 +61,8 @@ func main() {
 			protected.POST("/summary", controller.Summary)
 
 			protected.DELETE("/deleteevent/:id", controller.DeleteEventinGroup)
+			protected.DELETE("/deleteaddshutttlecock/:id", controller.DeleteAddshutt)
+
 			// protected.POST("/event",controller.CreateEventShuttleCock)
 		}
 	}

@@ -66,3 +66,21 @@ func AddShuttleCock(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": AddShuttlecock})
 
 }
+
+func DeleteAddshutt(c *gin.Context) {
+	id := c.Param("id")
+
+	var data entity.ShuttleCock
+
+	var eventgroupmembershutt entity.EventGroupMemberShuttlecock
+	if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
+		First(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", id)).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sql := "DELETE FROM shuttle_cocks WHERE id = ?"
+	entity.DB().Model(&entity.EventShutt{}).Raw(sql, id).Scan(&data)
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
