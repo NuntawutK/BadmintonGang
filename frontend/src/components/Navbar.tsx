@@ -60,7 +60,13 @@ const useStyles = makeStyles((theme: Theme) =>
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
       },
-    drawer : { width: 250 },
+    drawer : { 
+      width: 250,
+      marginTop: theme.spacing(5),
+
+      // background: 'linear-gradient(45deg, #EE6262 30%, #EE6262 70%, #EE6262 100%)',
+
+     },
     colorbar:{
       background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
     },
@@ -94,11 +100,11 @@ const handleClose = () => {
   }
   
  const menu = [
-    {name: "AccountInfomation", icon: <AccountCircleIcon  />, path: "/AccountInfomation"},
-    {name: "ManageGroup", icon: <SportsTennisIcon  />, path: "/SelectGroup"},
-    {name: "Player", icon: <GroupIcon  />, path: "/player"},
-    {name: "Summarize", icon: <AttachMoneyIcon  />, path: "/summarize"},
-    {name: "status", icon: <StorageIcon  />, path: "/status"},
+    {name: "AccountInfomation", icon: <AccountCircleIcon color="secondary" />, path: "/AccountInfomation"},
+    {name: "ManageGroup", icon: <SportsTennisIcon color="secondary" />, path: "/SelectGroup"},
+    {name: "Player", icon: <GroupIcon color="secondary" />, path: "/player"},
+    {name: "Summarize", icon: <AttachMoneyIcon color="secondary" />, path: "/summarize"},
+    // {name: "status", icon: <StorageIcon color="secondary" />, path: "/status"},
  ]
  const SignOut = () => {
   localStorage.clear();
@@ -117,7 +123,7 @@ const handleClose = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Drawer open={openDrawer} onClose={toggleDrawer(false)} >
+          <Drawer open={openDrawer} onClose={toggleDrawer(false) }>
             <List 
               className={classes.drawer} 
               onClick={toggleDrawer(false)} 
@@ -151,21 +157,6 @@ const handleClose = () => {
 
         
           <MenuItem onClick={SignOut}><ExitToAppIcon style={{ marginRight: ".5rem" }}/>Log out</MenuItem>
-
-          {/* <div style={{marginRight: ".5rem"}}>
-            <Typography align="right" variant="subtitle2">
-              
-            </Typography>
-          </div>
-          <div>
-            
-                <Button onClick={SignOut}  color="inherit" style={{ marginRight: 12 }}>
-                  ออกจากระบบ
-                </Button>
-                
-            
-              
-          </div> */}
         </Toolbar>
 
       </AppBar>

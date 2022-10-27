@@ -33,6 +33,7 @@ type UserDetail struct {
 	PhoneNumber string  `valid:"required,matches(^[0]\\d{9}$)~PhoneNumber must be contain 10 numbers"`
 	PromtPay    string  `valid:"required,matches(^[0]\\d{9}$)~PromtPay must be contain 10 numbers"`
 	PriceShutt  float64 `valid:"required~PriceShutt must not be zero, PriceShutt~PriceShutt must not be negative"`
+	Qrcode      string
 }
 
 type Member struct {
@@ -44,8 +45,8 @@ type Member struct {
 	UserDetailID *uint
 	UserDetail   UserDetail `gorm:"references:ID"`
 
-	ShuttleCock                 []ShuttleCock                 `gorm:"foreignKey:MemberID"`
-	GroupMember                 []GroupMember                 `gorm:"foreignKey:MemberID"`
+	ShuttleCock []ShuttleCock `gorm:"foreignKey:MemberID"`
+	GroupMember []GroupMember `gorm:"foreignKey:MemberID"`
 	// EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:MemberID"`
 	// Register    []Register    `gorm:"foreignKey:MemberID"`
 }

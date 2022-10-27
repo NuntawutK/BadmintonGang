@@ -71,7 +71,7 @@ function App() {
 
                   
                   <Route path = "/memberinevent" element={<MemberinEvent />} />
-                  <Route path = "/status" element={<Status />} />
+                  {/* <Route path = "/status" element={<Status />} /> */}
                   <Route path = "/manageEvent/:id" element={<ManageEvent />} />
                   <Route path = "/historyEvent/:id" element={<Dashboard />} />
 

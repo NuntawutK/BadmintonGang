@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme, createStyles, ThemeProvider, createTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Box, Paper, Select } from "@material-ui/core";
@@ -29,7 +29,9 @@ import { Details } from "@material-ui/icons";
 //import { stringify } from "querystring";
 
 import moment from "moment";
-
+import CropFreeIcon from '@material-ui/icons/CropFree';
+import IconButton from '@material-ui/core/IconButton';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import { MembersInterface, UserDetailsInterface, UserRolesInterface } from "../models/IUser";
 import { UsersInterface } from "../models/ISignIn";
 import { isDisabled } from "@testing-library/user-event/dist/utils";
@@ -52,34 +54,36 @@ const useStyles = makeStyles((theme: Theme) =>
     tableSpace: { marginTop: 20 },
     colorbuttom: {
       background: 'linear-gradient(45deg, #DC143C 30%, #DC143C 70%)',
-
+    },
+    selectimage: {
+      display: 'none',
+    },
+    image: {
+      borderRadius: "20px",
     }
   })
 );
+
+
+
+
 const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
 
 export default function AccountInfomation() {
+
   const classes = useStyles();
+  // const theme = createTheme();
 
-  const [Member, setMember] = React.useState<Partial<UsersInterface>>();
-  const [user, setUser] = React.useState<Partial<UsersInterface>>({});
+
   const [userdetail, setuserdetail] = React.useState<Partial<UserDetailsInterface>>({});
-
-  const [account, setaccount] = React.useState<Partial<UsersInterface>>({});
-  const [role, setRole] = useState("");
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
-  const [memberchang, setmemberchang] = React.useState<number | string>("")
-  const [errorMessage, setErrorMessage] = React.useState("");
 
-  function cancelUpdateMS() {
-    localStorage.removeItem("update_status");
-    localStorage.removeItem("update_msID");
-    localStorage.removeItem("update_mwtID");
-    localStorage.removeItem("check_mwtID");
-  }
+
+
+  const [trigger, setTrigger] = useState(0);
 
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -104,52 +108,11 @@ export default function AccountInfomation() {
   };
 
 
-  const handleChange = (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const name = event.target.name as keyof typeof user;
-    setUser({
-      ...user,
-      [name]: event.target.value,
-    });
-    // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target. === "NamePromotionID") {
-    //   setdetail(NamePromotion.find((r) => r.ID === event.target.value));
-    // }
-  };
-
   const [btnDisabled, setBtnDisabled] = useState(true)
   const handleClickedit = () => {
     setBtnDisabled(!btnDisabled)
   }
 
-
-
-  const getmember = async () => {
-    const apiUrl = `http://localhost:8080/userdetail`;
-
-    const requestOptions = {
-      method: "GET",
-
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    };
-    //การกระทำ
-    fetch(apiUrl, requestOptions)
-      .then((response) => response.json())
-
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.data) {
-          setMember(res.data);
-        } else {
-          console.log("else");
-        }
-      });
-  };
 
 
   function editAcount() {
@@ -158,6 +121,7 @@ export default function AccountInfomation() {
       PriceShutt: userdetail.PriceShutt,
       PhoneNumber: userdetail.PhoneNumber,
       PromtPay: userdetail.PromtPay,
+      Qrcode: image.src,
     }
 
     console.log(newAccount)
@@ -188,45 +152,42 @@ export default function AccountInfomation() {
       });
   }
 
-  const [image, setImage] = useState('')
-  const [loading, setLoading] = useState(false)
 
-  const uploadImage = async (e: any) => {
-    const files = e.target.files
-    const data = new FormData()
-    data.append('file', files[0])
-    data.append('upload_preset', 'darwin')
-    setLoading(true)
-    const res = await fetch(
-      '	https://api.cloudinary.com/v1_1/dihifeicm/image/upload',
-      {
-        method: 'POST',
-        body: data
-      }
-    )
-    const file = await res.json()
 
-    setImage(file.secure_url)
-    setLoading(false)
-  }
+  const [image, setImage] = useState({ name: "", src: "" });
+  const handleChangeimages = (event: any, id?: string) => {
+    const input = event.target.files[0];
+    const idimage = event.target.id as keyof typeof userdetail;
+
+    var reader = new FileReader();
+    reader.readAsDataURL(input)
+    reader.onload = function () {
+      const dataURL = reader.result;
+      setImage({ name: input.name, src: dataURL?.toString() as string });
+    };
+    if (id === "Qrcode") {
+      setuserdetail({ ...userdetail, [idimage]: input });
+    }
+
+
+
+
+  };
+
+
 
   useEffect(() => {
-    // getmember();
-    setuserdetail(JSON.parse(localStorage.getItem("user") || "")?.UserDetail)
-    // setUser(JSON.parse(localStorage.getItem("user") || ""));
-    // const getToken = localStorage.getItem("token");
-    // if (getToken) {
-    //   setUser(JSON.parse(localStorage.getItem("user") || ""));
-    //   setRole(localStorage.getItem("role") || "");
-    // } 
-  }, []);
+    setuserdetail(JSON.parse(localStorage.getItem("user") || "")?.UserDetail);
+  }, [handleChangeimages]);
 
   console.log(userdetail)
 
 
   return (
+
+    // <ThemeProvider theme = {theme}>
     <Container className={classes.container} maxWidth="sm">
-      <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={success} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
           Edit success
         </Alert>
@@ -301,11 +262,7 @@ export default function AccountInfomation() {
             value={userdetail.PhoneNumber}
             disabled={btnDisabled}
             onChange={handleInputChange}
-
-
           />
-
-
         </Grid>
         <Grid item xs={4}>
           <p>PromtPay</p>
@@ -339,21 +296,33 @@ export default function AccountInfomation() {
           />
 
         </Grid>
-        <Grid item xs={12}>
-        <input
-          type="file"
-          name="file"
-          placeholder="Upload an image"
-          onChange={uploadImage}
-          style={{ float: "right" }}
-        />
-        {loading ? (
-          <h3>Loading...</h3>
-        ) : (
-          <img src={image} style={{ width: '300px' }} />
-        )}
+        <Grid item xs={6}>
+          <p>Upload Qrcode</p>
+          <input
+            accept="image/*"
+            type="file"
+            // name="file"
+            // id="Qrcode"
+            id="contained-button-file"
+            // placeholder="Upload an image"
+            onChange={handleChangeimages}
+            style={{ float: "left" }}
+            disabled={btnDisabled}
+            className={classes.selectimage}
+            multiple
+          />
+          <label htmlFor="contained-button-file">
+            <Button variant="contained" component="span" disabled={btnDisabled}>
+              Upload&nbsp;&nbsp;
+              <CropFreeIcon />
+            </Button>
+          </label>
+        </Grid>
+        <Grid item xs={6} >
+          <img src={userdetail?.Qrcode} width="150px" style={{ float: "right" }} className={classes.image}></img>
         </Grid>
       </Grid>
+      {/* <img src= {image.src}  width="50px" ></img> */}
       <br />
       <br />
 
@@ -393,8 +362,9 @@ export default function AccountInfomation() {
 
 
     </Container>
-
+    // </ThemeProvider>
 
   );
 }
+
 

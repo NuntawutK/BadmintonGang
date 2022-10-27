@@ -39,6 +39,7 @@ import { ShuttleCockInterface } from '../../models/IShuttleCock';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { EventGroupmemberShuttlecockInterface } from '../../models/IEventGroupMemberShuttlecock';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import shuttlecock from "../image/shuttlecock.png"
 
 const drawerWidth = 240;
 
@@ -345,7 +346,7 @@ export default function Dashboard() {
 
                     <Grid item xs={12} md={5}>
                         <Typography variant="h5">
-                            Shuttlecock
+                            Owner Shuttlecock
                         </Typography>
                         <Paper className={fixedHeightPaper}>
 
@@ -421,8 +422,9 @@ export default function Dashboard() {
                             </React.Fragment>
 
                         </Paper>
+                        <br/>
                         <Typography variant="h5">
-                            Member
+                        Members play shuttlecock
                         </Typography>
                         <Paper className={fixedHeightPaper}>
                            
@@ -447,7 +449,7 @@ export default function Dashboard() {
                                                     <TableCell align="center">{index + 1}</TableCell>
                                                     <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.FirstName}{" "}{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.LastName}</TableCell>
                                                     <TableCell align="left">{t2?.EventGroupMember?.GroupMember?.Member?.UserDetail?.Nickname}</TableCell>
-                                                    <TableCell align="left">{TotalPriceShutt()}{" ฿"}</TableCell>
+                                                    <TableCell align="left">{TotalPriceShutt().toFixed(2)}{" ฿"}</TableCell>
 
                                                 </TableRow>
                                             </TableBody>

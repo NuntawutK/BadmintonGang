@@ -13,7 +13,7 @@ type Group struct {
 	CreatedMemberID *uint
 	CreatedMember   Member `gorm:"references:ID" valid:"-"`
 
-	NameGroup string `valid:"required~please enter name group"`
+	NameGroup string `gorm:"uniqueIndex" valid:"required~please enter name group"`
 	CodeGroup string `gorm:"uniqueIndex"`
 
 	EventShutt  []EventShutt  `gorm:"foreignKey:GroupID"`
@@ -50,7 +50,7 @@ type ShuttleCock struct {
 	MemberID *uint
 	Member   Member `gorm:"references:ID" valid:"-"`
 
-	EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:ShuttleCockID"`
+	EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:ShuttleCockID;constraint:OnDelete:CASCADE;"`
 }
 
 type EventShutt struct {
@@ -62,10 +62,9 @@ type EventShutt struct {
 	Place     string    `valid:"required"`
 	TimeStart time.Time `valid:"notpast~TimeStart must not be in the past"`
 	TimeStop  time.Time `valid:"notpast~TimeStop must not be in the past"`
-	//`valid:"notpast~TimeStop must not be in the past"`
 
-	EventGroupMember []EventGroupMember `gorm:"foreignKey:EventShuttID"`
-	ShuttleCock      []ShuttleCock      `gorm:"foreignKey:EventShuttID"`
+	EventGroupMember []EventGroupMember `gorm:"foreignKey:EventShuttID;constraint:OnDelete:CASCADE;"`
+	ShuttleCock      []ShuttleCock      `gorm:"foreignKey:EventShuttID;constraint:OnDelete:CASCADE;"`
 	Summary          []Summary          `gorm:"foreignKey:EventShuttID"`
 }
 
@@ -78,17 +77,17 @@ type EventGroupMember struct {
 	EventShuttID *uint
 	EventShutt   EventShutt `gorm:"references:ID" valid:"-"`
 
-	EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:EventGroupMemberID"`
+	EventGroupMemberShuttlecock []EventGroupMemberShuttlecock `gorm:"foreignKey:EventGroupMemberID;constraint:OnDelete:CASCADE;"`
 }
 
 type EventGroupMemberShuttlecock struct {
 	gorm.Model
 
 	ShuttleCockID *uint
-	ShuttleCock   ShuttleCock `gorm:"references:ID" valid:"-"`
+	ShuttleCock   ShuttleCock `gorm:"references:ID;" valid:"-"`
 
 	EventGroupMemberID *uint
-	EventGroupMember   EventGroupMember `gorm:"references:ID" valid:"-"`
+	EventGroupMember   EventGroupMember `gorm:"references:ID;;" valid:"-"`
 
 	// MemberID *uint
 	// Member   Member `gorm:"references:ID" valid:"-"`

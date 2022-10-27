@@ -92,6 +92,62 @@ func ListEventShuttleCock(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
 }
 
+func DeleteEventinGroup(c *gin.Context) {
+	id := c.Param("id")
+
+	var data entity.EventShutt
+	// if err := entity.DB().Model(&entity.EventShutt{}).
+	// 	First(&event, entity.DB().Where("id = ?", id)).Error; err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	sql := "DELETE FROM event_shutts WHERE id = ?"
+	entity.DB().Model(&entity.EventShutt{}).Raw(sql, id).Scan(&data)
+	// entity.DB().Delete("DELETE FROM event_shutts WHERE id = ?", id)
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+// var eventgroupmember entity.EventGroupMember
+// if err := entity.DB().Model(&entity.EventGroupMember{}).
+// 	First(&eventgroupmember, entity.DB().Where("event_shutt_id = ?", event.ID)).Error; err != nil {
+// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 	return
+// }
+
+// var shuttlecock entity.ShuttleCock
+// if err := entity.DB().Model(&entity.ShuttleCock{}).
+// 	First(&shuttlecock, entity.DB().Where("event_shutt_id = ?", event.ID)).Error; err != nil {
+// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 	return
+// }
+
+// var eventgroupmembershutt entity.EventGroupMemberShuttlecock
+// if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
+// 	First(&eventgroupmembershutt, entity.DB().Where("event_group_member_id = ?", eventgroupmember.ID)).Error; err != nil {
+// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 	return
+// }
+
+// if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
+// 	First(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", shuttlecock.ID)).Error; err != nil {
+// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 	return
+// }
+
+// sql1 := "DELETE FROM event_group_member_shuttlecocks WHERE event_group_member_id = ?"
+// entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).Raw(sql1, eventgroupmember.ID).Scan(&eventgroupmembershutt)
+
+// // sql2 := "DELETE FROM event_group_member_shuttlecocks WHERE shuttle_cock_id = ?"
+// // entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).Raw(sql2, shuttlecock.ID).Scan(&shuttlecock)
+
+// sql3 := "DELETE FROM event_group_members WHERE event_shutt_id = ?"
+// entity.DB().Model(&entity.EventGroupMember{}).Raw(sql3, event.ID).Scan(&eventgroupmember)
+
+// sql4 := "DELETE FROM shuttle_cocks WHERE event_shutt_id = ?"
+// entity.DB().Model(&entity.ShuttleCock{}).Raw(sql4, event.ID).Scan(&shuttlecock)
+
 // GET /listevent/membernotingroup/:event
 func ListMemberNotInEventShuttleCock(c *gin.Context) {
 

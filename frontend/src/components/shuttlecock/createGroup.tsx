@@ -252,10 +252,20 @@ export default function SelectGroup() {
         if (res.data) {
           setSuccess(true);
           setMsg("Create group success")
-          setErrorMassage("");
+          setErrorMassage("");    
+          
         } else {
           setError(true);
           setErrorMassage(res.error)
+          if (res.error == "UNIQUE constraint failed: groups.name_group") {
+            setErrorMassage("GROUP NAME duplicate")
+          }else if (res.error == "UNIQUE constraint failed: groups.code_group"){
+            submit();
+          }else{
+            setErrorMassage(res.error)
+          }
+         
+
         }
       });
 
@@ -483,11 +493,11 @@ export default function SelectGroup() {
                 Name
               </TableCell>
 
-              <TableCell align="center" width="4%">
+              <TableCell align="left" width="4%">
                 Create
                 Event
               </TableCell>
-              <TableCell align="center" width="4%">
+              <TableCell align="left" width="4%">
                 Manage
                 Event
               </TableCell>

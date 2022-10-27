@@ -15,6 +15,8 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+
 //Table
 import Popover from '@material-ui/core/Popover';
 import Table from '@material-ui/core/Table';
@@ -41,7 +43,12 @@ import AddIcon from '@material-ui/icons/Add';
 import HistoryIcon from '@material-ui/icons/History';
 import SportsTennisIcon from '@material-ui/icons/SportsTennis';
 import { UsersInterface } from "../../models/ISignIn";
-
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -281,6 +288,42 @@ export default function ManageEvent() {
       });
   };
 
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [cancelMS, setCancelMS] = useState<string>('')
+  const handleClickOpenDialog = (id: string) => {
+    setOpenDialog(true);
+    setCancelMS(id)
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const sleep = (milliseconds: number) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
+  const deleteEvent = async () => {
+    setOpenDialog(false);
+    const apiUrl = "http://localhost:8080/deleteevent/"+cancelMS;
+    const requestOptions = {
+      method: "DELETE",
+      headers: { 
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    };
+    const reponse = await fetch(apiUrl, requestOptions);
+
+    const res = await reponse.json()
+    if (res.data) {
+      console.log(res.data)
+      await sleep(1000)
+      window.location.reload()
+    } else {
+      console.log(res.data)
+    }
+  }
+
   const getMemberNotInEventMember = (eventId: number) => {
     const apiUrl = `http://localhost:8080/listevent/membernotingroup/${eventId}`;
 
@@ -347,14 +390,14 @@ export default function ManageEvent() {
   }
 
   function submitAddshuttlecock(Event: number) {
+
     let payload: any[] = [];
-  
     selectedmembershutt.forEach((item: number) => {
       payload.push({
         EventGroupMemberID: item
       });
     });
-
+    console.log(payload)
     let data = {
       Code: makeid(6),
       EventShuttID: Event,
@@ -448,7 +491,7 @@ export default function ManageEvent() {
       <Box display="flex">
         <Box flexGrow={1}>
           
-          <Typography variant="h5">
+          <Typography variant="h6">
 
             <h3>GroupName : {group?.NameGroup}</h3>
 
@@ -476,7 +519,7 @@ export default function ManageEvent() {
 
       <TableContainer component={Paper} className={classes.tableSpace}>
         <Table className={classes.table} aria-label="simple table">
-          <TableHead>
+          <TableHead  className={classes.tableHead}>
             <TableRow>
               <TableCell align="left" width="5%">
                 Place
@@ -498,6 +541,8 @@ export default function ManageEvent() {
               </TableCell>
               <TableCell align="left" width="4%">
                 summary
+              </TableCell>
+              <TableCell align="left" width="4%">
               </TableCell>
 
 
@@ -753,6 +798,37 @@ export default function ManageEvent() {
                       <HistoryIcon/>
                     </Button>
                   </TableCell>
+                  <TableCell>
+                         <Button 
+                            size="small"
+                            color="secondary"
+                            onClick={() => handleClickOpenDialog(item.ID.toString())}
+                         >
+                           <DeleteForeverIcon fontSize="small"/>
+                         </Button>
+                         <Dialog
+                           open={openDialog}
+                           onClose={handleCloseDialog}
+                           aria-labelledby="alert-dialog-title"
+                           aria-describedby="alert-dialog-description"
+                         >
+                           <DialogTitle id="alert-dialog-title">{"Want to delete activity data?"}</DialogTitle>
+                           <DialogContent>
+                             <DialogContentText id="alert-dialog-description">
+                               ⚠️ If the data has been deleted <b>Will not be able to recover data</b>
+                             </DialogContentText>
+                           </DialogContent>
+                           <DialogActions>
+                             <Button onClick={handleCloseDialog} color="primary">
+                               cancel
+                             </Button>
+                             <Button onClick={deleteEvent} color="primary" autoFocus>
+                              accept
+                             </Button>
+                           </DialogActions>
+                         </Dialog>
+                     
+                     </TableCell>
 
 
                 </TableRow>

@@ -48,6 +48,11 @@ const useStyles = makeStyles((theme: Theme) =>
     position: { marginleft: theme.spacing(5) },
 
     tableSpace: { marginTop: 20 },
+
+    image:{
+      // backgroundImage:`url("https://cdn.dribbble.com/users/427368/screenshots/10977733/media/08c4814eaa402b580cfbc6b3c39011da.png?compress=1&resize=400x300")`,
+      opacity: "0.3",
+    },
   })
 );
 const Alert = (props: AlertProps) => {
@@ -325,6 +330,12 @@ export default function AccountInfomation() {
         >
           Register
         </Button>
+        <br/>
+        <br/>
+        <br/>
+        <img src="https://cdn-icons-png.flaticon.com/512/2633/2633874.png" alt="Cinque Terre"   width="300" style={{ float: "right" }} className={classes.image}> 
+      </img>
+      
 
 
 

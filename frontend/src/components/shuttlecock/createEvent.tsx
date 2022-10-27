@@ -50,11 +50,13 @@ const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
 
   createStyles({
-    root: { flexGrow: 1,
-     },
+    root: {
+      flexGrow: 1,
+    },
 
-    container: { marginTop: theme.spacing(1),
-     },
+    container: {
+      marginTop: theme.spacing(1),
+    },
 
     paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
 
@@ -95,7 +97,7 @@ export default function CreateEvent() {
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
   const [sentEvent, setSentEvent] = React.useState<Partial<EventShuttInterface>>({
     Place: "",
-  
+
   });
   // const [sentEvent,setsentEvent] = React.useState<Partial<JoinEventInterface>>({});
 
@@ -105,7 +107,7 @@ export default function CreateEvent() {
 
   // const [ShowjoinGroup, setShowjoinGroup] = React.useState<JoinGroupInterface[]>([]);
 
-  const [user,setUser] = React.useState<UsersInterface>();
+  const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
   const [selected, setSelected] = React.useState<number[]>([
 
@@ -182,7 +184,7 @@ export default function CreateEvent() {
 
 
   let { id } = useParams()
-  
+
   const getGroupMember = async () => {
 
     const apiUrl = `http://localhost:8080/groupmember/${id}`;
@@ -205,7 +207,7 @@ export default function CreateEvent() {
         if (res.data) {
           setGroupMember(res.data);
           const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
-          setSelected([res.data?.find((m:GroupMemberInterface) => m.Member.ID === user?.ID)?.ID])
+          setSelected([res.data?.find((m: GroupMemberInterface) => m.Member.ID === user?.ID)?.ID])
 
         } else {
           console.log("else");
@@ -213,7 +215,7 @@ export default function CreateEvent() {
       });
   };
 
-  
+
 
   const getEventMember = async () => {
     // const event: Ebe = JSON.parse(localStorage.getItem("user") || "");
@@ -254,7 +256,7 @@ export default function CreateEvent() {
     return result;
   }
 
-  
+
   let payload: any[] = [];
   function submit() {
     selected.forEach((id: number) => {
@@ -314,7 +316,7 @@ export default function CreateEvent() {
     if (getToken) {
       setUser(JSON.parse(localStorage.getItem("user") || ""));
       setRole(localStorage.getItem("role") || "");
-    } 
+    }
 
     getGroupMember();
     getEventMember();
@@ -325,7 +327,7 @@ export default function CreateEvent() {
   console.log(sentEvent);
 
   return (
-    <Container className={classes.container} maxWidth="lg">
+    <Container className={classes.container} maxWidth="md">
       <Snackbar open={success} autoHideDuration={3000} onClose={handleClose} >
         <Alert onClose={handleClose} severity="success">
           {msg}
@@ -333,7 +335,7 @@ export default function CreateEvent() {
       </Snackbar>
       <Snackbar open={error} autoHideDuration={5000} onClose={handleClose} >
         <Alert onClose={handleClose} severity="error">
-        {errorMessage}
+          {errorMessage}
         </Alert>
       </Snackbar>
       <Paper className={classes.paper}>
@@ -354,7 +356,7 @@ export default function CreateEvent() {
           </Box>
         </Box>
         <Grid container spacing={3} className={classes.root}>
-          <Box flexGrow={1}>
+          <Grid item xs={12}>
             <Button
               component={RouterLink}
               to="/SelectGroup"
@@ -362,26 +364,46 @@ export default function CreateEvent() {
               color="secondary"
               style={{ float: "right" }}
             >
-              <ArrowBackIosIcon/>
+              <ArrowBackIosIcon />
               Back
             </Button>
-          </Box>
+
+
+          </Grid>
+
+
+
           <br />
           <br />
           <Divider />
+          
 
         </Grid>
 
         <br />
         <br />
         <Divider />
+
+        <br />
+        <Grid item xs={12}>
+            <Button
+              component={RouterLink}
+              to={"/manageEvent/" + id}
+              variant="contained"
+              color="secondary"
+              style={{ float: "right" }}
+            >
+              manage event
+            </Button>
+
+          </Grid>
         <br />
 
         <Grid container item xs={12} spacing={3} className={classes.root} style={{ marginTop: 5 }}>
           <Grid item xs={12}>
             <Typography className={classes.typoHeader} variant="subtitle2">
-
-              <h3>GroupName : {groupMember[0]?.Group?.NameGroup}</h3>
+            
+              GROUP NAME : {groupMember[0]?.Group?.NameGroup}
 
 
             </Typography>
@@ -393,7 +415,7 @@ export default function CreateEvent() {
                     id="Place"
                     type="string"
                     inputProps={{ name: "Place" }}
-                    size = "small"
+                    size="small"
                     value={sentEvent?.Place}
                     onChange={handleChange}
                     label=""
@@ -412,7 +434,7 @@ export default function CreateEvent() {
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDateTimePicker
                       name="WatchedTime"
-                      size = "small"
+                      size="small"
                       value={selectedDateTimestart}
                       onChange={handleDateChangeTimestart}
                       label=""
@@ -442,8 +464,8 @@ export default function CreateEvent() {
                 </form>
               </Grid>
             </Grid>
-            
-            
+
+
 
             <br />
             <TableContainer component={Paper} className={classes.tableContainer}>
@@ -452,7 +474,7 @@ export default function CreateEvent() {
                   <TableRow>
                     <TableCell width="1%" align="center">SELECT</TableCell>
                     <TableCell width="20%" align="center">Name</TableCell>
-                    <TableCell width="6%" align="center">Nickname</TableCell>
+                    <TableCell width="6%" align="left">Nickname</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -465,12 +487,12 @@ export default function CreateEvent() {
                           <Checkbox
                             checked={isItemSelected}
                             onClick={(event) => handleClick(event, item.ID)}
-                            disabled = {item.ID === groupMember.find((m:GroupMemberInterface) => m.Member.ID === user?.ID)?.ID }
+                            disabled={item.ID === groupMember.find((m: GroupMemberInterface) => m.Member.ID === user?.ID)?.ID}
                           />
 
                         </TableCell>
                         <TableCell align="center">{item.Member.UserDetail.FirstName}{"  "}{item.Member.UserDetail.LastName}</TableCell>
-                        <TableCell align="center">{item.Member.UserDetail.Nickname}</TableCell>
+                        <TableCell align="left">{item.Member.UserDetail.Nickname}</TableCell>
                       </TableRow>
                     )
                   })}
@@ -485,7 +507,18 @@ export default function CreateEvent() {
 
 
           </Grid>
-         
+
+          <Grid item xs={12}>
+            <Button
+              style={{ float: "right" }}
+              onClick={submit}
+              variant="contained"
+              color="primary"
+              disabled={(sentEvent.Place === "")}
+            >
+              Create EVENT
+            </Button>
+          </Grid>
 
         </Grid>
       </Paper>
@@ -494,25 +527,9 @@ export default function CreateEvent() {
       <br />
 
       <br />
-      <Button
-        component={RouterLink}
-        to={"/manageEvent/"+id}
-        variant="contained"
-        color="secondary"
-        style={{ float: "right" }}
-      >
-        manage event
-      </Button>
 
-      <Button
-        style={{ float: "right" }}
-        onClick={submit}
-        variant="contained"
-        color="primary"
-        disabled = {(sentEvent.Place === "")}
-      >
-        Create EVENT
-      </Button>
+
+
 
 
     </Container>

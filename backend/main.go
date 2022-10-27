@@ -49,6 +49,7 @@ func main() {
 			protected.GET("/summarizegroupownershuttlecockevent/:eventid", controller.ListEventownershuttgroupbyid)
 			protected.GET("/sum/groupmember/:groupid", controller.Summaryeventgroupbyid)
 			protected.GET("/sum/eventshutt/:eventid", controller.Summaryeventbyid)
+			protected.GET("/status/eventshutt/:eventid", controller.Statuseventbyid)
 
 			protected.PATCH("/updateaccount", controller.UpdateAccount)
 			protected.PATCH("/listevent/membernotingroup/:event", controller.UpdateMemberIntoEvent)
@@ -58,6 +59,8 @@ func main() {
 			protected.POST("/creategroup", controller.CreateGroup)
 			protected.POST("/addshutt", controller.AddShuttleCock)
 			protected.POST("/summary", controller.Summary)
+
+			protected.DELETE("/deleteevent/:id", controller.DeleteEventinGroup)
 			// protected.POST("/event",controller.CreateEventShuttleCock)
 		}
 	}

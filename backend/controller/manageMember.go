@@ -38,7 +38,8 @@ func UpdateAccount(c *gin.Context) {
 	new_dataUserDetail.PriceShutt = dataUserDetail.PriceShutt
 	new_dataUserDetail.PhoneNumber = dataUserDetail.PhoneNumber
 	new_dataUserDetail.PromtPay = dataUserDetail.PromtPay
-
+	new_dataUserDetail.Qrcode = dataUserDetail.Qrcode
+	
 	if err := entity.DB().Save(&new_dataUserDetail).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

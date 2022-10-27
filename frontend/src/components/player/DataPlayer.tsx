@@ -52,6 +52,14 @@ const useStyles = makeStyles((theme: Theme) =>
     position: { marginleft: theme.spacing(5) },
 
     tableSpace: { marginTop: 20 },
+
+    tableHead: {
+      "& .MuiTableCell-head": {
+        color: "white",
+        backgroundColor: "#DC143C",
+      },
+      
+    },
   })
 );
 const Alert = (props: AlertProps) => {
@@ -124,42 +132,11 @@ export default function DataPlayer() {
       });
   };
 
-  //  const getGroup = async () => {
-  //   const apiUrl = `http://localhost:8080/manageGroup`;
-
-  //   const requestOptions = {
-  //     method: "GET",
-
-  //     headers: {
-  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   };
-  //   //การกระทำ
-  //   fetch(apiUrl, requestOptions)
-  //     .then((response) => response.json())
-
-  //     .then((res) => {
-  //       console.log(res.data);
-
-  //       if (res.data) {
-  //         setGroup(res.data);
-  //       } else {
-  //         console.log("else");
-  //       }
-  //     });
-  // };
-
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     const name = event.target.name as keyof typeof group;
     setSelectedGroup(groupMember.find(g => g.ID === event.target.value as number)?.Group);
-
-    // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target.name === "GroupID") {
-    //   setmember(Group?.find((g) => g.ID === event.target.value as number)?.Group?.JoinGroup as JoinGroupInterface[]);
-    // }
   };
 
 
@@ -173,12 +150,8 @@ export default function DataPlayer() {
     getMemberList();
   }, [selectedGroup?.ID]);
 
-  // function createData(name: string, calories: number, fat: number, carbs: number, protein: number) {
-  //   return { name, calories, fat, carbs, protein };
-  // }
 
   console.log(selectedGroup);
-  // console.log(sentGroup.CodeGroup)
 
   return (
     <Container className={classes.container} maxWidth="md">
@@ -197,7 +170,6 @@ export default function DataPlayer() {
       <Grid container spacing={3} className={classes.root}>
 
         <Grid item xs={4}>
-          <p>Select Group</p>
           <FormControl fullWidth variant="outlined">
             <Select
               // value={selectedGroup?.ID || 0}
@@ -226,7 +198,7 @@ export default function DataPlayer() {
 
       <TableContainer component={Paper} className={classes.tableSpace}>
         <Table className={classes.table} aria-label="simple table">
-          <TableHead>
+          <TableHead className = {classes.tableHead}>
             <TableRow>
               <TableCell align="left" width="2%">
                 No.

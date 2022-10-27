@@ -14,6 +14,10 @@ import Grid from "@material-ui/core/Grid";
 
 import SportsTennisIcon from '@material-ui/icons/SportsTennis';
 import { SigninInterface } from "../models/ISignIn";
+import { url } from "inspector";
+import shuttlecock from "../image/shuttlecock.png"
+import { Opacity } from "@material-ui/icons";
+
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -38,13 +42,24 @@ function ForDevLoginShow() {
 }
 
 const useStyles = makeStyles((theme) => ({
+
+  image:{
+    // backgroundImage:`url("https://cdn.dribbble.com/users/427368/screenshots/10977733/media/08c4814eaa402b580cfbc6b3c39011da.png?compress=1&resize=400x300")`,
+    // opacity: "0.3",
+    display: "absolute",
+    marginTop:theme.spacing(-50),
+    marginLeft:theme.spacing(-5),
+    zIndex: -1,
+    // width: "500px"
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    
-    
+    backgroundImage: `url(${shuttlecock})`,
+    height: "500px",
+    width: "450px",    
   },
   avatar: {
     margin: theme.spacing(1),
@@ -64,7 +79,8 @@ const useStyles = makeStyles((theme) => ({
   colorbuttom:{
     background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
 
-  }
+  },
+  
   
   
 }));
@@ -113,6 +129,7 @@ function SignIn() {
       event.stopPropagation();
       login();
     }
+    
   }
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -126,7 +143,7 @@ function SignIn() {
   // console.log(signin);
 
   return (
-    
+   
     <Container component="main" maxWidth="xs" >
       
       <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
@@ -142,6 +159,7 @@ function SignIn() {
       <CssBaseline />
 
       <div className={classes.paper}>
+      
         <Avatar className={classes.avatar}>
           <SportsTennisIcon />
         </Avatar>
@@ -209,12 +227,14 @@ function SignIn() {
     
         </Grid>
         </Grid>
-        
+         
       </div>
-     
+      {/* <img src = {shuttlecock}    style={{ float: "inline-start" }}  className={classes.image}> 
+      </img> */}
       
     </Container>
-    
+   
+   
   );
   
 }

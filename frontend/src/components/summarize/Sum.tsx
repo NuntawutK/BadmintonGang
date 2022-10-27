@@ -16,7 +16,6 @@ import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 import PropTypes from 'prop-types';
 
-
 //Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -40,11 +39,13 @@ import { group } from "console";
 import { EventShuttInterface } from "../../models/IEvent";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
 import { ShuttleCockInterface } from "../../models/IShuttleCock";
-import { EventGroupmemberShuttlecockInterface } from "../../models/IEventGroupMemberShuttlecock";
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Collapse from '@material-ui/core/Collapse';
+import { EventGroupmemberShuttlecockInterface } from "../../models/IEventGroupMemberShuttlecock";
+import { DatasummaryInterface } from "../../models/ISummary";
+import CropFreeIcon from '@material-ui/icons/CropFree';
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
@@ -55,20 +56,31 @@ const useStyles = makeStyles((theme: Theme) =>
 
     container: { marginTop: theme.spacing(2) },
 
-    paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
+    paper: { padding: theme.spacing(2), color: theme.palette.text.secondary, marginBottom: 50 },
 
     table: { minWidth: 400 },
 
     position: { marginleft: theme.spacing(5) },
 
-    tableSpace: { marginTop: 20 },
+    tableSpace: { marginTop: 20, marginBottom: 30 },
+
+    tableHead: {
+      "& .MuiTableCell-head": {
+        color: "white",
+        backgroundColor: "#F25D5D",
+      },
+
+    },
+    selectimage: {
+      display: 'none',
+    },
   })
 );
 
 
 const StyledTableHead = withStyles((theme) => ({
   head: {
-    backgroundColor: '#334756',
+    backgroundColor: '#DC143C',
     color: theme.palette.common.white,
   },
   body: {
@@ -82,12 +94,16 @@ const Alert = (props: AlertProps) => {
 };
 
 function Row(props: any) {
+  const classes = useStyles();
+
   const { event } = props;
   const [openRow, setOpenRow] = React.useState(false);
+  const [user, setUser] = React.useState<UsersInterface>();
+  const [role, setRole] = useState("");
 
-  const [shutt, setshutt] = React.useState<ShuttleCockInterface[]>([]);
+  const [data, setdata] = React.useState<DatasummaryInterface[]>([]);
   function getDetailEvent() {
-    const apiUrl = "http://localhost:8080/sum/eventshutt/"+ event.EventShuttID;
+    const apiUrl = "http://localhost:8080/sum/eventshutt/" + event.EventShuttID;
     const requestOptions = {
       method: "GET",
       headers: {
@@ -101,13 +117,32 @@ function Row(props: any) {
       .then((res) => {
         if (res.data) {
           console.log(res.data)
-          setshutt(res.data)
+          setdata(res.data)
         }
       });
   }
 
+
+  const [image, setImage] = useState({ name: "", src: "" });
+  const handleChangeimages = (event: any,id:number) => {
+    const input = event.target.files[id];
+    var reader = new FileReader();
+    reader.readAsDataURL(input)
+    reader.onload = function () {
+      const dataURL = reader.result;
+      setImage({ name: input.name, src: dataURL?.toString() as string });
+    };
+  };
+
+
+
   React.useEffect(() => {
     getDetailEvent()
+    const getToken = localStorage.getItem("token");
+    if (getToken) {
+      setUser(JSON.parse(localStorage.getItem("user") || ""));
+      setRole(localStorage.getItem("role") || "");
+    }
   }, [])
 
   return (
@@ -117,46 +152,82 @@ function Row(props: any) {
           <IconButton aria-label="expand row" size="medium" onClick={() => setOpenRow(!openRow)}>
             {openRow ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell align="center">{event.EventShutt?.ID}</TableCell>
-        <TableCell align="center">{event.EventShutt?.Place}</TableCell>
-        <TableCell align="center">{moment(event.EventShutt?.TimeStart).format("DD/MM/YYYY hh:mm A")}{" TO "}{moment(event.EventShutt?.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
-        </TableRow>
-        <TableRow>
 
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
-            <Collapse in={openRow} timeout="auto" unmountOnExit>
+        </TableCell>
+        <TableCell align="center">{event.EventShutt?.Place}</TableCell>
+        <TableCell align="center">{moment(event.EventShutt?.TimeStart).format("DD/MM/YYYY hh:mm A")}{" to "}{moment(event.EventShutt?.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
+      </TableRow>
+      <TableRow>
+
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+          <Collapse in={openRow} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
                 รายละเอียด
               </Typography>
               <Table size="small" aria-label="simple table">
-                <TableHead>
+                <TableHead className={classes.tableHead}>
                   <TableRow>
-                    <TableCell align="center" >No.</TableCell>
-                    <TableCell align="center" >Owner shut</TableCell>
-                    <TableCell align="center" >quantity</TableCell>
+                    <TableCell align="center" width="1%">No.</TableCell>
+                    <TableCell align="center" width="20%">Owner shuttle cock</TableCell>
+                    <TableCell align="center" width="5%">quantity</TableCell>
+                    <TableCell align="center" width="15%">TotalPrice (baht)</TableCell>
                     {/* <TableCell align="center" > Total price</TableCell> */}
-                    <TableCell align="center"> PromtPay</TableCell>
+                    <TableCell align="center" width="20%"> PromtPay</TableCell>
+                    <TableCell align="center" width="20%"> QRcode</TableCell>
+
+
                     {/* <TableCell align="center">slip</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {shutt.map((shutt: ShuttleCockInterface,index:number) => (
-                    <TableRow key={shutt.ID} hover >
-                      <TableCell component="th" scope="row" align="center">{index+1}</TableCell>
-                      <TableCell align="center">{shutt.Member.UserDetail.Nickname}</TableCell>
-                      <TableCell align="center">{shutt.Member.UserDetail.Nickname.length}</TableCell>
-                      <TableCell align="center">{shutt.Member.UserDetail.PhoneNumber}</TableCell>
+                  {/* {eventgroupmembershutt?.map((item: EventGroupmemberShuttlecockInterface, index: number) => (
+                    <TableRow key={item.ID} hover >
+                      <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
+                     
+                  ))} */}
+                  {data.map((item: DatasummaryInterface, index: number) => (
+                    <TableRow hover >
+                      <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
+                      <TableCell align="center">{item?.name}</TableCell>
+                      <TableCell align="center">{item?.quantity}</TableCell>
+                      <TableCell align="center">{item?.price.toFixed(2)}</TableCell>
+                      <TableCell align="center">{item?.pp}</TableCell>
+                      <TableCell align="center">
+                        <img src={item.qrcode} width="150px" style={{ float: "right" }} ></img>
+                      </TableCell>
+                      {/* <TableCell>
+                        <input
+                          accept="image/*"
+                          type="file"                
+                          id="contained-button-file"
+                          onChange={(e)=>handleChangeimages(e,index)}
+                          style={{ float: "left" }}
+                          className={classes.selectimage}
+                          multiple
+                        />
+                        <label htmlFor="contained-button-file">
+                          <Button variant="contained" component="span" >
+                            Upload&nbsp;&nbsp;
+                            <CropFreeIcon />
+                          </Button>
+                        </label>
+                        <img src={} width="150px" style={{ float: "right" }} ></img>
+                      </TableCell> */}
+
+
+
                     </TableRow>
-                  ))}
+                  ))
+
+                  }
                 </TableBody>
               </Table>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-   
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+
     </React.Fragment>
   )
 }
@@ -179,7 +250,7 @@ export default function DataPlayer() {
 
 
 
-  
+
 
   const getGroupMember = async () => {
     const user: UsersInterface = JSON.parse(localStorage.getItem("user") || "");
@@ -275,7 +346,6 @@ export default function DataPlayer() {
 
         <Grid container spacing={3} className={classes.root}>
           <Grid item xs={3}>
-            <p>Select Group</p>
             <FormControl fullWidth variant="outlined">
               <Select
                 // value={selectedGroup?.ID || 0}
@@ -309,10 +379,8 @@ export default function DataPlayer() {
                 <TableHead>
                   <TableRow>
                     <StyledTableHead width="1%" />
-                    <StyledTableHead align="center" width="20%">
-                      No.
-                    </StyledTableHead>
-                    <StyledTableHead align="center" width="20%">
+
+                    <StyledTableHead align="center" width="5%">
                       place
                     </StyledTableHead>
                     <StyledTableHead align="center" width="20%">

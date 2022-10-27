@@ -15,6 +15,7 @@ export interface UserDetailsInterface {
     PhoneNumber: string;
     PromtPay: string;
     PriceShutt: number; 
+    Qrcode: string;
 
 }
 
