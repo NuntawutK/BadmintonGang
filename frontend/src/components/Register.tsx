@@ -53,6 +53,12 @@ const useStyles = makeStyles((theme: Theme) =>
       // backgroundImage:`url("https://cdn.dribbble.com/users/427368/screenshots/10977733/media/08c4814eaa402b580cfbc6b3c39011da.png?compress=1&resize=400x300")`,
       opacity: "0.3",
     },
+    text:{
+      [`& fieldset`]:{
+        borderRadius: "20px",
+      }
+    
+    }
   })
 );
 const Alert = (props: AlertProps) => {
@@ -200,6 +206,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Username</p>
           <TextField
+            className={classes.text}
             variant="outlined"
             // label="UserID"
             value={registerlogin.Username}
@@ -211,6 +218,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Password</p>
           <TextField
+            className={classes.text}
             variant="outlined"
             // margin="normal"
             // required
@@ -231,6 +239,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Firstname</p>
           <TextField
+            className={classes.text}
             size = "small"  
             variant="outlined"
             value={registerdetail.FirstName}
@@ -243,6 +252,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Lastname</p>
           <TextField
+            className={classes.text}
             size = "small"
             variant="outlined"
             value={registerdetail.LastName}
@@ -254,6 +264,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>Nickname</p>
           <TextField
+            className={classes.text}
             size = "small"
             variant="outlined"
             value={registerdetail.Nickname}
@@ -266,7 +277,8 @@ export default function AccountInfomation() {
       <Grid container spacing={3} className={classes.root}>
         <Grid item xs={4}>
           <p>Tell</p>
-          <TextField
+          <TextField  
+            className={classes.text}
             size = "small"
             variant="outlined"
             value={registerdetail.PhoneNumber}
@@ -280,6 +292,7 @@ export default function AccountInfomation() {
         <Grid item xs={4}>
           <p>PromtPay</p>
           <TextField
+            className={classes.text}
             size = "small"
             variant="outlined"
             value={registerdetail.PromtPay}
@@ -293,6 +306,7 @@ export default function AccountInfomation() {
           <p>Price/Shuttlecock</p>
 
           <TextField
+            className={classes.text}
             size = "small"
             variant="outlined"
             value={registerdetail.PriceShutt}

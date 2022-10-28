@@ -88,11 +88,6 @@ const StyledTableHead = withStyles((theme) => ({
   },
 }))(TableCell);
 
-
-const Alert = (props: AlertProps) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-};
-
 function Row(props: any) {
   const classes = useStyles();
 
@@ -100,6 +95,8 @@ function Row(props: any) {
   const [openRow, setOpenRow] = React.useState(false);
   const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
+
+  const [Noeventdatashow,setNoeventdatashow] = React.useState(true);
 
   const [data, setdata] = React.useState<DatasummaryInterface[]>([]);
   function getDetailEvent() {
@@ -122,20 +119,6 @@ function Row(props: any) {
       });
   }
 
-
-  const [image, setImage] = useState({ name: "", src: "" });
-  const handleChangeimages = (event: any,id:number) => {
-    const input = event.target.files[id];
-    var reader = new FileReader();
-    reader.readAsDataURL(input)
-    reader.onload = function () {
-      const dataURL = reader.result;
-      setImage({ name: input.name, src: dataURL?.toString() as string });
-    };
-  };
-
-
-
   React.useEffect(() => {
     getDetailEvent()
     const getToken = localStorage.getItem("token");
@@ -152,8 +135,8 @@ function Row(props: any) {
           <IconButton aria-label="expand row" size="medium" onClick={() => setOpenRow(!openRow)}>
             {openRow ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-
         </TableCell>
+
         <TableCell align="center">{event.EventShutt?.Place}</TableCell>
         <TableCell align="center">{moment(event.EventShutt?.TimeStart).format("DD/MM/YYYY hh:mm A")}{" to "}{moment(event.EventShutt?.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
       </TableRow>
@@ -166,63 +149,37 @@ function Row(props: any) {
                 รายละเอียด
               </Typography>
               <Table size="small" aria-label="simple table">
-                <TableHead className={classes.tableHead}>
-                  <TableRow>
-                    <TableCell align="center" width="1%">No.</TableCell>
-                    <TableCell align="center" width="20%">Owner shuttle cock</TableCell>
-                    <TableCell align="center" width="5%">quantity</TableCell>
-                    <TableCell align="center" width="15%">TotalPrice (baht)</TableCell>
-                    {/* <TableCell align="center" > Total price</TableCell> */}
-                    <TableCell align="center" width="20%"> PromtPay</TableCell>
-                    <TableCell align="center" width="20%"> QRcode</TableCell>
-
-
-                    {/* <TableCell align="center">slip</TableCell> */}
+              <TableHead className={classes.tableHead}>
+                <TableRow>
+                  <TableCell align="center" width="1%">No.</TableCell>
+                  <TableCell align="center" width="20%">Owner shuttle cock</TableCell>
+                  <TableCell align="center" width="5%">quantity</TableCell>
+                  <TableCell align="center" width="15%">TotalPrice (baht)</TableCell>
+                  <TableCell align="center" width="20%"> PromtPay</TableCell>
+                  <TableCell align="center" width="20%"> QRcode</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((item: DatasummaryInterface, index: number) => (
+                  <TableRow hover >
+                    <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
+                    <TableCell align="center">{item?.name}</TableCell>
+                    <TableCell align="center">{item?.quantity}</TableCell>
+                    <TableCell align="center">{item?.price.toFixed(2)}</TableCell>
+                    <TableCell align="center">{item?.pp}</TableCell>
+                    <TableCell align="center">
+                      <img src={item.qrcode} width="150px" style={{ float: "right" }} ></img>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* {eventgroupmembershutt?.map((item: EventGroupmemberShuttlecockInterface, index: number) => (
-                    <TableRow key={item.ID} hover >
-                      <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
-                     
-                  ))} */}
-                  {data.map((item: DatasummaryInterface, index: number) => (
-                    <TableRow hover >
-                      <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
-                      <TableCell align="center">{item?.name}</TableCell>
-                      <TableCell align="center">{item?.quantity}</TableCell>
-                      <TableCell align="center">{item?.price.toFixed(2)}</TableCell>
-                      <TableCell align="center">{item?.pp}</TableCell>
-                      <TableCell align="center">
-                        <img src={item.qrcode} width="150px" style={{ float: "right" }} ></img>
-                      </TableCell>
-                      {/* <TableCell>
-                        <input
-                          accept="image/*"
-                          type="file"                
-                          id="contained-button-file"
-                          onChange={(e)=>handleChangeimages(e,index)}
-                          style={{ float: "left" }}
-                          className={classes.selectimage}
-                          multiple
-                        />
-                        <label htmlFor="contained-button-file">
-                          <Button variant="contained" component="span" >
-                            Upload&nbsp;&nbsp;
-                            <CropFreeIcon />
-                          </Button>
-                        </label>
-                        <img src={} width="150px" style={{ float: "right" }} ></img>
-                      </TableCell> */}
+                ))
 
+                }
+              </TableBody>
+            </Table>
+             
 
+              
 
-                    </TableRow>
-                  ))
-
-                  }
-                </TableBody>
-              </Table>
             </Box>
           </Collapse>
         </TableCell>
@@ -311,6 +268,7 @@ export default function DataPlayer() {
     event: React.ChangeEvent<{ value: unknown }>
   ) => {
     setselectGroupMember(groupMember.find(g => g.ID === event.target.value as number))
+    seteventGroupMember([])
   };
 
 
@@ -392,7 +350,7 @@ export default function DataPlayer() {
 
                 <TableBody>
                   {eventgroupMember.map((event: EventGroupMemberInterface) => (
-                    <Row event={event} />
+                    event.EventGroupMemberShuttlecock.length > 0 ? <Row event={event} /> : ""
                   ))}
                 </TableBody>
               </Table>

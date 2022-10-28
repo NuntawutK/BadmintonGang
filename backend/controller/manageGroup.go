@@ -149,6 +149,17 @@ func JoinGroup(c *gin.Context) {
 		return
 	}
 
+	var groupmember entity.GroupMember
+	if tx := entity.DB().Where("member_id = ? AND group_id = ?", member.ID, group.ID).First(&groupmember); tx.RowsAffected != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "joingroup duplicate"})
+		return
+	}
+
+	// if joingroup.CodeGroup == group.CodeGroup {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "joingroup duplicate"})
+	// 	return
+	// }
+
 	createGroupMember := entity.GroupMember{
 		Member: member,
 		Group:  group,

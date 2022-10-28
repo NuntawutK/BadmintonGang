@@ -72,12 +72,16 @@ func DeleteAddshutt(c *gin.Context) {
 
 	var data entity.ShuttleCock
 
-	var eventgroupmembershutt entity.EventGroupMemberShuttlecock
-	if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
-		First(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", id)).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// var eventgroupmembershutt entity.EventGroupMemberShuttlecock
+	// if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
+	// 	First(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", id)).Error; err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	entity.DB().Unscoped().
+		Where("shuttle_cock_id = ?", id).
+		Delete(&entity.EventGroupMemberShuttlecock{})
 
 	sql := "DELETE FROM shuttle_cocks WHERE id = ?"
 	entity.DB().Model(&entity.EventShutt{}).Raw(sql, id).Scan(&data)

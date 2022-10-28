@@ -60,7 +60,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     image: {
       borderRadius: "20px",
+    },
+    text:{
+      [`& fieldset`]:{
+        borderRadius: "20px",
+      }
+    
     }
+
   })
 );
 
@@ -224,6 +231,7 @@ export default function AccountInfomation() {
             size="small"
             variant="outlined"
             value={userdetail.FirstName}
+            className={classes.text}
             disabled
           />
 
@@ -235,7 +243,7 @@ export default function AccountInfomation() {
             size="small"
             variant="outlined"
             value={userdetail.LastName}
-            multiline rows={1}
+            className={classes.text}
             disabled
           />
 
@@ -246,7 +254,7 @@ export default function AccountInfomation() {
             size="small"
             variant="outlined"
             value={userdetail.Nickname}
-            multiline rows={1}
+            className={classes.text}
             disabled
           />
 
@@ -260,6 +268,7 @@ export default function AccountInfomation() {
             id="PhoneNumber"
             variant="outlined"
             value={userdetail.PhoneNumber}
+            className={classes.text}
             disabled={btnDisabled}
             onChange={handleInputChange}
           />
@@ -271,6 +280,7 @@ export default function AccountInfomation() {
             id="PromtPay"
             variant="outlined"
             value={userdetail.PromtPay}
+            className={classes.text}
             disabled={btnDisabled}
             onChange={handleInputChange}
 
@@ -287,6 +297,7 @@ export default function AccountInfomation() {
             // inputProps={{ name: "PriceShutt" }}
             size="small"
             onChange={handleInputChange}
+            className={classes.text}
             disabled={btnDisabled}
             InputProps={{
               startAdornment: <InputAdornment position="start">฿</InputAdornment>,

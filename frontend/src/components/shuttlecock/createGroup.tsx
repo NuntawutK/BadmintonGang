@@ -74,6 +74,12 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       
     },
+    text:{
+      [`& fieldset`]:{
+        borderRadius: "20px",
+      }
+    
+    }
   })
 );
 const Alert = (props: AlertProps) => {
@@ -410,7 +416,7 @@ export default function SelectGroup() {
                       onChange={handleChangeCreateGroup}
                       label=""
                       variant="outlined"
-                      //className ={classes.fullbox}
+                      className={classes.text}
                       multiline
                       rows={1}
                     />

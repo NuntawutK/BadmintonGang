@@ -17,10 +17,9 @@ import { MenuItem } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { IconButton } from "@material-ui/core";
 import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-
 import DateFnsUtils from "@date-io/date-fns";
 import moment from "moment";
-
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 //Table
 import Table from '@material-ui/core/Table';
@@ -44,6 +43,7 @@ import { group } from "console";
 import { useParams } from 'react-router-dom';
 import { EventShuttInterface } from "../../models/IEvent";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
+import shuttlecock2 from "../image/shuttlecock.png"
 
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,7 +58,11 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(1),
     },
 
-    paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
+    paper: { 
+      padding: theme.spacing(2), 
+      color: theme.palette.text.secondary,
+
+    },
 
     table: { minWidth: 20 },
 
@@ -81,6 +85,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     tableCellDisabled: {
       color: "gray",
+    },
+    text:{
+      [`& fieldset`]:{
+        borderRadius: "20px",
+      }
+    
+    },
+    checkbox:{
+      [`& .MuiSvgIcon-root`]:
+      {
+        borderRadius: "20px"
+      }
     }
   })
 );
@@ -420,7 +436,7 @@ export default function CreateEvent() {
                     onChange={handleChange}
                     label=""
                     variant="outlined"
-                    //className ={classes.fullbox}
+                    className ={classes.text}
                     multiline
                     rows={1}
                   />
@@ -485,6 +501,7 @@ export default function CreateEvent() {
                       <TableRow key={item.ID} >
                         <TableCell padding="checkbox" align="center" >
                           <Checkbox
+                           
                             checked={isItemSelected}
                             onClick={(event) => handleClick(event, item.ID)}
                             disabled={item.ID === groupMember.find((m: GroupMemberInterface) => m.Member.ID === user?.ID)?.ID}

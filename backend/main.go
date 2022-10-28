@@ -50,6 +50,7 @@ func main() {
 			protected.GET("/sum/groupmember/:groupid", controller.Summaryeventgroupbyid)
 			protected.GET("/sum/eventshutt/:eventid", controller.Summaryeventbyid)
 			protected.GET("/status/eventshutt/:eventid", controller.Statuseventbyid)
+			protected.GET("/groupeventshutt/:group", controller.ListEventmembershuttbyidgroup)
 
 			protected.PATCH("/updateaccount", controller.UpdateAccount)
 			protected.PATCH("/listevent/membernotingroup/:event", controller.UpdateMemberIntoEvent)

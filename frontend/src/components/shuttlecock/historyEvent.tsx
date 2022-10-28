@@ -237,6 +237,7 @@ export default function Dashboard() {
         setselectedshutt(showEventshuttmembergroup?.ShuttleCock[index] as Partial<ShuttleCockInterface>)
     }
 
+    console.log(selectedshutt)
 
     const navigate = useNavigate();
 

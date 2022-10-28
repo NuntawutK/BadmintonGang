@@ -80,6 +80,12 @@ const useStyles = makeStyles((theme) => ({
     background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
 
   },
+  text:{
+    [`& fieldset`]:{
+      borderRadius: "20px",
+    }
+  
+  }
   
   
   
@@ -183,6 +189,7 @@ function SignIn() {
             value={signin.Username || ""}
             onChange={handleInputChange}
             onKeyDown={keyPressEnter}
+            className={classes.text}
           />
           <TextField
             variant="outlined"
@@ -197,6 +204,7 @@ function SignIn() {
             value={signin.Password || ""}
             onChange={handleInputChange}
             onKeyDown={keyPressEnter}
+            className={classes.text}
           />
           <Button
             fullWidth

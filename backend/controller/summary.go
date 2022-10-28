@@ -114,9 +114,11 @@ func Summaryeventbyid(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// fmt.Println(username)
-	// fmt.Println(len(eventshutt.ShuttleCock))
+	var eventgroupmember entity.EventGroupMember
+	if tx := entity.DB().Raw("SELECT * FROM event_group_members WHERE event_shutt_id = ?", eventshutt.ID).Find(&eventgroupmember); tx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+		return
+	}
 
 	var user entity.UserLogin
 	if tx := entity.DB().Raw("SELECT * FROM user_logins WHERE username = ?", username).Find(&user); tx.RowsAffected == 0 {
@@ -130,7 +132,6 @@ func Summaryeventbyid(c *gin.Context) {
 		return
 	}
 
-	// fmt.Println(member.UserDetail.FirstName)
 	type Group struct {
 		Name     string  `json:"name"`
 		Quantity int     `json:"quantity"`
@@ -139,78 +140,38 @@ func Summaryeventbyid(c *gin.Context) {
 		PromtPay string  `json:"pp"`
 	}
 
-	// type Data struct {
-	// 	Group    []Group    `json:"Group"`
-	//   }
-
 	data := []Group{}
-	// data := make(map[string]float64)
 	quan := 1
-	for _, item1 := range eventshutt.ShuttleCock {
-		for _, item2 := range item1.EventGroupMemberShuttlecock {
-			if item2.EventGroupMember.GroupMember.Member.UserDetail.FirstName == member.UserDetail.FirstName {
+	for _, itemA := range eventshutt.EventGroupMember {
+		if itemA.GroupMember.Member.UserDetail.FirstName != member.UserDetail.FirstName {
+			continue
+		} else {
+			for _, item1 := range eventshutt.ShuttleCock {
+				for _, item2 := range item1.EventGroupMemberShuttlecock {
+					if item2.EventGroupMember.GroupMember.Member.UserDetail.FirstName == member.UserDetail.FirstName {
+						check := false
+						for i := 0; i < len(data); i++ {
+							if data[i].Name == item1.Member.UserDetail.FirstName {
+								data[i].Price += ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock))))
+								data[i].Quantity += 1
+								check = true
+								fmt.Println(quan)
+							}
 
-				check := false
-				for i := 0; i < len(data); i++ {
-					// fmt.Println("--", data[i].Name)
-					if data[i].Name == item1.Member.UserDetail.FirstName {
-						data[i].Price += ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock))))
-						data[i].Quantity += 1
-						check = true
-						fmt.Println(quan)
+						}
+						if !check {
+							group := Group{Name: item1.Member.UserDetail.FirstName, Quantity: 1, Price: ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock)))), Qrcode: item1.Member.UserDetail.Qrcode, PromtPay: item1.Member.UserDetail.PromtPay}
+							data = append(data, group)
+						}
 					}
 
 				}
-				if !check {
-					group := Group{Name: item1.Member.UserDetail.FirstName, Quantity: 1, Price: ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock)))), Qrcode: item1.Member.UserDetail.Qrcode, PromtPay: item1.Member.UserDetail.PromtPay}
-					data = append(data, group)
-				}
+
 			}
+
 		}
-		// fmt.Println(data)
 
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
-
-	// for _, item := range
-
-	// var event entity.EventShutt
-	// if err := entity.DB().Model(&entity.EventShutt{}).
-	// 	First(&event, entity.DB().Where("id = ?", idevent)).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// var shuttlecock entity.ShuttleCock
-	// if err := entity.DB().Model(&entity.ShuttleCock{}).
-	// 	First(&shuttlecock, entity.DB().Where("event_shutt_id = ?", event.ID)).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// var eventgroupmembershutt []entity.EventGroupMemberShuttlecock
-	// if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
-	// 	Preload("ShuttleCock.Member.").
-	// 	Preload("ShuttleCock.Member.UserDetail").
-	// 	Preload("EventGroupMember.EventShutt.ShuttleCock.Member").
-	// 	Preload("EventGroupMember.EventShutt.ShuttleCock.Member.UserDetail").
-	// 	Preload("EventGroupMember.GroupMember").
-	// 	Preload("EventGroupMember.GroupMember.Member").
-	// 	Preload("EventGroupMember.GroupMember.Member.UserDetail").
-	// 	Find(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", shuttlecock.ID)).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, gin.H{"data": eventshutt})
-
 }
-
-// if err := entity.DB().Model(&entity.ShuttleCock{}).
-// 	Preload("Member").
-// 	Preload("Member.UserDetail").
-// 	Find(&shuttlecock, entity.DB().Where("event_shutt_id = ?", event.ID)).Error; err != nil {
-// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 	return
-
-// }
