@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { makeStyles, Theme, createStyles, ThemeProvider, createTheme } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -8,33 +7,12 @@ import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
-
-//Table
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import EditIcon from '@material-ui/icons/Edit';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import SaveIcon from '@material-ui/icons/Save';
-import { Details } from "@material-ui/icons";
-//import { stringify } from "querystring";
-
-import moment from "moment";
 import CropFreeIcon from '@material-ui/icons/CropFree';
-import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
-import { MembersInterface, UserDetailsInterface, UserRolesInterface } from "../models/IUser";
-import { UsersInterface } from "../models/ISignIn";
-import { isDisabled } from "@testing-library/user-event/dist/utils";
+import { MembersInterface, UserDetailsInterface } from "../models/IUser";
 
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
@@ -82,17 +60,9 @@ const Alert = (props: AlertProps) => {
 export default function AccountInfomation() {
 
   const classes = useStyles();
-  // const theme = createTheme();
-
   const [userdetail, setuserdetail] = React.useState<Partial<UserDetailsInterface>>({});
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
-
-
-
-  const [trigger, setTrigger] = useState(0);
-
-
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -175,9 +145,6 @@ export default function AccountInfomation() {
         setuserdetail({ ...userdetail, [name]: dataURL?.toString() });
       }
     };
-    // if (id === "Qrcode") {
-    //   setuserdetail({ ...userdetail, [idimage]: input });
-    // }
   };
 
 
@@ -190,8 +157,6 @@ export default function AccountInfomation() {
 
 
   return (
-
-    // <ThemeProvider theme = {theme}>
     <Container className={classes.container} maxWidth="sm">
       <Snackbar open={success} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
@@ -286,41 +251,17 @@ export default function AccountInfomation() {
           />
 
         </Grid>
-        {/* <Grid item xs={4}>
-          <p>Price/Shuttlecock</p>
-
-          <TextField
-            id="PriceShutt"
-            variant="outlined"
-            value={userdetail.PriceShutt}
-            // inputProps={{ name: "PriceShutt" }}
-            size="small"
-            onChange={handleInputChange}
-            className={classes.text}
-            disabled={btnDisabled}
-            InputProps={{
-              startAdornment: <InputAdornment position="start">฿</InputAdornment>,
-            }}
-
-
-          />
-
-        </Grid> */}
         <Grid item xs={6}>
           <p>Upload Qrcode</p>
           <input
             accept="image/*"
-            type="file"
-            // name="file"
-            // id="Qrcode"
+            type="file"       
             id="Qrcode"
             name="Qrcode"
-            // placeholder="Upload an image"
             onChange={handleChangeimages}
             style={{ float: "left" }}
             disabled={btnDisabled}
             className={classes.selectimage}
-            // multiple
           />
           <label htmlFor="Qrcode">
             <Button variant="contained" component="span" disabled={btnDisabled}>
@@ -333,10 +274,8 @@ export default function AccountInfomation() {
           <img src={userdetail?.Qrcode} width="150px" style={{ float: "right" }} className={classes.image}></img>
         </Grid>
       </Grid>
-      {/* <img src= {image.src}  width="50px" ></img> */}
       <br />
       <br />
-
       <Grid item xs={12}>
         <Button
           style={{ float: "right" }}
@@ -362,18 +301,7 @@ export default function AccountInfomation() {
         </Button>
 
       </Grid>
-
-
-
-
-
-
-
-
-
-
     </Container>
-    // </ThemeProvider>
 
   );
 }
