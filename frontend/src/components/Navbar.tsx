@@ -1,45 +1,23 @@
 import React, { useState } from "react";
-
-// import { makeStyles } from "@material-ui/core/styles";
-
 import AppBar from "@material-ui/core/AppBar";
-
 import Toolbar from "@material-ui/core/Toolbar";
-
 import Typography from "@material-ui/core/Typography";
-
 import IconButton from "@material-ui/core/IconButton";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import GroupIcon from '@material-ui/icons/Group';
-import { Link } from "react-router-dom";
-
 import { Link as RouterLink } from "react-router-dom";
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-
-import PersonPinIcon from "@material-ui/icons/PersonPin";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import HomeIcon from '@material-ui/icons/Home';
-import Button from '@material-ui/core/Button';
 import Box from "@material-ui/core/Box";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import SportsTennisIcon from '@material-ui/icons/SportsTennis';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import StorageIcon from '@material-ui/icons/Storage';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import { UsersInterface } from "../models/ISignIn";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import { WatchDirectoryFlags } from "typescript";
-
-const drawerWidth = 240;
-
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {

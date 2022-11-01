@@ -8,34 +8,12 @@ import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
-
-//Table
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-
-
-import { Details } from "@material-ui/icons";
-//import { stringify } from "querystring";
-
-import moment from "moment";
-
 import { MembersInterface, UserDetailsInterface, UserRolesInterface } from "../models/IUser";
-import { UsersInterface, SigninInterface } from "../models/ISignIn";
+import { SigninInterface } from "../models/ISignIn";
 
 const useStyles = makeStyles((theme: Theme) =>
-  //การกำหนดลักษณะ
-
-
   createStyles({
     root: { flexGrow: 1 },
 
@@ -50,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) =>
     tableSpace: { marginTop: 20 },
 
     image:{
-      // backgroundImage:`url("https://cdn.dribbble.com/users/427368/screenshots/10977733/media/08c4814eaa402b580cfbc6b3c39011da.png?compress=1&resize=400x300")`,
       opacity: "0.3",
     },
     text:{
@@ -67,11 +44,8 @@ const Alert = (props: AlertProps) => {
 
 export default function AccountInfomation() {
   const classes = useStyles();
-  // const [Detail, setDetail] = React.useState<Partial<UserDetailsInterface>>();
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
-
-  const [register, setregister] = React.useState<Partial<MembersInterface>>({});
   const [registerlogin, setregisterlogin] = React.useState<Partial<SigninInterface>>({
     Username: "",
     Password: "",
@@ -85,8 +59,6 @@ export default function AccountInfomation() {
   });
   const [errorMessage, setErrorMassage] = useState("");
 
-
-  const [role, setrole] = React.useState<UserRolesInterface[]>([]);
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -101,9 +73,6 @@ export default function AccountInfomation() {
     const { value } = event.target;
     const { dis } = event.target.value;
     setregisterlogin({ ...registerlogin, [id]: value });
-
-    // setBtnDisabled(!value)
-
   };
 
   const handleInputChangedetail = (event: React.ChangeEvent<{ id?: string; value: any }>) => {
@@ -111,7 +80,6 @@ export default function AccountInfomation() {
     const { value } = event.target;
     const { dis } = event.target.value;
     setregisterdetail({ ...registerdetail, [id]: value });
-    // setBtnDisabled(!value)
   };
 
 
@@ -206,7 +174,6 @@ export default function AccountInfomation() {
           <TextField
             className={classes.text}
             variant="outlined"
-            // label="UserID"
             value={registerlogin.Username}
             onChange={handleInputChangelogin}
             id="Username"
@@ -218,10 +185,7 @@ export default function AccountInfomation() {
           <TextField
             className={classes.text}
             variant="outlined"
-            // margin="normal"
-            // required
             name="Password"
-            // label="Password"
             type="password"
             id="Password"
             autoComplete="current-password"
