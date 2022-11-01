@@ -6,21 +6,13 @@ import Container from "@material-ui/core/Container";
 import { Box, Paper, Select } from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
-//import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-// import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
 import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import { IconButton } from "@material-ui/core";
 import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import moment from "moment";
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-
 //Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -28,23 +20,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 
-
-import { GroupInterface } from "../../models/IGroup";
 import { GroupMemberInterface } from "../../models/IGroupMember";
-import { UserDetailsInterface } from "../../models/IUser";
-// import { JoinGroupInterface } from "../../models/IjoinGroup";
-import { MembersInterface } from "../../models/IUser";
 import { UsersInterface } from "../../models/ISignIn";
-import { group } from "console";
-
 import { useParams } from 'react-router-dom';
 import { EventShuttInterface } from "../../models/IEvent";
-import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
-import shuttlecock2 from "../image/shuttlecock.png"
-
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 const useStyles = makeStyles((theme: Theme) =>
   //การกำหนดลักษณะ
@@ -58,8 +39,8 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(1),
     },
 
-    paper: { 
-      padding: theme.spacing(2), 
+    paper: {
+      padding: theme.spacing(2),
       color: theme.palette.text.secondary,
 
     },
@@ -86,16 +67,18 @@ const useStyles = makeStyles((theme: Theme) =>
     tableCellDisabled: {
       color: "gray",
     },
-    text:{
-      [`& fieldset`]:{
+    text: {
+      [`& fieldset`]: {
         borderRadius: "20px",
+        borderWidth: "3px",
       }
-    
+
     },
-    checkbox:{
+    checkbox: {
       [`& .MuiSvgIcon-root`]:
       {
         borderRadius: "20px"
+        
       }
     }
   })
@@ -108,21 +91,13 @@ const Alert = (props: AlertProps) => {
 export default function CreateEvent() {
   const classes = useStyles();
   const [showEvent, setShowEvent] = React.useState<EventShuttInterface[]>([]);
-
-  // const [Detail, setDetail] = React.useState<Partial<UserDetailsInterface>>();
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
   const [sentEvent, setSentEvent] = React.useState<Partial<EventShuttInterface>>({
     Place: "",
 
   });
-  // const [sentEvent,setsentEvent] = React.useState<Partial<JoinEventInterface>>({});
-
-
 
   const [msg, setMsg] = useState<string>("");
-
-  // const [ShowjoinGroup, setShowjoinGroup] = React.useState<JoinGroupInterface[]>([]);
-
   const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
   const [selected, setSelected] = React.useState<number[]>([
@@ -169,10 +144,6 @@ export default function CreateEvent() {
       ...sentEvent,
       [name]: event.target.value,
     });
-    //การล็อค หน่วยกิตตามใบลงทะเบียนเรียน
-    // if (event.target.name === "RegistrationID") {
-    //   setReg(Registration.find((r) => r.ID === event.target.value));
-    // }
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, item: number) => {
@@ -234,7 +205,6 @@ export default function CreateEvent() {
 
 
   const getEventMember = async () => {
-    // const event: Ebe = JSON.parse(localStorage.getItem("user") || "");
 
     const apiUrl = `http://localhost:8080/listevent/${id}`;
 
@@ -286,10 +256,6 @@ export default function CreateEvent() {
       Place: sentEvent?.Place,
       TimeStart: selectedDateTimestart,
       TimeStop: selectedDateTimestop,
-      // ShuttleCock: [{ 
-      //   Code: makeid(6),
-      //   MemberID: user?.ID,
-      // }],
       EventGroupMember: payload,
       GroupID: Number(id),
     };
@@ -313,6 +279,8 @@ export default function CreateEvent() {
           setSuccess(true);
           setMsg("Create Event success")
           setErrorMassage("")
+          window.location.href = "/manageEvent/"+id
+          
         } else {
           console.log(res.error)
           setError(true);
@@ -392,7 +360,7 @@ export default function CreateEvent() {
           <br />
           <br />
           <Divider />
-          
+
 
         </Grid>
 
@@ -402,23 +370,23 @@ export default function CreateEvent() {
 
         <br />
         <Grid item xs={12}>
-            <Button
-              component={RouterLink}
-              to={"/manageEvent/" + id}
-              variant="contained"
-              color="secondary"
-              style={{ float: "right" }}
-            >
-              manage event
-            </Button>
+          <Button
+            component={RouterLink}
+            to={"/manageEvent/" + id}
+            variant="contained"
+            color="secondary"
+            style={{ float: "right" }}
+          >
+            manage event
+          </Button>
 
-          </Grid>
+        </Grid>
         <br />
 
         <Grid container item xs={12} spacing={3} className={classes.root} style={{ marginTop: 5 }}>
           <Grid item xs={12}>
             <Typography className={classes.typoHeader} variant="subtitle2">
-            
+
               GROUP NAME : {groupMember[0]?.Group?.NameGroup}
 
 
@@ -436,7 +404,7 @@ export default function CreateEvent() {
                     onChange={handleChange}
                     label=""
                     variant="outlined"
-                    className ={classes.text}
+                    className={classes.text}
                     multiline
                     rows={1}
                   />
@@ -501,7 +469,7 @@ export default function CreateEvent() {
                       <TableRow key={item.ID} >
                         <TableCell padding="checkbox" align="center" >
                           <Checkbox
-                           
+
                             checked={isItemSelected}
                             onClick={(event) => handleClick(event, item.ID)}
                             disabled={item.ID === groupMember.find((m: GroupMemberInterface) => m.Member.ID === user?.ID)?.ID}
@@ -527,10 +495,11 @@ export default function CreateEvent() {
 
           <Grid item xs={12}>
             <Button
+              
               style={{ float: "right" }}
               onClick={submit}
               variant="contained"
-              color="primary"
+              color="secondary"
               disabled={(sentEvent.Place === "")}
             >
               Create EVENT

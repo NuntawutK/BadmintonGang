@@ -44,12 +44,12 @@ func main() {
 			protected.GET("/listevent/:group", controller.ListEventShuttleCock)
 			protected.GET("/listevent/membernotingroup/:event", controller.ListMemberNotInEventShuttleCock)
 			protected.GET("/eventmember/:eventid", controller.EventMember)
+			protected.GET("/ownershutt/:eventid/:memberid/:price", controller.ListOwnerShutt)
 			protected.GET("/summarizeevent/:eventid", controller.ListEventshuttbyid)
 			protected.GET("/summarizegroupmembershuttlecockevent/:eventid", controller.ListEventmembershuttgroupbyid)
 			protected.GET("/summarizegroupownershuttlecockevent/:eventid", controller.ListEventownershuttgroupbyid)
 			protected.GET("/sum/groupmember/:groupid", controller.Summaryeventgroupbyid)
 			protected.GET("/sum/eventshutt/:eventid", controller.Summaryeventbyid)
-			protected.GET("/status/eventshutt/:eventid", controller.Statuseventbyid)
 			protected.GET("/groupeventshutt/:group", controller.ListEventmembershuttbyidgroup)
 
 			protected.PATCH("/updateaccount", controller.UpdateAccount)

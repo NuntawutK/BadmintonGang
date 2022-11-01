@@ -4,22 +4,16 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Box, Paper, Select } from "@material-ui/core";
-import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
 import { EventGroupMemberInterface } from "../../models/IEventGroupMember";
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 //Table
-import Popover from '@material-ui/core/Popover';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -29,15 +23,11 @@ import TableRow from '@material-ui/core/TableRow';
 import { EventShuttInterface } from "../../models/IEvent";
 import { useParams } from "react-router-dom";
 import { GroupInterface } from "../../models/IGroup";
-// import { EmployeesInterface } from "../../models/IUser";
 import { GroupMemberInterface } from "../../models/IGroupMember";
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import { Details } from "@material-ui/icons";
-//import { stringify } from "querystring";
 import { ShuttleCockInterface } from "../../models/IShuttleCock";
 import GroupAddOutlinedIcon from '@material-ui/icons/GroupAddOutlined';
 import moment from "moment";
-import id from "date-fns/locale/id";
 import Menu from "@material-ui/core/Menu";
 import Checkbox from '@material-ui/core/Checkbox';
 import AddIcon from '@material-ui/icons/Add';
@@ -54,7 +44,6 @@ import { EventGroupmemberShuttlecockInterface } from "../../models/IEventGroupMe
 
 
 const useStyles = makeStyles((theme: Theme) =>
-  //การกำหนดลักษณะ
   createStyles({
     root: { flexGrow: 1 },
 
@@ -103,8 +92,6 @@ const Alert = (props: AlertProps) => {
 
 export default function ManageEvent() {
   const classes = useStyles();
-
-  // Get User and Role from localStorage
   const [user, setUser] = React.useState<UsersInterface>();
   const [role, setRole] = useState("");
 
@@ -121,7 +108,9 @@ export default function ManageEvent() {
   const [anchorEl, setAnchorEl] = useState<(null | HTMLElement)[]>([]);
   const [anchorEl2, setAnchorEl2] = useState<(null | HTMLElement)[]>([]);
 
-
+  const [addshutt, setaddshutt] = React.useState<Partial<ShuttleCockInterface>>({
+    Price:0,
+  });
 
 
   const [msg, setMsg] = useState<string>("");
@@ -252,13 +241,24 @@ export default function ManageEvent() {
     let newAnchorEl2 = [...anchorEl2];
     newAnchorEl2[index] = null;
     setAnchorEl2(newAnchorEl2);
-    setselectedshutt({EventGroupMemberShuttlecock: []})
+    setselectedshutt({ EventGroupMemberShuttlecock: [] })
+    setaddshutt({Price:0});
+
   }
+
+
+  const handleChangeAddshuttlecock = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    const name = event.target.name as keyof typeof addshutt;
+    setaddshutt({
+      ...addshutt,
+      [name]: event.target.value,
+    });
+  };
   const { id } = useParams()
 
   const getEventMember = async () => {
-    // const event: Ebe = JSON.parse(localStorage.getItem("user") || "");
-
     const apiUrl = `http://localhost:8080/listevent/${id}`;
 
     const requestOptions = {
@@ -284,20 +284,7 @@ export default function ManageEvent() {
       });
   };
 
-  // const [selectedeventshutt, setselectedeventshutt] = React.useState<Partial<ShuttleCockInterface>>({ 
-  //   EventGroupMemberShuttlecock: [] 
-  // }
-  // );
-
-  // const ShowmemberofShutt = (shutt: number, event: number) => {
-  //   setselectedeventshutt(showEventowneradndmembershutt[event]?.ShuttleCock[shutt] as Partial<ShuttleCockInterface>)
-  // }
-
-
-  // const [selectedeventshutt, setselectedeventshutt] = React.useState<Partial<EventShuttInterface>>({ 
-  //   ShuttleCock: [] 
-  // }
-  // );
+  
 
   const [selectedshutt, setselectedshutt] = React.useState<Partial<ShuttleCockInterface>>({
     EventGroupMemberShuttlecock: []
@@ -306,13 +293,9 @@ export default function ManageEvent() {
 
   const ShowmemberofShutt = (shutt: number, event: number) => {
     setselectedshutt(showEventowneradndmembershutt[event].ShuttleCock[shutt] as Partial<ShuttleCockInterface>)
-    // setselectedshutt(selectedeventshutt?.ShuttleCock[shutt])
   }
 
-  // console.log(selectedeventshutt)
   const getEventgroup = async () => {
-    // const event: Ebe = JSON.parse(localStorage.getItem("user") || "");
-
     const apiUrl = `http://localhost:8080/groupeventshutt/${id}`;
 
     const requestOptions = {
@@ -497,6 +480,7 @@ export default function ManageEvent() {
     }
 
     let data = {
+      Price: Number(addshutt?.Price),
       Code: makeid(6),
       EventShuttID: Event,
       MemberID: selectedOwnershutt[0],
@@ -540,12 +524,19 @@ export default function ManageEvent() {
   }
 
   const submitMemberNotInEvent = (eventId: number) => {
+
+
     let payload: any[] = [];
     selected.forEach((item: number) => {
       payload.push({
         GroupMemberID: item
       });
     });
+    if (payload.length === 0) {
+      setIsItemEmpty(true);
+      setErrorMassage("Did not select members or did not have members")
+      return
+    }
     console.log(payload);
     const apiUrl = `http://localhost:8080/listevent/membernotingroup/${eventId}`;
 
@@ -565,6 +556,7 @@ export default function ManageEvent() {
         console.log(res);
         if (res.data) {
           setSuccess(true);
+          setMsg("Add Member success")
           setTrigger(trigger + 1);
           setSelected([]);
           getMemberNotInEventMember(eventId);
@@ -589,7 +581,6 @@ export default function ManageEvent() {
     getEventgroup();
   }, [trigger]);
 
-  // console.log(anchorEl);
 
 
   return (
@@ -614,7 +605,7 @@ export default function ManageEvent() {
 
           <Typography variant="h6">
 
-            <h3>GroupName : {group?.NameGroup}</h3>
+            <h3>Group name : {group?.NameGroup}</h3>
 
 
           </Typography>
@@ -715,10 +706,10 @@ export default function ManageEvent() {
                                 <Table className={classes.tableshutt} aria-label="simple table">
                                   <TableHead>
                                     <TableRow>
-                                      <TableCell align="left" width="5%">
+                                      <TableCell align="left" width="1%">
                                         No.
                                       </TableCell>
-                                      <TableCell align="left" width="8%">
+                                      <TableCell align="left" width="20%">
                                         Name
                                       </TableCell>
                                       <TableCell align="left" width="5%">
@@ -770,7 +761,6 @@ export default function ManageEvent() {
                                             <Checkbox
                                               checked={isItemSelected}
                                               onClick={(event) => handleClick(event, item.ID)}
-                                            // inputProps={{ 'aria-label': 'primary checkbox' }}
                                             />
 
                                           </TableCell>
@@ -807,11 +797,7 @@ export default function ManageEvent() {
 
                   <TableCell align="center">
                     <Box flexGrow={1}>
-                      <Button
-                        // component={RouterLink}
-                        // to={"/memberinevent"}
-                        // variant="contained"
-
+                      <Button                    
                         onClick={(e) => handleMenuCodeShuttlecock(e, indexA, item.ID)}
                         aria-haspopup="true"
                         color="secondary"
@@ -840,9 +826,31 @@ export default function ManageEvent() {
                             <Grid item xs={12}>
                               <Typography variant="subtitle1" noWrap>
                                 <p>Add ShuttleCock</p>
+                                <TextField
+                                        id="Price"
+                                        type="string"
+                                        inputProps={{ name: "Price" }}
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
+                                        InputProps={{
+                                          endAdornment: <InputAdornment position="end">฿</InputAdornment>,
+                                        }}
+                                        label="Price/Shuttlecock"
+                                        variant="outlined"
+                                        onChange={handleChangeAddshuttlecock}
+                                        value={addshutt.Price}
+                                        className={classes.text}                                      
+                                        rows={1}
+                                      />
+                                      <br/>
+                                      <br/>
+                                      
                                 <TableContainer component={Paper} className={classes.tableContainer}>
                                   <Table stickyHeader>
+                                    
                                     <TableHead className={classes.tableHead}>
+                                    
                                       <TableRow>
                                         <TableCell width="5%" align="center">OwnerShutt</TableCell>
                                         <TableCell width="5%" align="center">Member</TableCell>
@@ -903,7 +911,7 @@ export default function ManageEvent() {
 
                                 <TableContainer component={Paper} className={classes.tableContainer}>
                                   <Table stickyHeader size="small">
-                                    <TableHead className={classes.tableHead2}>
+                                    <TableHead className={classes.tableHead2}>                                 
                                       <TableRow>
                                         <TableCell width="5%" align="left">Name</TableCell>
                                         <TableCell width="5%" align="left">Member</TableCell>

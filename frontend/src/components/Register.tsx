@@ -82,7 +82,6 @@ export default function AccountInfomation() {
     Nickname: "",
     PhoneNumber: "",
     PromtPay: "",
-    PriceShutt: 0,
   });
   const [errorMessage, setErrorMassage] = useState("");
 
@@ -128,7 +127,6 @@ export default function AccountInfomation() {
         Nickname: registerdetail.Nickname,
         PhoneNumber: registerdetail.PhoneNumber,
         PromtPay: registerdetail.PromtPay,
-        PriceShutt: Number(registerdetail.PriceShutt),
       },
 
 
@@ -154,7 +152,7 @@ export default function AccountInfomation() {
           setErrorMassage(res.error)
           if (res.error == "UNIQUE constraint failed: members.user_login_id") {
             setErrorMassage("user duplicate")
-          } else {
+          }else {
             setErrorMassage(res.error)
           }
 
@@ -302,19 +300,7 @@ export default function AccountInfomation() {
           />
 
         </Grid>
-        <Grid item xs={4}>
-          <p>Price/Shuttlecock</p>
-
-          <TextField
-            className={classes.text}
-            size = "small"
-            variant="outlined"
-            value={registerdetail.PriceShutt}
-            onChange={handleInputChangedetail}
-            id="PriceShutt"
-          />
-
-        </Grid>
+       
       </Grid>
       <br />
       <br />
@@ -338,8 +324,7 @@ export default function AccountInfomation() {
             registerdetail.LastName === "" ||
             registerdetail.Nickname === "" ||
             registerdetail.PhoneNumber === "" ||
-            registerdetail.PromtPay === "" ||
-            registerdetail.PriceShutt === 0}
+            registerdetail.PromtPay === "" }
           onClick={submitRegister}
         >
           Register

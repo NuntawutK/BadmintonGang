@@ -146,15 +146,15 @@ function Row(props: any) {
           <Collapse in={openRow} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
-                รายละเอียด
+                Details
               </Typography>
               <Table size="small" aria-label="simple table">
               <TableHead className={classes.tableHead}>
                 <TableRow>
                   <TableCell align="center" width="1%">No.</TableCell>
-                  <TableCell align="center" width="20%">Owner shuttle cock</TableCell>
-                  <TableCell align="center" width="5%">quantity</TableCell>
-                  <TableCell align="center" width="15%">TotalPrice (baht)</TableCell>
+                  <TableCell align="center" width="20%">Owner shuttlecock</TableCell>
+                  <TableCell align="center" width="1%">quantity</TableCell>
+                  <TableCell align="center" width="10%">TotalPrice (baht)</TableCell>
                   <TableCell align="center" width="20%"> PromtPay</TableCell>
                   <TableCell align="center" width="20%"> QRcode</TableCell>
                 </TableRow>
@@ -163,7 +163,7 @@ function Row(props: any) {
                 {data.map((item: DatasummaryInterface, index: number) => (
                   <TableRow hover >
                     <TableCell component="th" scope="row" align="center">{index + 1}</TableCell>
-                    <TableCell align="center">{item?.name}</TableCell>
+                    <TableCell align="center">{item?.name}{" "}{item.lastname}<br/>{" ("}{item.nickname}{")"}</TableCell>
                     <TableCell align="center">{item?.quantity}</TableCell>
                     <TableCell align="center">{item?.price.toFixed(2)}</TableCell>
                     <TableCell align="center">{item?.pp}</TableCell>
@@ -303,7 +303,7 @@ export default function DataPlayer() {
         </Box>
 
         <Grid container spacing={3} className={classes.root}>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <FormControl fullWidth variant="outlined">
               <Select
                 // value={selectedGroup?.ID || 0}

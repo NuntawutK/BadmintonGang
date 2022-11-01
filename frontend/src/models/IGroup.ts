@@ -11,9 +11,6 @@ export interface GroupInterface {
     CreatedMemberID: number;
     CreatedMember: MembersInterface;
 
-    Members: MembersInterface[];
-
-    // GroupMember: GroupMemberInterface[];
-    
+    Members: MembersInterface[];    
 
 }

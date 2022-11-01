@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Box, Paper, Select } from "@material-ui/core";
-import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import FormControl from "@material-ui/core/FormControl";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
-import { Snackbar } from "@material-ui/core";
 import { MenuItem } from "@material-ui/core";
 
 //Table
@@ -22,18 +14,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { useParams } from "react-router-dom";
 
 import { GroupInterface } from "../../models/IGroup";
-// import { EmployeesInterface } from "../../models/IUser";
 import { UsersInterface } from "../../models/ISignIn";
-
-import { Details } from "@material-ui/icons";
-//import { stringify } from "querystring";
-
-import moment from "moment";
 import { GroupMemberInterface } from "../../models/IGroupMember";
-import { MembersInterface } from "../../models/IUser";
 import { group } from "console";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -62,10 +46,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-const Alert = (props: AlertProps) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-};
-
 export default function DataPlayer() {
   const classes = useStyles();
   // List group by member id
@@ -142,7 +122,6 @@ export default function DataPlayer() {
 
 
   useEffect(() => {
-    // getGroup();
     getGroupMember();
   }, []);
 
@@ -169,13 +148,10 @@ export default function DataPlayer() {
       </Box>
       <Grid container spacing={3} className={classes.root}>
 
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <FormControl fullWidth variant="outlined">
-            <Select
-              // value={selectedGroup?.ID || 0}
-              //เปลี่ยนค่าที่รับเข้ามาจาก Value
+            <Select             
               onChange={handleChange}
-              //กำหนดให้ value
               inputProps={{
                 name: "ID",
               }}
@@ -219,10 +195,6 @@ export default function DataPlayer() {
                 PromptPay
               </TableCell>
 
-              <TableCell align="center" width="10%">
-                Price/Shutt.
-              </TableCell>
-
               <TableCell align="center" width="7%">
                 Tell
               </TableCell>
@@ -237,7 +209,6 @@ export default function DataPlayer() {
                 <TableCell align="center">{item.Member.UserDetail.LastName}</TableCell>
                 <TableCell align="center">{item.Member.UserDetail.Nickname}</TableCell>
                 <TableCell align="center">{item.Member.UserDetail.PromtPay}</TableCell>
-                <TableCell align="center">{item.Member.UserDetail.PriceShutt}</TableCell>
                 <TableCell align="center">{item.Member.UserDetail.PhoneNumber}</TableCell>
               </TableRow>
             ))}

@@ -3,7 +3,6 @@ package controller
 import (
 	"net/http"
 
-	// "github.com/asaskevich/govalidator"
 	"github.com/Sakeezt/Badminton/backend/entity"
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -62,15 +61,6 @@ func GetGroupByPlayer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": member.GroupMember})
-	// var groups []entity.Group
-
-	// if err := entity.DB().Preload("GroupMember.Member", "member_id = ?", id).Preload("GroupMember.Member.UserDetail").
-	// 	Table("groups").Find(&groups).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// c.JSON(http.StatusOK, gin.H{"data": groups})
 }
 
 // POST /Group
@@ -99,8 +89,6 @@ func CreateGroup(c *gin.Context) {
 		CreatedMember: createdMember,
 		NameGroup:     group.NameGroup,
 		CodeGroup:     group.CodeGroup,
-		// คนสร้างกลุ่มต้องมีชื่อใน GroupMember ด้วย
-		// Members: []entity.Member{createdMember},
 	}
 
 	//บันทึก
@@ -154,12 +142,6 @@ func JoinGroup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "joingroup duplicate"})
 		return
 	}
-
-	// if joingroup.CodeGroup == group.CodeGroup {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "joingroup duplicate"})
-	// 	return
-	// }
-
 	createGroupMember := entity.GroupMember{
 		Member: member,
 		Group:  group,

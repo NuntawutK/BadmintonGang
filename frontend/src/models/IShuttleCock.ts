@@ -6,6 +6,7 @@ export interface ShuttleCockInterface {
     
     ID: number;
 	Code: string;
+    Price: number;
 
     EventShuttID: number;
     EventShutt: EventShuttInterface;

@@ -5,6 +5,7 @@ import (
 
 	// "github.com/asaskevich/govalidator"
 	"github.com/Sakeezt/Badminton/backend/entity"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,11 +36,26 @@ func UpdateAccount(c *gin.Context) {
 		return
 	}
 
-	new_dataUserDetail.PriceShutt = dataUserDetail.PriceShutt
+	new_dataUserDetail.FirstName = dataUserDetail.FirstName
+	new_dataUserDetail.LastName = dataUserDetail.LastName
+	new_dataUserDetail.Nickname = dataUserDetail.Nickname
 	new_dataUserDetail.PhoneNumber = dataUserDetail.PhoneNumber
 	new_dataUserDetail.PromtPay = dataUserDetail.PromtPay
 	new_dataUserDetail.Qrcode = dataUserDetail.Qrcode
-	
+
+	updatAccout := entity.UserDetail{
+		FirstName:   new_dataUserDetail.FirstName,
+		LastName:    new_dataUserDetail.LastName,
+		Nickname:    new_dataUserDetail.Nickname,
+		PhoneNumber: new_dataUserDetail.PhoneNumber,
+		PromtPay:    new_dataUserDetail.PromtPay,
+	}
+
+	if _, err := govalidator.ValidateStruct(updatAccout); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err := entity.DB().Save(&new_dataUserDetail).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -47,37 +63,3 @@ func UpdateAccount(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": new_dataUserDetail})
 }
-
-// Update
-
-// func UpdateAccount(c *gin.Context) {
-// 	username, _ := c.Get("username")
-// 	id := c.Param("id")
-
-// 	var member entity.Member
-// 	entity.DB().Model(&entity.Member{}).Preload("UserLogin").Joins("UserLogin").Where("`UserLogin__username` = ?", username).First(&member)
-
-// 	var userdetail entity.UserDetail
-// 	if err := c.ShouldBindJSON(&userdetail); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	var update_member entity.Member
-// 	entity.DB().Model(&entity.Member{}).Find(&update_member, entity.DB().Where("`id` = ?", id))
-
-// 	update_member = member
-// 	update_member.UserDetail = userdetail
-
-// 	// if _, err := govalidator.ValidateStruct(update_manageSalary); err != nil {
-// 	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 	// 	return
-// 	// }
-
-// 	if err := entity.DB().Save(&update_member).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"data": update_member})
-// }

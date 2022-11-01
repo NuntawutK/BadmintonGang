@@ -14,7 +14,6 @@ export interface UserDetailsInterface {
     Nickname: string;
     PhoneNumber: string;
     PromtPay: string;
-    PriceShutt: number; 
     Qrcode: string;
 
 }

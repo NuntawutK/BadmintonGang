@@ -64,36 +64,6 @@ func Summaryeventgroupbyid(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": eventgroupmember})
 }
 
-// func Summaryeventbyid(c *gin.Context) {
-
-// 	idevent := c.Param("eventid")
-// 	// idmember := c.Param("memberid")
-
-// var event entity.EventShutt
-// if err := entity.DB().Model(&entity.EventShutt{}).
-// 	First(&event, entity.DB().Where("id = ?", idevent)).Error; err != nil {
-// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 	return
-// }
-
-// var shuttlecock []entity.ShuttleCock
-
-// if err := entity.DB().Model(&entity.ShuttleCock{}).
-// 	Preload("Member").
-// 	Preload("Member.UserDetail").
-// 	Preload("EventGroupMemberShuttlecock.EventGroupMember").
-// 	Preload("EventGroupMemberShuttlecock.EventGroupMember.GroupMember").
-// 	Preload("EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member").
-// 	Preload("EventGroupMemberShuttlecock.EventGroupMember.GroupMember.Member.UserDetail").
-// 	Find(&shuttlecock, entity.DB().Where("event_shutt_id = ?", event.ID)).Error; err != nil {
-// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 	return
-
-// }
-
-// c.JSON(http.StatusOK, gin.H{"data": shuttlecock})
-
-// }
 func Summaryeventbyid(c *gin.Context) {
 
 	idevent := c.Param("eventid")
@@ -134,6 +104,9 @@ func Summaryeventbyid(c *gin.Context) {
 
 	type Group struct {
 		Name     string  `json:"name"`
+		Lastname string  `json:"lastname"`
+		Nickname string  `json:"nickname"`
+		MemberID uint    `json:"memberid"`
 		Quantity int     `json:"quantity"`
 		Price    float64 `json:"price"`
 		Qrcode   string  `json:"qrcode"`
@@ -143,16 +116,16 @@ func Summaryeventbyid(c *gin.Context) {
 	data := []Group{}
 	quan := 1
 	for _, itemA := range eventshutt.EventGroupMember {
-		if itemA.GroupMember.Member.UserDetail.FirstName != member.UserDetail.FirstName {
+		if itemA.GroupMember.Member.ID != member.ID {
 			continue
 		} else {
 			for _, item1 := range eventshutt.ShuttleCock {
 				for _, item2 := range item1.EventGroupMemberShuttlecock {
-					if item2.EventGroupMember.GroupMember.Member.UserDetail.FirstName == member.UserDetail.FirstName {
+					if item2.EventGroupMember.GroupMember.Member.ID == member.ID {
 						check := false
 						for i := 0; i < len(data); i++ {
-							if data[i].Name == item1.Member.UserDetail.FirstName {
-								data[i].Price += ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock))))
+							if data[i].MemberID == *item1.MemberID {
+								data[i].Price += ((float64(item1.Price)) / (float64(len(item1.EventGroupMemberShuttlecock))))
 								data[i].Quantity += 1
 								check = true
 								fmt.Println(quan)
@@ -160,7 +133,7 @@ func Summaryeventbyid(c *gin.Context) {
 
 						}
 						if !check {
-							group := Group{Name: item1.Member.UserDetail.FirstName, Quantity: 1, Price: ((item1.Member.UserDetail.PriceShutt) / (float64(len(item1.EventGroupMemberShuttlecock)))), Qrcode: item1.Member.UserDetail.Qrcode, PromtPay: item1.Member.UserDetail.PromtPay}
+							group := Group{MemberID: *item1.MemberID, Name: item1.Member.UserDetail.FirstName, Lastname: item1.Member.UserDetail.LastName, Nickname: item1.Member.UserDetail.Nickname, Quantity: 1, Price: ((float64(item1.Price)) / (float64(len(item1.EventGroupMemberShuttlecock)))), Qrcode: item1.Member.UserDetail.Qrcode, PromtPay: item1.Member.UserDetail.PromtPay}
 							data = append(data, group)
 						}
 					}

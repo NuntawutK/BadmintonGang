@@ -8,15 +8,10 @@ import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { MuiPickersUtilsProvider, TimePicker } from "@material-ui/pickers";
-import { KeyboardDateTimePicker } from "@material-ui/pickers";
-import FormControl from "@material-ui/core/FormControl";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Snackbar } from "@material-ui/core";
-import { MenuItem } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import GroupIcon from '@material-ui/icons/Group';
-//Table
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -25,18 +20,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 
-// import { EmployeesInterface } from "../../models/IUser";
 import { GroupInterface } from "../../models/IGroup";
 import { UsersInterface } from "../../models/ISignIn";
-import { MembersInterface } from "../../models/IUser";
-import { Details } from "@material-ui/icons";
 import { GroupMemberInterface } from "../../models/IGroupMember";
-//import { stringify } from "querystring";
-
-import moment from "moment";
-import { group } from "console";
-import { EventShuttInterface } from "../../models/IEvent";
-import userEvent from "@testing-library/user-event";
 import { useParams } from "react-router-dom";
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import EventAvailableIcon from '@material-ui/icons/EventAvailable';
@@ -48,9 +34,13 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: { flexGrow: 1 },
 
-    container: { marginTop: theme.spacing(2) },
+    container: { marginTop: theme.spacing(2),
+      
+     },
 
-    paper: { padding: theme.spacing(2), color: theme.palette.text.secondary },
+    paper: { padding: theme.spacing(2), 
+      color: theme.palette.text.secondary 
+    },
 
     table: { minWidth: 10 },
 
@@ -77,6 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
     text:{
       [`& fieldset`]:{
         borderRadius: "20px",
+        borderWidth: "3px",
       }
     
     }
@@ -90,20 +81,12 @@ export default function SelectGroup() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
-
-  //Ex1
   const [ShowGroup, setShowGroup] = React.useState<GroupInterface[]>([]);
   const [sentGroup, setsentGroup] = React.useState<Partial<GroupInterface>>({});
-  //Ex2
   const [joinGroup, setjoinGroup] = React.useState<Partial<GroupMemberInterface>>({});
   const [ShowjoinGroup, setShowjoinGroup] = React.useState<GroupMemberInterface[]>([]);
-
   const [groupMember, setGroupMember] = React.useState<GroupMemberInterface[]>([]);
-
   const [user, setUser] = useState<UsersInterface>();
-
-
-  //  const [shutt, setshutt] = React.useState<Partial<ShuttInterface>>({});
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [errorMessage, setErrorMassage] = useState("");
@@ -180,12 +163,6 @@ export default function SelectGroup() {
       });
   };
 
-
-
-
-
-
-
   const handleChangeCreateGroup = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
@@ -201,24 +178,8 @@ export default function SelectGroup() {
     }
 
     );
-
-    // // //การล็อครายละเอียดโปรโมชั่นตามชื่อ
-    // if (event.target.name === "CodeGroup") {
-    //   setShowGroup(se.find((r) => r.ID === event.target.value));
-    // }
   };
-
-  const handleInputChange = (
-    event: React.ChangeEvent<{ id?: string; value: any }>
-  ) => {
-    const id = event.target.id as keyof typeof ShowGroup;
-    const { value } = event.target;
-    setShowGroup({ ...ShowGroup, [id]: value === "" ? "" : Number(value) });
-  };
-
-
   let length: number
-
   function makeid(length: any) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -340,10 +301,6 @@ export default function SelectGroup() {
     setError(false);
   };
 
-
-  console.log(sentGroup.NameGroup)
-  //console.log(sentGroup.CodeGroup)
-
   return (
     <Container className={classes.container} maxWidth="md">
       <Snackbar open={success} autoHideDuration={3000} onClose={handleCloseregister} >
@@ -373,11 +330,8 @@ export default function SelectGroup() {
       <br />
       <Grid container spacing={1} className={classes.root}>
       <Grid item xs={12}>
-        <Button
-            // component={RouterLink}
-            // to="/CreateGroup"
+        <Button     
             variant="contained"
-            // color="primary"
             style={{ float: "right" }}
             onClick={handleMenu}
             aria-haspopup="true"
@@ -455,10 +409,7 @@ export default function SelectGroup() {
             value={sentGroup.CodeGroup}
             onChange={handleChangeCreateGroup}
             label=""
-            // variant="outlined"
-            //className ={classes.fullbox}
             multiline
-          // rows={}
           />
 
         </Grid>
@@ -521,10 +472,7 @@ export default function SelectGroup() {
                 <TableCell align="left">
                   <Button
                     component={RouterLink}
-                    // to={"/CreateEvent/" + group.Group.ID.toString()}
                     to={"/CreateEvent/" + group.Group.ID.toString()}
-
-                    // variant="contained"
                     color="secondary"
                   > 
                    
@@ -538,7 +486,6 @@ export default function SelectGroup() {
                 <Button
                   component={RouterLink}
                   to={"/manageEvent/" + group.Group.ID.toString()}
-                  // variant="contained"
                   color="secondary"
                   style={{ float: "left" }}
                 >

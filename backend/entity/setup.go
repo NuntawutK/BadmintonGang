@@ -16,15 +16,6 @@ func SetupDatabase() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-
-	// // Create join table
-	// if err := database.SetupJoinTable(&Group{}, "Members", &GroupMember{}); err != nil {
-	// 	panic("failed to setup join table")
-	// }
-	// if err := database.SetupJoinTable(&Member{}, "Groups", &GroupMember{}); err != nil {
-	// 	panic("failed to setup join table")
-	// }
-
 	// Migrate the schema
 	database.AutoMigrate(
 		// User

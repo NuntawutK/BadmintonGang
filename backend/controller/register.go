@@ -25,10 +25,6 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// if tx := entity.DB().Where("id = ?", member.UserLogin.UserRoleID).First(&userRole); tx.RowsAffected == 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Member not found"})
-	// 	return
-	// }
 
 	if err := entity.DB().Model(&entity.UserRole{}).Where("role_name = ?", "Member").First(&userRole).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "member role not found"})
@@ -56,16 +52,11 @@ func Register(c *gin.Context) {
 		Nickname:    member.UserDetail.Nickname,
 		PhoneNumber: member.UserDetail.PhoneNumber,
 		PromtPay:    member.UserDetail.PromtPay,
-		PriceShutt:  member.UserDetail.PriceShutt,
 	}
 	if _, err := govalidator.ValidateStruct(createUserdetail); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// if err := entity.DB().Create(&createUserdetail).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
 
 	createmember := entity.Member{
 		UserLogin:  createuserlogin,

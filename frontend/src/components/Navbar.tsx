@@ -37,6 +37,7 @@ import { UsersInterface } from "../models/ISignIn";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { WatchDirectoryFlags } from "typescript";
 
+const drawerWidth = 240;
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -73,9 +74,18 @@ const useStyles = makeStyles((theme: Theme) =>
     colorbuttom:{
       background: 'linear-gradient(45deg, #981919 30%, #EE6262 70%, #981919 100%)',
 
-    }
+    },  
   }),
+
 );
+
+interface Props {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window?: () => Window;
+}
 
 
 function Navbar() {
@@ -84,8 +94,6 @@ function Navbar() {
  const [openDrawer, setOpenDrawer] = useState(false);
  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
  const openMenu = Boolean(anchorEl);
- const [user, setUser] = useState<UsersInterface>();
- const [role, setRole] = useState("");
 
 
 const handleClose = () => {
@@ -123,6 +131,7 @@ const handleClose = () => {
           >
             <MenuIcon />
           </IconButton>
+          
           <Drawer open={openDrawer} onClose={toggleDrawer(false) }>
             <List 
               className={classes.drawer} 
@@ -140,19 +149,11 @@ const handleClose = () => {
             </List>
           </Drawer>
           <Box className={classes.title}>
-            <Button
-              component={RouterLink}
-              to="/" 
-              style={{ 
-                textTransform: "none", 
-                backgroundColor: "transparent", 
-                borderRadius: 0
-              }}
-          >
+         
           <Typography variant="h6" className={classes.title}>
-                
+                Menu
           </Typography>
-          </Button>
+       
           </Box>
 
         

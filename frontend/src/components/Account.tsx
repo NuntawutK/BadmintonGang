@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
     text:{
       [`& fieldset`]:{
         borderRadius: "20px",
+        borderWidth: "3px",
       }
     
     }
@@ -82,7 +83,6 @@ export default function AccountInfomation() {
 
   const classes = useStyles();
   // const theme = createTheme();
-
 
   const [userdetail, setuserdetail] = React.useState<Partial<UserDetailsInterface>>({});
   const [success, setSuccess] = React.useState(false);
@@ -106,12 +106,7 @@ export default function AccountInfomation() {
   ) => {
     const id = event.target.id as keyof typeof userdetail;
     const { value } = event.target;
-    if (id === "PriceShutt") {
-      setuserdetail({ ...userdetail, [id]: value === "" ? 0 : Number(value) });
-    }
-    else {
-      setuserdetail({ ...userdetail, [id]: value });
-    }
+    setuserdetail({ ...userdetail, [id]: value });  
   };
 
 
@@ -119,13 +114,16 @@ export default function AccountInfomation() {
   const handleClickedit = () => {
     setBtnDisabled(!btnDisabled)
   }
+  const [errorMessage, setErrorMassage] = useState("");
 
 
 
   function editAcount() {
     let newAccount = {
       ID: userdetail.ID,
-      PriceShutt: userdetail.PriceShutt,
+      FirstName: userdetail.FirstName,
+      LastName: userdetail.LastName,
+      Nickname: userdetail.Nickname,
       PhoneNumber: userdetail.PhoneNumber,
       PromtPay: userdetail.PromtPay,
       Qrcode: image.src,
@@ -147,6 +145,7 @@ export default function AccountInfomation() {
       .then((res) => {
         if (res.data) {
           setSuccess(true);
+          setErrorMassage("");
           const member: MembersInterface = JSON.parse(localStorage.getItem("user") || "")
           member.UserDetail = res.data as UserDetailsInterface
           localStorage.setItem("user", JSON.stringify(member))
@@ -154,7 +153,7 @@ export default function AccountInfomation() {
         } else {
           console.log(res.error);
           setError(true);
-          // setErrorMsg(res.error);
+          setErrorMassage(res.error);
         }
       });
   }
@@ -162,30 +161,30 @@ export default function AccountInfomation() {
 
 
   const [image, setImage] = useState({ name: "", src: "" });
+
   const handleChangeimages = (event: any, id?: string) => {
     const input = event.target.files[0];
-    const idimage = event.target.id as keyof typeof userdetail;
+    const name = event.target.name as keyof typeof userdetail;
 
     var reader = new FileReader();
     reader.readAsDataURL(input)
     reader.onload = function () {
       const dataURL = reader.result;
       setImage({ name: input.name, src: dataURL?.toString() as string });
+      if (event.target.name === "Qrcode") {
+        setuserdetail({ ...userdetail, [name]: dataURL?.toString() });
+      }
     };
-    if (id === "Qrcode") {
-      setuserdetail({ ...userdetail, [idimage]: input });
-    }
-
-
-
-
+    // if (id === "Qrcode") {
+    //   setuserdetail({ ...userdetail, [idimage]: input });
+    // }
   };
 
 
 
   useEffect(() => {
     setuserdetail(JSON.parse(localStorage.getItem("user") || "")?.UserDetail);
-  }, [handleChangeimages]);
+  }, []);
 
   console.log(userdetail)
 
@@ -201,7 +200,7 @@ export default function AccountInfomation() {
       </Snackbar>
       <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error">
-          Edit Unsuccess
+          {errorMessage}
         </Alert>
       </Snackbar>
       <Box display="flex">
@@ -287,7 +286,7 @@ export default function AccountInfomation() {
           />
 
         </Grid>
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <p>Price/Shuttlecock</p>
 
           <TextField
@@ -306,7 +305,7 @@ export default function AccountInfomation() {
 
           />
 
-        </Grid>
+        </Grid> */}
         <Grid item xs={6}>
           <p>Upload Qrcode</p>
           <input
@@ -314,15 +313,16 @@ export default function AccountInfomation() {
             type="file"
             // name="file"
             // id="Qrcode"
-            id="contained-button-file"
+            id="Qrcode"
+            name="Qrcode"
             // placeholder="Upload an image"
             onChange={handleChangeimages}
             style={{ float: "left" }}
             disabled={btnDisabled}
             className={classes.selectimage}
-            multiple
+            // multiple
           />
-          <label htmlFor="contained-button-file">
+          <label htmlFor="Qrcode">
             <Button variant="contained" component="span" disabled={btnDisabled}>
               Upload&nbsp;&nbsp;
               <CropFreeIcon />

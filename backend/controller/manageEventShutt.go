@@ -13,7 +13,6 @@ import (
 func CreateEventShuttleCock(c *gin.Context) {
 
 	var eventshuttlecock entity.EventShutt
-	//var groupmember entity.GroupMember
 
 	if err := c.ShouldBindJSON(&eventshuttlecock); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -54,6 +53,11 @@ func CreateEventShuttleCock(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if _, err := entity.CheckTimeEnd(createEvent.TimeStop, createEvent.TimeStart); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	//บันทึก
 	if err := entity.DB().Create(&createEvent).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -81,9 +85,6 @@ func ListEventShuttleCock(c *gin.Context) {
 
 	var eventshutt []entity.EventShutt
 	if err := entity.DB().Model(&entity.EventShutt{}).
-		// Preload("ShuttleCock").
-		// Preload("ShuttleCock.Member").
-		// Preload("ShuttleCock.Member.UserDetail").
 		Preload("EventGroupMember.GroupMember").
 		Preload("EventGroupMember.GroupMember.Member").
 		Preload("EventGroupMember.GroupMember.Member.UserDetail").
@@ -201,9 +202,23 @@ func ListEventmembershuttgroupbyid(c *gin.Context) {
 func ListEventownershuttgroupbyid(c *gin.Context) {
 
 	idevent := c.Param("eventid")
+	username, _ := c.Get("username")
+
+	var user entity.UserLogin
+	if tx := entity.DB().Raw("SELECT * FROM user_logins WHERE username = ?", username).Find(&user); tx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+		return
+	}
+	var member entity.Member
+	if tx := entity.DB().Preload("UserDetail").
+		Raw("SELECT * FROM members WHERE user_login_id = ?", user.ID).Find(&member); tx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "member not found"})
+		return
+	}
 
 	var eventshutt entity.EventShutt
 	if err := entity.DB().Model(&entity.EventShutt{}).
+		Preload("ShuttleCock").
 		Preload("ShuttleCock.Member").
 		Preload("ShuttleCock.Member.UserDetail").
 		Find(&eventshutt, entity.DB().Where("id = ?", idevent)).Error; err != nil {
@@ -211,7 +226,47 @@ func ListEventownershuttgroupbyid(c *gin.Context) {
 		return
 	}
 
+	var shuttlecock []entity.ShuttleCock
+	if err := entity.DB().Model(&entity.ShuttleCock{}).
+		Find(&shuttlecock, entity.DB().Where("member_id = ? AND event_shutt_id = ?", member.ID, eventshutt.ID)).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
+}
+
+func ListOwnerShutt(c *gin.Context) {
+
+	idevent := c.Param("eventid")
+	idmember := c.Param("memberid")
+	price := c.Param("price")
+
+	var member entity.Member
+	if tx := entity.DB().Preload("UserDetail").
+		Raw("SELECT * FROM members WHERE id = ?", idmember).Find(&member); tx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "member not found"})
+		return
+	}
+
+	var eventshutt entity.EventShutt
+	if err := entity.DB().Model(&entity.EventShutt{}).
+		Preload("ShuttleCock").
+		Preload("ShuttleCock.Member").
+		Preload("ShuttleCock.Member.UserDetail").
+		Find(&eventshutt, entity.DB().Where("id = ?", idevent)).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var shuttlecock entity.ShuttleCock
+	if err := entity.DB().Model(&entity.ShuttleCock{}).
+		Find(&shuttlecock, entity.DB().Where("member_id = ? AND event_shutt_id = ? AND price = ?", member.ID, eventshutt.ID, price)).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": shuttlecock})
 }
 
 func ListEventShuttlecockbyGroup(c *gin.Context) {
@@ -292,19 +347,3 @@ func ListEventmembershuttbyidgroup(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
 }
-
-// func ListEventownershuttbyidgroup(c *gin.Context) {
-
-// 	idgroup := c.Param("group")
-
-// 	var eventshutt []entity.EventShutt
-// 	if err := entity.DB().Model(&entity.EventShutt{}).
-// 		Preload("ShuttleCock.Member").
-// 		Preload("ShuttleCock.Member.UserDetail").
-// 		Find(&eventshutt, entity.DB().Where("id = ?", idgroup)).Error; err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"data": eventshutt})
-// }

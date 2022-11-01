@@ -5,6 +5,7 @@ import (
 
 	// "github.com/asaskevich/govalidator"
 	"github.com/Sakeezt/Badminton/backend/entity"
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,13 +17,6 @@ func AddShuttleCock(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// var eventgroupmember entity.EventGroupMember
-	// if tx := entity.DB().Where("id = ?", shuttlecockgroupmember.EventGroupMemberID).First(&eventgroupmember); tx.RowsAffected == 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "eventgroupmember not found"})
-	// 	return
-	// }
-
 	var eventshutt entity.EventShutt
 	if tx := entity.DB().Where("id = ?", shuttlecock.EventShuttID).First(&eventshutt); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "eventshutt not found"})
@@ -48,16 +42,17 @@ func AddShuttleCock(c *gin.Context) {
 	}
 
 	AddShuttlecock := entity.ShuttleCock{
+		Price:                       shuttlecock.Price,
 		Code:                        shuttlecock.Code,
 		Member:                      member,
 		EventShuttID:                &eventshutt.ID,
 		EventGroupMemberShuttlecock: neweventgroupmembershutt,
 	}
 
-	// shuttgroupmember := entity.EventGroupMemberShuttlecock{
-	// 	ShuttleCock:      AddShuttlecock,
-	// 	EventGroupMember: neweventgroupmember,
-	// }
+	if _, err := govalidator.ValidateStruct(AddShuttlecock); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	if err := entity.DB().Create(&AddShuttlecock).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -71,14 +66,6 @@ func DeleteAddshutt(c *gin.Context) {
 	id := c.Param("id")
 
 	var data entity.ShuttleCock
-
-	// var eventgroupmembershutt entity.EventGroupMemberShuttlecock
-	// if err := entity.DB().Model(&entity.EventGroupMemberShuttlecock{}).
-	// 	First(&eventgroupmembershutt, entity.DB().Where("shuttle_cock_id = ?", id)).Error; err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
 	entity.DB().Unscoped().
 		Where("shuttle_cock_id = ?", id).
 		Delete(&entity.EventGroupMemberShuttlecock{})

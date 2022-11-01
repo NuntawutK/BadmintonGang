@@ -1,45 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import PropTypes from 'prop-types';
 import { Link as RouterLink, useParams, useNavigate } from "react-router-dom";
-import TableContainer from '@material-ui/core/TableContainer';
 
 import Button from "@material-ui/core/Button";
-import { id } from 'date-fns/locale';
 import { EventShuttInterface } from '../../models/IEvent';
-import { GroupMemberInterface } from '../../models/IGroupMember';
 import { UsersInterface } from '../../models/ISignIn';
 import { EventGroupMemberInterface } from '../../models/IEventGroupMember';
 import moment from 'moment';
-import { Title } from '@material-ui/icons';
 import { ShuttleCockInterface } from '../../models/IShuttleCock';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { EventGroupmemberShuttlecockInterface } from '../../models/IEventGroupMemberShuttlecock';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import shuttlecock from "../image/shuttlecock.png"
 
 const drawerWidth = 240;
 
@@ -48,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     toolbar: {
-        paddingRight: 24, // keep right padding when drawer closed
+        paddingRight: 24,
     },
     toolbarIcon: {
         display: 'flex',
@@ -143,11 +125,40 @@ export default function Dashboard() {
     const [showEventownershutt, setshowEventownershutt] = React.useState<EventShuttInterface>();
     const [showEventshuttmembergroup, setshowEventshuttmembergroup] = React.useState<EventShuttInterface>();
 
+    const [showOwner, setShowOwner] = React.useState<ShuttleCockInterface>();
+
+
     const [user, setUser] = React.useState<UsersInterface>();
     const [role, setRole] = useState("");
 
+
+    const [selectedshutt, setselectedshutt] = React.useState<Partial<ShuttleCockInterface>>({
+        EventGroupMemberShuttlecock: [],
+    });
+    const ShowmemberofShutt = (index: number) => {
+        setselectedshutt(showEventshuttmembergroup?.ShuttleCock[index] as Partial<ShuttleCockInterface>)
+    }
+
+    console.log(selectedshutt)
+
+    const navigate = useNavigate();
+
+    function TotalPriceShutt() {
+
+        let totalprice = 0;
+        if (typeof selectedshutt?.Member?.UserDetail === 'undefined' || selectedshutt.EventGroupMemberShuttlecock?.length === 0)
+            return totalprice;
+        if (typeof selectedshutt?.EventGroupMemberShuttlecock === 'undefined')
+            return totalprice;
+        if (typeof showOwner?.Price === 'undefined')
+            return totalprice;
+        totalprice = Number((showOwner?.Price) / (selectedshutt?.EventGroupMemberShuttlecock?.length))
+
+        return totalprice;
+    }
+
     let { id } = useParams();
-    
+
     const getEventDetail = async () => {
         const apiUrl = `http://localhost:8080/summarizeevent/${id}`;
 
@@ -168,6 +179,34 @@ export default function Dashboard() {
 
                 if (res.data) {
                     setShowEvent(res.data);
+
+                } else {
+                    console.log("else");
+                }
+            });
+    };
+
+
+    const getownershutt = async () => {
+        const apiUrl = `http://localhost:8080/ownershutt/${id}/` + selectedshutt?.MemberID + `/` + selectedshutt?.Price?.toFixed(1);
+
+        const requestOptions = {
+            method: "GET",
+
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json",
+            },
+        };
+        //การกระทำ
+        fetch(apiUrl, requestOptions)
+            .then((response) => response.json())
+
+            .then((res) => {
+                console.log(res.data);
+
+                if (res.data) {
+                    setShowOwner(res.data);
                 } else {
                     console.log("else");
                 }
@@ -215,7 +254,6 @@ export default function Dashboard() {
                 "Content-Type": "application/json",
             },
         };
-        //การกระทำ
         fetch(apiUrl, requestOptions)
             .then((response) => response.json())
 
@@ -230,31 +268,7 @@ export default function Dashboard() {
             });
     };
 
-    const [selectedshutt, setselectedshutt] = React.useState<Partial<ShuttleCockInterface>>({
-        EventGroupMemberShuttlecock: [],
-    });
-    const ShowmemberofShutt = (index: number) => {
-        setselectedshutt(showEventshuttmembergroup?.ShuttleCock[index] as Partial<ShuttleCockInterface>)
-    }
 
-    console.log(selectedshutt)
-
-    const navigate = useNavigate();
-
-    function TotalPriceShutt() {
-
-        let totalprice = 0;
-        if (typeof selectedshutt?.Member?.UserDetail === 'undefined' || selectedshutt.EventGroupMemberShuttlecock?.length === 0)
-            return totalprice;
-        if (typeof selectedshutt?.EventGroupMemberShuttlecock === 'undefined')
-            return totalprice;
-
-
-        totalprice = Number(selectedshutt?.Member?.UserDetail?.PriceShutt / selectedshutt?.EventGroupMemberShuttlecock?.length)
-
-
-        return totalprice;
-    }
 
     useEffect(() => {
         const getToken = localStorage.getItem("token");
@@ -265,8 +279,13 @@ export default function Dashboard() {
         getEventDetail();
         getEventDetailshuttlecock();
         getEventOwnerDetailshuttlecock();
+
     }, []);
 
+
+    useEffect(() => {
+        getownershutt()
+    }, [selectedshutt]);
 
     return (
         <div className={classes.root}>
@@ -276,8 +295,6 @@ export default function Dashboard() {
 
 
                 <Button
-                    // component={RouterLink}
-                    // to={"/manageEvent/"+id}
                     variant="contained"
                     color="secondary"
                     style={{ float: "right" }}
@@ -312,10 +329,10 @@ export default function Dashboard() {
                             <Table size="small">
                                 <TableHead className={classes.tableHead}>
                                     <TableRow>
-                                        <TableCell align="center">No.</TableCell>
-                                        <TableCell align="left">Name</TableCell>
-                                        <TableCell align="left">Nickname</TableCell>
-                                        <TableCell align="left">Phonenumber</TableCell>
+                                        <TableCell align="left" width="1%">No.</TableCell>
+                                        <TableCell align="left" width="20%">Name</TableCell>
+                                        <TableCell align="left" width="5%">Nickname</TableCell>
+                                        <TableCell align="left" width="10%">Phonenumber</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -364,10 +381,10 @@ export default function Dashboard() {
                                 <Table size="small">
                                     <TableHead className={classes.tableHead}>
                                         <TableRow>
-                                            <TableCell>No.</TableCell>
-                                            <TableCell>Nickname</TableCell>
-                                            <TableCell>Price/shutt</TableCell>
-                                            <TableCell>Member</TableCell>
+                                            <TableCell width="1%">No.</TableCell>
+                                            <TableCell width="20%">Name</TableCell>
+                                            <TableCell width="1%">Price/shutt</TableCell>
+                                            <TableCell width="1%">Member</TableCell>
 
 
                                         </TableRow>
@@ -379,20 +396,17 @@ export default function Dashboard() {
                                                 return (
                                                     <TableRow key={item1.ID} >
                                                         <TableCell align="left">{index + 1}</TableCell>
-                                                        <TableCell align="left">{item1.Member?.UserDetail?.Nickname}</TableCell>
-                                                        <TableCell align="left">{item1.Member?.UserDetail?.PriceShutt}</TableCell>
+                                                        <TableCell align="left">{item1.Member?.UserDetail?.FirstName}{" "}{item1.Member?.UserDetail?.LastName}</TableCell>
+                                                        <TableCell align="left">{item1?.Price}</TableCell>
+
                                                         <TableCell>
                                                             <Button
-                                                                // component={RouterLink}
-                                                                // to={"/memberinevent"}
                                                                 variant="contained"
                                                                 color="secondary"
                                                                 onClick={() => ShowmemberofShutt(index)}
-                                                                // aria-controls={openMenuMember ? 'basic-menu' : undefined}
                                                                 aria-haspopup="true"
-                                                            // aria-expanded={openMenuMember ? 'true' : undefined}
                                                             >
-                                                                <VisibilityIcon />
+                                                                <VisibilityIcon fontSize="small"/>
                                                             </Button>
 
                                                         </TableCell>
@@ -414,21 +428,15 @@ export default function Dashboard() {
                                 </Table>
                                 <br />
                                 <br />
-                                {/* <Typography variant="h5">
-
-                                    Total Price : {TotalPriceShutt(showEvent?.ShuttleCock)} 
-
-                                </Typography> */}
-
                             </React.Fragment>
 
                         </Paper>
-                        <br/>
+                        <br />
                         <Typography variant="h5">
-                        Members play shuttlecock
+                            Members play shuttlecock
                         </Typography>
                         <Paper className={fixedHeightPaper}>
-                           
+
 
                             <Table size="small">
                                 <TableHead className={classes.tableHead}>
@@ -454,32 +462,15 @@ export default function Dashboard() {
 
                                                 </TableRow>
                                             </TableBody>
-
                                         )
-
-
-
-
                                     })
                                 }
                             </Table>
-
-
-
                             <br />
                             <br />
                             <br />
-
                         </Paper>
-
-
                     </Grid>
-
-
-
-
-
-
                 </Grid>
                 <Box pt={4}>
 

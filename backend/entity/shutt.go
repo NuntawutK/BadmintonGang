@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -42,8 +43,8 @@ type GroupMember struct {
 type ShuttleCock struct {
 	gorm.Model
 
-	Code string `gorm:"uniqueIndex"`
-
+	Code         string  `gorm:"uniqueIndex"`
+	Price        float64 `valid:"required~PriceShutt must not be zero, PriceShutt~PriceShutt must not be negative"`
 	EventShuttID *uint
 	EventShutt   EventShutt `gorm:"references:ID" valid:"-"`
 
@@ -88,9 +89,6 @@ type EventGroupMemberShuttlecock struct {
 
 	EventGroupMemberID *uint
 	EventGroupMember   EventGroupMember `gorm:"references:ID;;" valid:"-"`
-
-	// MemberID *uint
-	// Member   Member `gorm:"references:ID" valid:"-"`
 }
 
 type Summary struct {
@@ -99,7 +97,6 @@ type Summary struct {
 	EventShuttID *uint
 	EventShutt   EventShutt `gorm:"references:ID" valid:"-"`
 
-	// Status     string
 	TotalPrice int
 }
 
@@ -109,4 +106,19 @@ func init() {
 		// ย้อนหลังไม่เกิน 1 วัน
 		return t.After(time.Now().AddDate(0, 0, -1))
 	})
+}
+func CheckTimeEnd(t time.Time, t2 time.Time) (bool, error) {
+	if t.After(t2) {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("TimeEnd must be greater than the TimeStart")
+	}
+}
+func init() {
+
+	govalidator.CustomTypeTagMap.Set("PriceShutt", func(i interface{}, o interface{}) bool {
+		a := i.(float64)
+		return a >= 1
+	})
+
 }

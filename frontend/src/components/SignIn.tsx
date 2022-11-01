@@ -3,7 +3,6 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
@@ -14,9 +13,7 @@ import Grid from "@material-ui/core/Grid";
 
 import SportsTennisIcon from '@material-ui/icons/SportsTennis';
 import { SigninInterface } from "../models/ISignIn";
-import { url } from "inspector";
 import shuttlecock from "../image/shuttlecock.png"
-import { Opacity } from "@material-ui/icons";
 
 
 function Alert(props: AlertProps) {
@@ -28,13 +25,8 @@ function ForDevLoginShow() {
 
   return (
     <>
-      {/* <Button onClick={() => {setOpen(open => !open)}}>
-        {open ? (<div>[ hide ]</div>) : (<div>[ show ]</div>)}
-      </Button> */}
       {open && (
-        <div style={{textAlign: "left"}}>
-
-          
+        <div style={{textAlign: "left"}}>   
         </div>
       )}
     </>
@@ -44,13 +36,10 @@ function ForDevLoginShow() {
 const useStyles = makeStyles((theme) => ({
 
   image:{
-    // backgroundImage:`url("https://cdn.dribbble.com/users/427368/screenshots/10977733/media/08c4814eaa402b580cfbc6b3c39011da.png?compress=1&resize=400x300")`,
-    // opacity: "0.3",
     display: "absolute",
     marginTop:theme.spacing(-50),
     marginLeft:theme.spacing(-5),
     zIndex: -1,
-    // width: "500px"
   },
   paper: {
     marginTop: theme.spacing(8),
@@ -58,8 +47,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     backgroundImage: `url(${shuttlecock})`,
-    height: "500px",
-    width: "450px",    
+    height: "400px",
+    width: "390px",    
   },
   avatar: {
     margin: theme.spacing(1),
@@ -85,9 +74,8 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: "20px",
     }
   
-  }
-  
-  
+  },
+ 
   
 }));
 
@@ -153,12 +141,12 @@ function SignIn() {
     <Container component="main" maxWidth="xs" >
       
       <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
+        <Alert onClose={handleClose} severity="success"> 
         login successfully
         </Alert>
       </Snackbar>
-      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose} >
+        <Alert onClose={handleClose} severity="error" >
           User or Password incorrect
         </Alert>
       </Snackbar>
@@ -237,9 +225,6 @@ function SignIn() {
         </Grid>
          
       </div>
-      {/* <img src = {shuttlecock}    style={{ float: "inline-start" }}  className={classes.image}> 
-      </img> */}
-      
     </Container>
    
    

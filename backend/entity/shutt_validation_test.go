@@ -86,3 +86,33 @@ func TestGroupCorrect(t *testing.T) {
 	g.Expect(err).To(BeNil())
 
 }
+
+func TestPriceshuttInCorrect(t *testing.T) {
+	g := NewGomegaWithT(t)
+	fixtures := []float64{
+		0,
+		-5,
+		-4,
+		-2,
+	}
+
+	for _, fixture := range fixtures {
+
+		shutt := ShuttleCock{
+			Price: fixture,
+		}
+		ok, err := govalidator.ValidateStruct(shutt)
+
+		// ok ต้องไม่เป็นค่า true แปลว่าต้องจับ error ได้
+		g.Expect(ok).ToNot(BeTrue())
+
+		// err ต้องไม่เป็นค่า nil แปลว่าต้องจับ error ได้
+		g.Expect(err).ToNot(BeNil())
+
+		if err.Error() == "PriceShutt must not be zero" {
+			g.Expect(err.Error()).To(Equal("PriceShutt must not be zero"))
+		} else if err.Error() == "PriceShutt must not be negative" {
+			g.Expect(err.Error()).To(Equal("PriceShutt must not be negative"))
+		}
+	}
+}
