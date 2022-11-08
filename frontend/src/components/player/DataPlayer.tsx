@@ -142,7 +142,7 @@ export default function DataPlayer() {
             color="primary"
             gutterBottom
           >
-            Player
+            Player in group
           </Typography>
         </Box>
       </Box>

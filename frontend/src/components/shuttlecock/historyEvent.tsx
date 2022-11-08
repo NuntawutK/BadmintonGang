@@ -22,6 +22,7 @@ import { ShuttleCockInterface } from '../../models/IShuttleCock';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { EventGroupmemberShuttlecockInterface } from '../../models/IEventGroupMemberShuttlecock';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { lineHeight } from '@mui/system';
 
 const drawerWidth = 240;
 
@@ -310,12 +311,13 @@ export default function Dashboard() {
 
                     <Grid item xs={12}>
 
-                        <Typography variant="h5">
-                            Group: {showEvent?.Group.NameGroup}
+                        <Typography variant="h6">
+                            Groupname : {showEvent?.Group.NameGroup}
                             <br />
-                            Place: {showEvent?.Place}
-                            <br />
-                            Time: {moment(showEvent?.TimeStart).format("DD/MM/YYYY hh:mm A")}  to {moment(showEvent?.TimeStop).format("DD/MM/YYYY hh:mm A")}
+                            Placename : {showEvent?.Place}
+                            <br style={{display:"block",marginBottom:"2em"}}/>
+                            Time : {moment(showEvent?.TimeStart).format("DD/MM/YYYY hh:mm A")}<br/> 
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{moment(showEvent?.TimeStop).format("DD/MM/YYYY hh:mm A")}
                         </Typography>
 
                     </Grid>

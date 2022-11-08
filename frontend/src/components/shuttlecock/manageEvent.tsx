@@ -229,8 +229,6 @@ export default function ManageEvent() {
     let newAnchorEl = [...anchorEl];
     newAnchorEl[index] = null;
     setAnchorEl(newAnchorEl);
-
-    // Clear member after close Member menu
     setGroupMember([]);
     setSelected([]);
     setSelectedOwnershutt([]);
@@ -274,7 +272,7 @@ export default function ManageEvent() {
       .then((response) => response.json())
 
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
 
         if (res.data) {
           setShowEvent(res.data);
@@ -311,7 +309,7 @@ export default function ManageEvent() {
       .then((response) => response.json())
 
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
 
         if (res.data) {
           setshowEventowneradndmembershutt(res.data);
@@ -371,7 +369,7 @@ export default function ManageEvent() {
 
     const res = await reponse.json()
     if (res.data) {
-      console.log(res.data)
+     // console.log(res.data)
       await sleep(1000)
       window.location.reload()
     } else {
@@ -393,7 +391,7 @@ export default function ManageEvent() {
 
     const res = await reponse.json()
     if (res.data) {
-      console.log(res.data)
+      //console.log(res.data)
       await sleep(1000)
       window.location.reload()
     } else {
@@ -417,7 +415,7 @@ export default function ManageEvent() {
       .then((response) => response.json())
 
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         if (res.data) {
           setGroupMember(res.data);
         } else {
@@ -443,7 +441,7 @@ export default function ManageEvent() {
       .then((response) => response.json())
 
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
 
         if (res.data) {
           setGroup(res.data);
@@ -472,7 +470,6 @@ export default function ManageEvent() {
         EventGroupMemberID: item
       });
     });
-    console.log(payload)
     if (payload.length === 0) {
       setIsItemEmpty(true);
       setErrorMassage("Select Member please")
@@ -486,7 +483,6 @@ export default function ManageEvent() {
       MemberID: selectedOwnershutt[0],
       EventGroupMemberShuttlecock: payload,
     };
-    console.log(data);
 
 
 
@@ -553,7 +549,7 @@ export default function ManageEvent() {
     fetch(apiUrl, requestOptions)
       .then((response) => response.json())
       .then((res) => {
-        console.log(res);
+        //console.log(res);
         if (res.data) {
           setSuccess(true);
           setMsg("Add Member success")
@@ -633,26 +629,24 @@ export default function ManageEvent() {
         <Table className={classes.table} aria-label="simple table">
           <TableHead className={classes.tableHead}>
             <TableRow>
-              <TableCell align="left" width="5%">
+              <TableCell align="left" width="2%">
                 Place
+              </TableCell>         
+              <TableCell align="center" width="3%">
+                Member
               </TableCell>
-
-              <TableCell align="center" width="7%">
+              <TableCell align="center" width="3%">
+                shuttlecock
+              </TableCell>
+              <TableCell align="left" width="3%">
+                summary
+              </TableCell>
+              <TableCell align="center" width="10%">
                 TimeStart
               </TableCell>
 
-              <TableCell align="center" width="7%">
+              <TableCell align="center" width="10%">
                 TimeStop
-              </TableCell>
-
-              <TableCell align="center" width="4%">
-                Member
-              </TableCell>
-              <TableCell align="center" width="4%">
-                shuttlecock
-              </TableCell>
-              <TableCell align="left" width="4%">
-                summary
               </TableCell>
               <TableCell align="left" width="4%">
               </TableCell>
@@ -666,8 +660,6 @@ export default function ManageEvent() {
               return (
                 <TableRow key={item.ID}>
                   <TableCell align="left">{item.Place}</TableCell>
-                  <TableCell align="left">{moment(item.TimeStart).format("DD/MM/YYYY hh:mm A")}</TableCell>
-                  <TableCell align="left">{moment(item.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
                   <TableCell align="center">
                     <div>
                       <Button
@@ -1023,19 +1015,19 @@ export default function ManageEvent() {
                     </Box>
 
 
-                  </TableCell>
-
+                  </TableCell>               
                   <TableCell align="center">
                     <Button
                       style={{ float: "left" }}
                       component={RouterLink}
                       to={"/historyEvent/" + item.ID.toString()}
-                      // variant="contained"
                       color="primary"
                     >
                       <HistoryIcon />
                     </Button>
                   </TableCell>
+                  <TableCell align="left">{moment(item.TimeStart).format("DD/MM/YYYY hh:mm A")}</TableCell>
+                  <TableCell align="left">{moment(item.TimeStop).format("DD/MM/YYYY hh:mm A")}</TableCell>
                   <TableCell>
                     <Button
                       size="small"
